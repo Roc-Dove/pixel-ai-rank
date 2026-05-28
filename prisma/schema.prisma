@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum RankType {
+  AICPB
+  AIXZD_STARS
+  AIXZD_MONTH
+  XHUNT_CN
+  XHUNT_GLOBAL
+}
+
+model RankItem {
+  id              String      @id @default(cuid())
+  rankType        RankType
+  rank            Int
+  name            String
+  description     String?
+  logoUrl         String?
+  externalLink    String
+  detailLink      String?
+  metricPrimary   String?
+  metricSecondary String?
+  metricTertiary  String?
+  batchId         String
+  batch           ScrapeBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  createdAt       DateTime    @default(now())
+
+  @@index([rankType, batchId])
+  @@index([batchId])
+}
+
+model ScrapeBatch {
+  id        String     @id @default(cuid())
+  rankType  RankType
+  status    String
+  itemCount Int        @default(0)
+  errorMsg  String?
+  scrapedAt DateTime   @default(now())
+  items     RankItem[]
+
+  @@index([rankType, status])
+  @@index([rankType, scrapedAt(sort: Desc)])
+}

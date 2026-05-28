@@ -1,0 +1,12 @@
+.env
+.env.*
+.git
+.next
+node_modules
+.tmp-scrape-debug
+.trae
+TabAI会话_*.md
+当前进度梳理.md
+CLAUDE.md
+AGENTS.md
+.DS_Store
