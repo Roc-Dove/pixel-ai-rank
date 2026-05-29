@@ -53,15 +53,14 @@ export function Header() {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center xl:min-w-[420px] xl:justify-end">
-            <div className="relative min-w-[260px] flex-1">
-              <div className="pointer-events-none absolute inset-y-0 left-4 z-10 flex items-center text-[var(--px-text-muted)]">
+            <div className="pixel-search-wrap min-w-[260px] flex-1">
+              <div className="pixel-search-icon">
                 <span aria-hidden="true">🔎</span>
               </div>
               <PixelInput
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="搜索名称、简介或标签"
-                className="[&_input]:pl-12"
                 aria-label="搜索当前榜单"
               />
             </div>
