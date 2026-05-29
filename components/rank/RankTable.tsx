@@ -22,6 +22,13 @@ const IMAGE_OVERRIDES: Record<string, string> = {
   "Z.ai | 智谱": "https://www.google.com/s2/favicons?domain=z.ai&sz=128",
   Codex: "https://www.google.com/s2/favicons?domain=chatgpt.com&sz=128",
   "ChatGPT Images 2.0": "https://www.google.com/s2/favicons?domain=openai.com&sz=128",
+  "Google Gemini": "https://cdn.simpleicons.org/googlegemini/1b1b3a",
+  Claude: "https://cdn.simpleicons.org/anthropic/1b1b3a",
+  DeepSeek: "https://cdn.simpleicons.org/deepseek/1b1b3a",
+  Grok: "https://cdn.simpleicons.org/x/1b1b3a",
+  "Perplexity AI": "https://cdn.simpleicons.org/perplexity/1b1b3a",
+  Grammarly: "https://cdn.simpleicons.org/grammarly/1b1b3a",
+  "Hugging Face": "https://cdn.simpleicons.org/huggingface/1b1b3a",
   宝玉: "https://unavatar.io/x/dotey",
   归藏: "https://unavatar.io/x/op7418",
   "AI 工具箱": "https://unavatar.io/x/op7418",
@@ -33,6 +40,8 @@ const IMAGE_OVERRIDES: Record<string, string> = {
   "Logan Kilpatrick": "https://unavatar.io/x/OfficialLoganK",
   "Matt Shumer": "https://unavatar.io/x/mattshumer_",
 };
+
+const FALLBACK_LOGO_NAMES = new Set(["Gamma", "Cursor", "HeyGen", "Midjourney", "Leonardo AI", "Kimi"]);
 
 function parseMetricValue(value: string | null) {
   if (!value) return Number.NEGATIVE_INFINITY;
@@ -51,6 +60,7 @@ function parseMetricValue(value: string | null) {
 function getImageUrl(item: RankItemDto) {
   if (item.logoUrl) return item.logoUrl;
   if (IMAGE_OVERRIDES[item.name]) return IMAGE_OVERRIDES[item.name];
+  if (FALLBACK_LOGO_NAMES.has(item.name)) return null;
 
   try {
     const url = new URL(item.externalLink);
@@ -76,14 +86,15 @@ function RankBadge({ rank }: { rank: number }) {
 function MetricBadge({ label, value, primary = false }: { label: string; value: string | null; primary?: boolean }) {
   const tone = primary ? "primary" : classifyMetricTone(value);
   const display = formatMetricDisplay(value);
+  const shouldShowTrendArrow = !primary && /增长|涨幅|活跃|率/.test(label);
   const content =
     display === "N/A"
       ? display
       : primary
         ? display
-        : tone === "positive"
+        : shouldShowTrendArrow && tone === "positive"
           ? `▲ ${display}`
-          : tone === "negative"
+          : shouldShowTrendArrow && tone === "negative"
             ? `▼ ${display}`
             : display;
 
@@ -182,6 +193,7 @@ export function RankTable({
   const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const metricLabels = METRIC_LABELS[payload.type];
+  const shouldShowPagination = totalPages > 1;
 
   const handleSortChange = (mode: SortMode) => {
     setSortMode(mode);
@@ -226,9 +238,10 @@ export function RankTable({
     <section className="nes-container is-rounded pixel-panel space-y-5">
       <div className="pixel-table-toolbar">
         <div>
-          <p className="title">{`${payload.label} / ${items.length} ITEMS`}</p>
+          <p className="title">{`${payload.label} / ${items.length} 条`}</p>
           <p className="text-sm text-[var(--px-text-muted)]">
-            第 {safePage} / {totalPages} 页{searchQuery ? `，${items.length} 条匹配结果` : ""}
+            {shouldShowPagination ? `第 ${safePage} / ${totalPages} 页` : `共 ${items.length} 条`}
+            {searchQuery ? `，${items.length} 条匹配结果` : ""}
           </p>
         </div>
 
@@ -258,15 +271,17 @@ export function RankTable({
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <PixelButton tone="ghost" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={safePage === 1}>
-          ◀ 上一页
-        </PixelButton>
-        <span className="pixel-chip blue">PAGE {safePage}</span>
-        <PixelButton tone="ghost" onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={safePage >= totalPages}>
-          下一页 ▶
-        </PixelButton>
-      </div>
+      {shouldShowPagination ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <PixelButton tone="ghost" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={safePage === 1}>
+            ◀ 上一页
+          </PixelButton>
+          <span className="pixel-chip blue">第 {safePage} 页</span>
+          <PixelButton tone="ghost" onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={safePage >= totalPages}>
+            下一页 ▶
+          </PixelButton>
+        </div>
+      ) : null}
     </section>
   );
 }
