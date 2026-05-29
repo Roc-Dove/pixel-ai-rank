@@ -2,7 +2,13 @@ import { type RawRankItem } from "@/types/rank";
 import { loadHtml, requestHtml, safeSlice, sanitizeText } from "@/lib/utils/scrape";
 
 const AICPB_URL = "https://www.aicpb.com/zh/ai-rankings/products/china-ai-growth-rate-ranking/websites";
-const OFFICIAL_LINK_OVERRIDES: Array<{ pattern: RegExp; url: string }> = [{ pattern: /智谱|z\.ai/i, url: "https://z.ai" }];
+const OFFICIAL_LINK_OVERRIDES: Array<{ pattern: RegExp; url: string }> = [
+  { pattern: /智谱|z\.ai/i, url: "https://z.ai" },
+  { pattern: /lovart/i, url: "https://lovart.ai" },
+  { pattern: /gamma/i, url: "https://gamma.app" },
+  { pattern: /vidu/i, url: "https://www.vidu.com" },
+  { pattern: /monica/i, url: "https://monica.im" },
+];
 
 type AicpbJsonLd = {
   "@graph"?: Array<{
