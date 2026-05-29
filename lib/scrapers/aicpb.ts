@@ -2,6 +2,7 @@ import { type RawRankItem } from "@/types/rank";
 import { loadHtml, requestHtml, safeSlice, sanitizeText } from "@/lib/utils/scrape";
 
 const AICPB_URL = "https://www.aicpb.com/zh/ai-rankings/products/china-ai-growth-rate-ranking/websites";
+const OFFICIAL_LINK_OVERRIDES: Array<{ pattern: RegExp; url: string }> = [{ pattern: /智谱|z\.ai/i, url: "https://z.ai" }];
 
 type AicpbJsonLd = {
   "@graph"?: Array<{
@@ -15,6 +16,10 @@ type AicpbJsonLd = {
     }>;
   }>;
 };
+
+function resolveOfficialLink(name: string, fallback: string) {
+  return OFFICIAL_LINK_OVERRIDES.find((entry) => entry.pattern.test(name))?.url ?? fallback;
+}
 
 function parseFromJsonLd(html: string): RawRankItem[] {
   const matches = Array.from(html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g));
@@ -41,7 +46,7 @@ function parseFromJsonLd(html: string): RawRankItem[] {
               description: null,
               logoUrl: null,
               detailLink,
-              externalLink: detailLink,
+              externalLink: resolveOfficialLink(name, detailLink),
               metricPrimary: null,
               metricSecondary: null,
               metricTertiary: null,
@@ -71,13 +76,15 @@ export async function scrapeAicpb(): Promise<RawRankItem[]> {
       const name = sanitizeText($(element).text());
       if (!href || !name) return;
 
+      const detailLink = new URL(href, AICPB_URL).toString();
+
       fallbackItems.push({
         rank: index + 1,
         name,
         description: null,
         logoUrl: null,
-        detailLink: new URL(href, AICPB_URL).toString(),
-        externalLink: new URL(href, AICPB_URL).toString(),
+        detailLink,
+        externalLink: resolveOfficialLink(name, detailLink),
         metricPrimary: null,
         metricSecondary: null,
         metricTertiary: null,

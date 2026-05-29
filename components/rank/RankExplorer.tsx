@@ -20,8 +20,6 @@ export function RankExplorer({ payload }: { payload: RankPayload }) {
     });
   }, [payload.items, search]);
 
-  const healthTone = payload.dataMode === "demo" ? "yellow" : payload.sourceStatus === "ready" ? "green" : "yellow";
-  const healthLabel = payload.dataMode === "demo" ? "DEMO MODE" : payload.sourceStatus === "ready" ? "LIVE DATA" : "DEGRADED";
   const source = TAB_CONFIG[payload.type];
   const updatedLabel = payload.lastUpdated ? formatUpdatedAt(payload.lastUpdated) : "WAITING";
 
@@ -37,7 +35,6 @@ export function RankExplorer({ payload }: { payload: RankPayload }) {
                     <span aria-hidden="true">{source.icon}</span>
                     <span>{source.label}</span>
                   </span>
-                  <span className={`pixel-chip ${healthTone}`}>{healthLabel}</span>
                   <span className="pixel-chip blue">UPDATED / {updatedLabel}</span>
                 </div>
                 <h1 className="pixel-hero-title">{source.shortLabel}</h1>
