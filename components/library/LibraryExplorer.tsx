@@ -29,8 +29,15 @@ function initials(name: string) {
     .toUpperCase();
 }
 
+function difficultyTone(difficulty: LibraryItemWithGuide["guide"]["difficulty"]) {
+  if (difficulty === "低") return "easy";
+  if (difficulty === "中") return "medium";
+  return "hard";
+}
+
 function LibraryCard({ item }: { item: LibraryItemWithGuide }) {
   const logoUrl = getLogoUrl(item);
+  const recommendationWidth = `${item.guide.recommendation}%`;
 
   return (
     <article className="pixel-library-card">
@@ -51,16 +58,18 @@ function LibraryCard({ item }: { item: LibraryItemWithGuide }) {
         </div>
       </div>
 
-      <div className="pixel-library-guide-card" aria-label="导购信息">
-        <div>
-          <span>推荐指数</span>
-          <strong>{item.guide.recommendation}</strong>
+      <div className="pixel-library-guide-card" aria-label={`${item.name} 导购信息`}>
+        <div className="pixel-library-score">
+          <div className="pixel-library-score-head">
+            <span>推荐指数</span>
+            <strong>{item.guide.recommendation}</strong>
+          </div>
+          <div className="pixel-library-score-track" aria-hidden="true">
+            <span style={{ width: recommendationWidth }} />
+          </div>
         </div>
-        <div>
-          <span>上手难度</span>
-          <strong>{item.guide.difficulty}</strong>
-        </div>
-        <div className="pixel-library-audiences">
+        <div className="pixel-library-meta-line">
+          <span className={`pixel-library-difficulty ${difficultyTone(item.guide.difficulty)}`}>上手 {item.guide.difficulty}</span>
           {item.guide.audiences.slice(0, 2).map((audience) => (
             <span key={audience}>{audience}</span>
           ))}
