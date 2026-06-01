@@ -9,9 +9,9 @@ import { PixelButton, pixelButtonClassName } from "@/components/ui/PixelButton";
 const PAGE_SIZE = 20;
 
 const METRIC_LABELS: Record<RankPayload["type"], { primary: string; secondary: string }> = {
-  aicpb: { primary: "访问量", secondary: "增长率" },
-  stars: { primary: "热度分", secondary: "访问量" },
-  month: { primary: "月榜热度", secondary: "访问量" },
+  aicpb: { primary: "出海适配", secondary: "推荐指数" },
+  stars: { primary: "趋势潜力", secondary: "推荐指数" },
+  month: { primary: "综合推荐", secondary: "推荐指数" },
   xhunt_cn: { primary: "影响力", secondary: "活跃度" },
   xhunt_global: { primary: "影响力", secondary: "活跃度" },
 };
