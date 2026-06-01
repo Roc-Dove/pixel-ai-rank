@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
-import { PixelButton } from "@/components/ui/PixelButton";
+import { PixelButton, pixelButtonClassName } from "@/components/ui/PixelButton";
 import { PixelInput } from "@/components/ui/PixelInput";
 import { isRankRouteType, TAB_CONFIG } from "@/types/rank";
 
@@ -22,6 +22,7 @@ export function Header() {
     const type = pathname.split("/")[2];
     return type && isRankRouteType(type) ? TAB_CONFIG[type] : null;
   }, [pathname]);
+  const isLibrary = pathname.startsWith("/library");
 
   return (
     <header className="pixel-topbar">
@@ -53,6 +54,15 @@ export function Header() {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center xl:min-w-[420px] xl:justify-end">
+            <div className="flex flex-wrap gap-2">
+              <Link href="/rank/aicpb" className={pixelButtonClassName({ tone: isLibrary ? "ghost" : "blue", active: !isLibrary })}>
+                榜单
+              </Link>
+              <Link href="/library" className={pixelButtonClassName({ tone: isLibrary ? "purple" : "ghost", active: isLibrary })}>
+                AI库
+              </Link>
+            </div>
+
             <div className="pixel-search-wrap min-w-[260px] flex-1">
               <div className="pixel-search-icon">
                 <span aria-hidden="true">🔎</span>
