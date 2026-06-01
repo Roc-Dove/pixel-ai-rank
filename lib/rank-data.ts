@@ -1,6 +1,7 @@
 import { buildDemoRankPayload } from "@/lib/mock/rank";
 import { getLatestRankPayload } from "@/lib/scrapers";
 import { getServerEnv } from "@/lib/env";
+import { syncLibraryProductsToMonthRank } from "@/lib/library/rank-sync";
 import { type RankPayload, type RankRouteType } from "@/types/rank";
 
 const DATABASE_READ_TIMEOUT_MS = 3500;
@@ -29,13 +30,13 @@ export async function getRankPayload(type: RankRouteType): Promise<RankPayload> 
   const env = getServerEnv();
 
   if (!env.DATABASE_URL && !env.DIRECT_URL) {
-    return buildDemoRankPayload(type);
+    return syncLibraryProductsToMonthRank(buildDemoRankPayload(type));
   }
 
   try {
-    return await withTimeout(getLatestRankPayload(type), DATABASE_READ_TIMEOUT_MS);
+    return syncLibraryProductsToMonthRank(await withTimeout(getLatestRankPayload(type), DATABASE_READ_TIMEOUT_MS));
   } catch (error) {
     console.warn("[rank-data] Falling back to demo data:", error);
-    return buildDemoRankPayload(type, DATABASE_FALLBACK_MESSAGE);
+    return syncLibraryProductsToMonthRank(buildDemoRankPayload(type, DATABASE_FALLBACK_MESSAGE));
   }
 }

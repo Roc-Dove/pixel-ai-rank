@@ -51,10 +51,20 @@ function LibraryCard({ item }: { item: LibraryItemWithGuide }) {
         </div>
       </div>
 
-      <div className="pixel-library-guide-row" aria-label="导购信息">
-        <span>推荐 {item.guide.recommendation}</span>
-        <span>上手 {item.guide.difficulty}</span>
-        <span>{item.guide.audiences[0]}</span>
+      <div className="pixel-library-guide-card" aria-label="导购信息">
+        <div>
+          <span>推荐指数</span>
+          <strong>{item.guide.recommendation}</strong>
+        </div>
+        <div>
+          <span>上手难度</span>
+          <strong>{item.guide.difficulty}</strong>
+        </div>
+        <div className="pixel-library-audiences">
+          {item.guide.audiences.slice(0, 2).map((audience) => (
+            <span key={audience}>{audience}</span>
+          ))}
+        </div>
       </div>
 
       <div className="pixel-library-tags">

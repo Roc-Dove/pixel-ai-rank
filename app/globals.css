@@ -560,23 +560,54 @@ html[data-theme="dark"] .pixel-topbar {
   line-height: 1.35;
 }
 
-.pixel-library-guide-row {
+.pixel-library-guide-card {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.45rem;
+  grid-template-columns: 0.85fr 0.85fr minmax(0, 1.3fr);
+  gap: 0.55rem;
+  border: 2px solid color-mix(in srgb, var(--px-border-color) 18%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--px-surface-muted) 72%, var(--px-surface));
+  padding: 0.55rem;
 }
 
-.pixel-library-guide-row span {
+.pixel-library-guide-card > div {
   min-width: 0;
-  overflow: hidden;
-  border: 2px solid color-mix(in srgb, var(--px-border-color) 18%, transparent);
-  border-radius: 12px;
-  background: var(--px-surface-muted);
-  padding: 0.4rem 0.45rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.pixel-library-guide-card > div:not(.pixel-library-audiences) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  border-right: 1px solid color-mix(in srgb, var(--px-border-color) 18%, transparent);
+}
+
+.pixel-library-guide-card > div > span {
+  color: var(--px-text-muted);
   font-family: var(--px-font), "PingFang SC", sans-serif;
-  font-size: 9px;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.pixel-library-guide-card strong {
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.pixel-library-audiences {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-content: center;
+}
+
+.pixel-library-audiences span {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--px-border-color) 28%, transparent);
+  border-radius: 999px;
+  background: var(--px-surface);
+  padding: 0.22rem 0.42rem;
+  font-size: 0.72rem;
   line-height: 1.4;
 }
 
