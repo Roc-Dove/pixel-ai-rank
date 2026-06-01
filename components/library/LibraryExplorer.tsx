@@ -1,13 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
-import { LIBRARY_CATEGORIES, type LibraryCategory, type LibraryItem } from "@/types/library";
+import { LIBRARY_AUDIENCES, LIBRARY_CATEGORIES, type LibraryAudience, type LibraryCategory, type LibraryItemWithGuide } from "@/types/library";
 
 const ALL_CATEGORIES = "全部";
+const ALL_AUDIENCES = "全部人群";
 
-function getLogoUrl(item: LibraryItem) {
+function getLogoUrl(item: LibraryItemWithGuide) {
   if (!item.officialUrl) return null;
 
   try {
@@ -27,7 +29,7 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-function LibraryCard({ item }: { item: LibraryItem }) {
+function LibraryCard({ item }: { item: LibraryItemWithGuide }) {
   const logoUrl = getLogoUrl(item);
 
   return (
@@ -49,13 +51,22 @@ function LibraryCard({ item }: { item: LibraryItem }) {
         </div>
       </div>
 
+      <div className="pixel-library-guide-row" aria-label="导购信息">
+        <span>推荐 {item.guide.recommendation}</span>
+        <span>上手 {item.guide.difficulty}</span>
+        <span>{item.guide.audiences[0]}</span>
+      </div>
+
       <div className="pixel-library-tags">
-        {item.tags.map((tag) => (
+        {[...item.tags, ...item.guide.useCases.slice(0, 1)].map((tag) => (
           <span key={tag}>{tag}</span>
         ))}
       </div>
 
       <div className="pixel-library-actions">
+        <Link href={`/library/${item.id}`} className={pixelButtonClassName({ tone: "ghost" })}>
+          <span>详情</span>
+        </Link>
         {item.officialUrl ? (
           <a href={item.officialUrl} target="_blank" rel="noopener noreferrer" className={pixelButtonClassName({ tone: "blue" })}>
             <span aria-hidden="true">↗</span>
@@ -67,9 +78,10 @@ function LibraryCard({ item }: { item: LibraryItem }) {
   );
 }
 
-export function LibraryExplorer({ items }: { items: LibraryItem[] }) {
+export function LibraryExplorer({ items }: { items: LibraryItemWithGuide[] }) {
   const { search } = useSearch();
   const [activeCategory, setActiveCategory] = useState<LibraryCategory | typeof ALL_CATEGORIES>(ALL_CATEGORIES);
+  const [activeAudience, setActiveAudience] = useState<LibraryAudience | typeof ALL_AUDIENCES>(ALL_AUDIENCES);
 
   const filteredItems = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -77,13 +89,15 @@ export function LibraryExplorer({ items }: { items: LibraryItem[] }) {
     return items.filter((item) => {
       const categoryMatched = activeCategory === ALL_CATEGORIES || item.category === activeCategory;
       if (!categoryMatched) return false;
+      const audienceMatched = activeAudience === ALL_AUDIENCES || item.guide.audiences.includes(activeAudience);
+      if (!audienceMatched) return false;
 
       if (!query) return true;
 
-      const haystack = [item.name, item.category, item.descriptionZh, ...item.tags].join(" ").toLowerCase();
+      const haystack = [item.name, item.category, item.descriptionZh, ...item.tags, ...item.guide.audiences, ...item.guide.useCases, ...item.guide.bestFor].join(" ").toLowerCase();
       return haystack.includes(query);
     });
-  }, [activeCategory, items, search]);
+  }, [activeAudience, activeCategory, items, search]);
 
   const categories = useMemo(
     () =>
@@ -111,9 +125,24 @@ export function LibraryExplorer({ items }: { items: LibraryItem[] }) {
               <h1 className="pixel-hero-title">AI库</h1>
             </div>
             <p className="pixel-hero-summary">
-              按用途查找 AI 工具。当前版本精选自 AI Collection 的核心工具方向，已改写为中文简介，并只展示能确认官网入口的条目。
+              按用途和人群查找 AI 工具。当前版本精选自 AI Collection 的核心工具方向，已改写为中文导购内容，并只展示能确认官网入口的条目。
             </p>
           </div>
+        </section>
+
+        <section className="pixel-library-filters" aria-label="适合人群">
+          <button className={pixelButtonClassName({ tone: "green", active: activeAudience === ALL_AUDIENCES })} onClick={() => setActiveAudience(ALL_AUDIENCES)}>
+            全部人群
+          </button>
+          {LIBRARY_AUDIENCES.map((audience) => (
+            <button
+              key={audience}
+              className={pixelButtonClassName({ tone: activeAudience === audience ? "green" : "ghost", active: activeAudience === audience })}
+              onClick={() => setActiveAudience(audience)}
+            >
+              {audience}
+            </button>
+          ))}
         </section>
 
         <section className="pixel-library-filters" aria-label="AI 工具分类">

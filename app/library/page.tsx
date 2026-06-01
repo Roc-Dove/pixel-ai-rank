@@ -1,5 +1,5 @@
 import { LibraryExplorer } from "@/components/library/LibraryExplorer";
-import { LIBRARY_ITEMS } from "@/lib/library/items";
+import { getLibraryItemsWithGuide } from "@/lib/library/guide";
 
 export const metadata = {
   title: "AI库",
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function LibraryPage() {
-  return <LibraryExplorer items={LIBRARY_ITEMS} />;
+  return <LibraryExplorer items={getLibraryItemsWithGuide()} />;
 }

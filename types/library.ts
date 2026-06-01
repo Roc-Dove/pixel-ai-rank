@@ -26,3 +26,27 @@ export type LibraryItem = {
   sourceName: "AI Collection";
   sourceUrl: string;
 };
+
+export const LIBRARY_AUDIENCES = ["普通用户", "创业者/产品经理", "内容创作者", "出海团队", "开发者"] as const;
+
+export type LibraryAudience = (typeof LIBRARY_AUDIENCES)[number];
+
+export type LibraryDifficulty = "低" | "中" | "高";
+
+export type LibraryGuide = {
+  recommendation: number;
+  difficulty: LibraryDifficulty;
+  audiences: LibraryAudience[];
+  bestFor: string[];
+  notFor: string[];
+  useCases: string[];
+  alternatives: string[];
+  isChineseFriendly: boolean;
+  isGoodForGlobal: boolean;
+  isGoodForCreators: boolean;
+  isGoodForBuilders: boolean;
+};
+
+export type LibraryItemWithGuide = LibraryItem & {
+  guide: LibraryGuide;
+};
