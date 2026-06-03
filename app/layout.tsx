@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CommunityBanner } from "@/components/layout/CommunityBanner";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { SearchProvider } from "@/components/providers/SearchProvider";
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <SearchProvider>
             <div className="flex min-h-screen flex-col">
               <Header />
+              <CommunityBanner />
               <div className="flex-1">{children}</div>
               <Footer />
             </div>
