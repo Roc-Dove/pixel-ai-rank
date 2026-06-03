@@ -118,102 +118,64 @@ html[data-theme="dark"] .pixel-topbar {
   box-shadow: 0 -14px 36px rgba(29, 33, 64, 0.08);
 }
 
-.pixel-community-band {
-  border-bottom: var(--px-border);
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--px-yellow) 30%, transparent), transparent 44%),
-    linear-gradient(135deg, color-mix(in srgb, var(--px-cyan) 14%, var(--px-surface)), var(--px-surface));
-}
-
-.pixel-community-inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 1rem;
+.pixel-header-community {
+  display: flex;
+  flex: 0 1 320px;
   align-items: center;
-  width: 100%;
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 1rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 260px;
+  border: var(--px-border);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--px-yellow) 22%, transparent), transparent 46%),
+    linear-gradient(135deg, color-mix(in srgb, var(--px-cyan) 18%, var(--px-surface)), var(--px-surface));
+  box-shadow: var(--px-shadow-sm);
+  padding: 0.52rem 0.62rem 0.52rem 0.8rem;
 }
 
-.pixel-community-copy {
+.pixel-header-community-copy {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 0.2rem;
 }
 
-.pixel-community-kicker {
+.pixel-header-community-copy span {
   width: fit-content;
   border: 2px solid var(--px-border-color);
   border-radius: 999px;
   background: var(--px-red);
-  box-shadow: var(--px-shadow-sm);
-  padding: 0.4rem 0.65rem;
+  padding: 0.16rem 0.42rem;
   color: #fff;
   font-family: var(--px-font), "PingFang SC", sans-serif;
-  font-size: 10px;
-  line-height: 1.4;
+  font-size: 9px;
+  line-height: 1.35;
 }
 
-.pixel-community-copy h2 {
-  margin: 0;
-  font-size: clamp(1.55rem, 3vw, 2.6rem);
-  line-height: 1.08;
-  letter-spacing: 0;
+.pixel-header-community-copy strong {
+  overflow: hidden;
+  font-family: var(--px-font), "PingFang SC", sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.pixel-community-copy p {
-  max-width: 48rem;
-  margin: 0;
+.pixel-header-community-copy small {
   color: var(--px-text-muted);
-  font-size: 1rem;
-  line-height: 1.65;
+  font-size: 0.74rem;
+  line-height: 1.35;
 }
 
-.pixel-community-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.pixel-community-tags span {
-  display: inline-flex;
-  align-items: center;
-  border: 2px solid color-mix(in srgb, var(--px-border-color) 24%, transparent);
-  border-radius: 999px;
-  background: var(--px-surface);
-  box-shadow: var(--px-shadow-sm);
-  padding: 0.38rem 0.6rem;
-  font-size: 0.82rem;
-  line-height: 1.4;
-}
-
-.pixel-community-qr {
-  display: flex;
-  width: 196px;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0;
-  border: var(--px-border);
-  border-radius: 20px;
-  background: #fff;
-  box-shadow: var(--px-shadow);
-  padding: 0.65rem;
-}
-
-.pixel-community-qr img {
+.pixel-header-community img {
   height: auto;
-  width: 100%;
-  border-radius: 12px;
-}
-
-.pixel-community-qr figcaption {
-  color: #1b1b3a;
-  font-size: 0.78rem;
-  line-height: 1.45;
-  text-align: center;
+  width: 72px;
+  flex: 0 0 auto;
+  border: 2px solid var(--px-border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 3px;
 }
 
 .pixel-muted {
@@ -1096,13 +1058,9 @@ html[data-theme="dark"] .pixel-topbar {
 }
 
 @media (max-width: 900px) {
-  .pixel-community-inner {
-    grid-template-columns: 1fr;
-  }
-
-  .pixel-community-qr {
-    width: min(220px, 100%);
-    justify-self: center;
+  .pixel-header-community {
+    width: 100%;
+    max-width: 28rem;
   }
 
   .pixel-overview-main,
@@ -1141,27 +1099,9 @@ html[data-theme="dark"] .pixel-topbar {
 }
 
 @media (max-width: 640px) {
-  .pixel-community-inner {
-    gap: 0.9rem;
-    padding: 0.9rem 0.75rem;
-  }
-
-  .pixel-community-copy p {
-    font-size: 0.92rem;
-    line-height: 1.6;
-  }
-
-  .pixel-community-tags {
-    gap: 0.4rem;
-  }
-
-  .pixel-community-tags span {
-    padding: 0.3rem 0.48rem;
-    font-size: 0.76rem;
-  }
-
-  .pixel-community-qr {
-    width: min(190px, 78vw);
+  .pixel-header-community {
+    min-width: 0;
+    max-width: none;
   }
 
   .pixel-shell {

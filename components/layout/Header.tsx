@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo } from "react";
+import { CommunityBanner } from "@/components/layout/CommunityBanner";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { PixelButton, pixelButtonClassName } from "@/components/ui/PixelButton";
@@ -52,6 +53,8 @@ export function Header() {
               </div>
             </div>
           </div>
+
+          <CommunityBanner />
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center xl:min-w-[420px] xl:justify-end">
             <div className="flex flex-wrap gap-2">
