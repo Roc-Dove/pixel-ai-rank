@@ -168,7 +168,23 @@ html[data-theme="dark"] .pixel-topbar {
   line-height: 1.35;
 }
 
-.pixel-header-community img {
+.pixel-header-community-qr {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: zoom-in;
+}
+
+.pixel-header-community-qr:focus-visible {
+  outline: 3px solid var(--px-blue);
+  outline-offset: 3px;
+}
+
+.pixel-header-community-qr img {
   height: auto;
   width: 72px;
   flex: 0 0 auto;
@@ -176,6 +192,77 @@ html[data-theme="dark"] .pixel-topbar {
   border-radius: 10px;
   background: #fff;
   padding: 3px;
+}
+
+.pixel-qr-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.pixel-qr-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(12, 16, 32, 0.72);
+  cursor: zoom-out;
+}
+
+.pixel-qr-lightbox-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(450px, 92vw);
+  max-height: min(720px, 82vh);
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  border: var(--px-border);
+  border-radius: 22px;
+  background: var(--px-surface);
+  box-shadow: 0 28px 80px rgba(12, 16, 32, 0.34);
+  padding: 1rem;
+}
+
+.pixel-qr-lightbox-card img {
+  width: auto;
+  max-width: 82vw;
+  height: min(560px, 62vh);
+  object-fit: contain;
+  border: 2px solid var(--px-border-color);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.pixel-qr-lightbox-card p {
+  margin: 0;
+  max-width: 22rem;
+  color: var(--px-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.pixel-qr-lightbox-close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: var(--px-border);
+  border-radius: 999px;
+  background: var(--px-red);
+  box-shadow: var(--px-shadow-sm);
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .pixel-muted {
@@ -1102,6 +1189,15 @@ html[data-theme="dark"] .pixel-topbar {
   .pixel-header-community {
     min-width: 0;
     max-width: none;
+  }
+
+  .pixel-qr-lightbox-card {
+    padding: 0.75rem;
+  }
+
+  .pixel-qr-lightbox-close {
+    top: -10px;
+    right: -8px;
   }
 
   .pixel-shell {
