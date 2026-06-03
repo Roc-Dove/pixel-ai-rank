@@ -32,6 +32,7 @@ export function CommunityBanner() {
 
         <button type="button" className="pixel-header-community-qr" onClick={() => setIsOpen(true)} aria-label="放大 Pixel AI Club 微信群二维码">
           <Image src="/pixel-ai-club-qr-focus.jpg" alt="Pixel AI Club 微信群二维码" width={76} height={120} priority sizes="76px" />
+          <span className="pixel-header-community-cta">扫码进群</span>
         </button>
       </aside>
 

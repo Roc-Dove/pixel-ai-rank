@@ -194,6 +194,10 @@ html[data-theme="dark"] .pixel-topbar {
   padding: 3px;
 }
 
+.pixel-header-community-cta {
+  display: none;
+}
+
 .pixel-qr-lightbox {
   position: fixed;
   inset: 0;
@@ -1187,8 +1191,50 @@ html[data-theme="dark"] .pixel-topbar {
 
 @media (max-width: 640px) {
   .pixel-header-community {
+    flex: 1 1 auto;
     min-width: 0;
     max-width: none;
+    min-height: 44px;
+    border-radius: 14px;
+    padding: 0.42rem 0.5rem 0.42rem 0.62rem;
+  }
+
+  .pixel-header-community-copy {
+    flex: 1 1 auto;
+  }
+
+  .pixel-header-community-copy span {
+    padding: 0.2rem 0.48rem;
+    font-size: 10px;
+  }
+
+  .pixel-header-community-copy strong,
+  .pixel-header-community-copy small {
+    display: none;
+  }
+
+  .pixel-header-community-qr {
+    min-height: 34px;
+    border: 2px solid var(--px-border-color);
+    border-radius: 999px;
+    background: var(--px-blue);
+    box-shadow: var(--px-shadow-sm);
+    padding: 0.36rem 0.62rem;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .pixel-header-community-qr img {
+    display: none;
+  }
+
+  .pixel-header-community-cta {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--px-font), "PingFang SC", sans-serif;
+    font-size: 10px;
+    line-height: 1.2;
+    white-space: nowrap;
   }
 
   .pixel-qr-lightbox-card {
