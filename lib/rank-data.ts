@@ -6,6 +6,7 @@ import { type RankPayload, type RankRouteType } from "@/types/rank";
 
 const DATABASE_READ_TIMEOUT_MS = 3500;
 const DATABASE_FALLBACK_MESSAGE = "当前数据库暂时不可用，页面正在展示内置演示数据。";
+const KOL_MINIMUM_ITEMS = 20;
 
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -34,7 +35,13 @@ export async function getRankPayload(type: RankRouteType): Promise<RankPayload> 
   }
 
   try {
-    return buildSelectedLibraryRankPayload(await withTimeout(getLatestRankPayload(type), DATABASE_READ_TIMEOUT_MS));
+    const payload = await withTimeout(getLatestRankPayload(type), DATABASE_READ_TIMEOUT_MS);
+
+    if (type.startsWith("xhunt") && payload.items.length < KOL_MINIMUM_ITEMS) {
+      return buildDemoRankPayload(type, "当前 KOL 抓取数据不足，页面正在展示本站精选 KOL 榜。");
+    }
+
+    return buildSelectedLibraryRankPayload(payload);
   } catch (error) {
     console.warn("[rank-data] Falling back to demo data:", error);
     return buildSelectedLibraryRankPayload(buildDemoRankPayload(type, DATABASE_FALLBACK_MESSAGE));
