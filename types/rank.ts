@@ -112,8 +112,8 @@ export const TAB_CONFIG: Record<
     navLabel: "KOL 中文",
     icon: "🐦",
     tone: "yellow",
-    sourceLabel: "kol.xhunt.ai/cn",
-    summary: "AI KOL 中文榜，适合跟踪中文圈传播影响力。",
+    sourceLabel: "Pixel AI Rank 精选",
+    summary: "精选中文圈 AI 创作者、产品观察者和信息源，适合跟踪中文 AI 传播影响力。",
   },
   xhunt_global: {
     label: "LV.5 KOL Global",
@@ -121,8 +121,8 @@ export const TAB_CONFIG: Record<
     navLabel: "KOL 全球",
     icon: "🌐",
     tone: "purple",
-    sourceLabel: "kol.xhunt.ai/global",
-    summary: "AI KOL 全球榜，观察全球创作者与意见领袖趋势。",
+    sourceLabel: "Pixel AI Rank 精选",
+    summary: "精选全球 AI 研究、产品、开发者生态和商业应用领域的高信号账号。",
   },
 };
 
