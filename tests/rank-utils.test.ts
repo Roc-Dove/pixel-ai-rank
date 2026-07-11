@@ -9,6 +9,13 @@ test("getMonthSlug 返回上一个月", () => {
   assert.equal(getMonthSlug(new Date("2026-01-02T12:00:00Z")), "202512");
 });
 
+test("getMonthSlug 在月末不会溢出到错误月份", () => {
+  assert.equal(getMonthSlug(new Date("2026-03-31T12:00:00Z")), "202602");
+  assert.equal(getMonthSlug(new Date("2024-03-31T12:00:00Z")), "202402");
+  assert.equal(getMonthSlug(new Date("2026-05-31T12:00:00Z")), "202604");
+  assert.equal(getMonthSlug(new Date("2026-01-31T12:00:00Z")), "202512");
+});
+
 test("formatCompactNumber 按数量级格式化", () => {
   assert.equal(formatCompactNumber(999), "999");
   assert.equal(formatCompactNumber(1200), "1.2K");

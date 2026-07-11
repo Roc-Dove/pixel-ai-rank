@@ -10,8 +10,9 @@ async function resolveExecutablePath() {
   if (process.platform !== "linux") return undefined;
   try {
     return await chromium.executablePath();
-  } catch {
-    return undefined;
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(`无法解析 Chromium 可执行文件：${reason}`, { cause: error });
   }
 }
 
@@ -70,6 +71,7 @@ export async function scrapeXhunt(group: "cn" | "all"): Promise<RawRankItem[]> {
           externalLink: absoluteHref,
           detailLink: absoluteHref,
           metricPrimary: followersMatch?.[1] ?? null,
+          // xhunt's secondary value is the account handle, not an engagement score.
           metricSecondary: handle,
           metricTertiary: currentGroup === "cn" ? "CN" : "Global",
         };
@@ -92,8 +94,9 @@ export async function scrapeXhunt(group: "cn" | "all"): Promise<RawRankItem[]> {
         .filter((item) => item.name),
       50,
     );
-  } catch {
-    return [];
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(`xhunt ${group === "cn" ? "CN" : "Global"} 抓取失败：${reason}`, { cause: error });
   } finally {
     await browser.close();
   }

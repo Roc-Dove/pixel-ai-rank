@@ -9,9 +9,11 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "kol.xhunt.ai" },
       { protocol: "https", hostname: "pbs.twimg.com" },
       { protocol: "https", hostname: "cdn.xhunt.ai" },
+      { protocol: "https", hostname: "www.google.com", pathname: "/s2/favicons**" },
+      { protocol: "https", hostname: "cdn.simpleicons.org" },
+      { protocol: "https", hostname: "unavatar.io" },
     ],
   },
-  serverExternalPackages: ["@prisma/client", "prisma", "puppeteer-core", "@sparticuz/chromium"],
 };
 
 export default nextConfig;

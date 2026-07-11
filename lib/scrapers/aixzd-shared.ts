@@ -34,13 +34,16 @@ export async function scrapeAixzdCollection(url: string): Promise<RawRankItem[]>
 
     rawCards.forEach((element: unknown, index: number) => {
       const card = $(element as never);
-      const titleLink =
-        card.find(".item-title-a, .post-logo, .item-excerpt a").first() ||
-        card.find("h1 a, h2 a, h3 a, strong a").first() ||
-        card
+      let titleLink = card.find(".item-title-a, .post-logo, .item-excerpt a").first();
+      if (titleLink.length === 0) {
+        titleLink = card.find("h1 a, h2 a, h3 a, strong a").first();
+      }
+      if (titleLink.length === 0) {
+        titleLink = card
           .find('a[href^="/"]')
           .filter((_: number, node: unknown) => !String($(node as never).attr("href") || "").includes("/category/"))
           .first();
+      }
       const name = sanitizeText(titleLink.text()) || sanitizeText(card.find("h1, h2, h3, strong").first().text());
       if (!name || seen.has(name)) return;
 
@@ -91,7 +94,8 @@ export async function scrapeAixzdCollection(url: string): Promise<RawRankItem[]>
     });
 
     return safeSlice(items, 50);
-  } catch {
-    return [];
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(`AIXZD 抓取失败：${reason}`, { cause: error });
   }
 }

@@ -98,7 +98,8 @@ export async function scrapeAicpb(): Promise<RawRankItem[]> {
     });
 
     return safeSlice(fallbackItems, 50);
-  } catch {
-    return [];
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(`AICPB 抓取失败：${reason}`, { cause: error });
   }
 }

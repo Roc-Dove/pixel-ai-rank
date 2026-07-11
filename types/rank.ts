@@ -3,7 +3,7 @@ export const RANK_TYPES = ["aicpb", "stars", "month", "xhunt_cn", "xhunt_global"
 export type RankRouteType = (typeof RANK_TYPES)[number];
 export type DbRankType = "AICPB" | "AIXZD_STARS" | "AIXZD_MONTH" | "XHUNT_CN" | "XHUNT_GLOBAL";
 export type SourceStatus = "ready" | "degraded" | "empty";
-export type DataMode = "database" | "demo";
+export type DataMode = "database" | "curated" | "demo";
 export type PixelTone = "red" | "blue" | "green" | "yellow" | "purple" | "ghost";
 
 export type RawRankItem = {

@@ -91,6 +91,7 @@ function toRankItem(type: RankRouteType, rank: number, item: LibraryItemWithGuid
 
 export function buildSelectedLibraryRankPayload(payload: RankPayload): RankPayload {
   if (!SELECTED_RANK_TYPES.has(payload.type)) return payload;
+  if (payload.dataMode === "database" && payload.items.length > 0) return payload;
 
   const config = rankConfig(payload.type);
   const scoredItems = getLibraryItemsWithGuide()
@@ -105,9 +106,9 @@ export function buildSelectedLibraryRankPayload(payload: RankPayload): RankPaylo
     ...payload,
     sourceLabel: "Pixel AI Rank 精选",
     sourceStatus: "ready",
-    dataMode: "demo",
+    dataMode: "curated",
     totalItems: items.length,
-    lastUpdated: payload.lastUpdated,
+    lastUpdated: null,
     items,
     message: `${config.primaryLabel} = 基于 AI库导购字段、适合人群、分类和可用官网综合计算。${config.secondaryLabel}来自 AI库推荐指数。`,
   };

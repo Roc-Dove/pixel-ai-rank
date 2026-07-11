@@ -5,6 +5,18 @@ declare global {
   var __pixelPrisma__: PrismaClient | undefined;
 }
 
+function withRuntimeTimeouts(rawUrl: string) {
+  try {
+    const url = new URL(rawUrl);
+    if (!url.searchParams.has("connect_timeout")) url.searchParams.set("connect_timeout", "2");
+    if (!url.searchParams.has("pool_timeout")) url.searchParams.set("pool_timeout", "2");
+    if (!url.searchParams.has("socket_timeout")) url.searchParams.set("socket_timeout", "3");
+    return url.toString();
+  } catch {
+    return rawUrl;
+  }
+}
+
 export function getPrismaClient() {
   const env = getServerEnv();
   const runtimeUrl = env.DATABASE_URL || env.DIRECT_URL;
@@ -15,7 +27,7 @@ export function getPrismaClient() {
 
   if (!global.__pixelPrisma__) {
     global.__pixelPrisma__ = new PrismaClient({
-      datasourceUrl: runtimeUrl,
+      datasourceUrl: withRuntimeTimeouts(runtimeUrl),
     });
   }
 

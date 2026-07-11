@@ -1,11 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import { Clock3, Database, Info, Layers3, ListFilter } from "lucide-react";
 import { useMemo } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { RankTable } from "@/components/rank/RankTable";
+import { RankTypeIcon } from "@/components/rank/RankTypeIcon";
 import { formatUpdatedAt } from "@/lib/utils/formatNumber";
 import { RANK_TYPES, TAB_CONFIG, type RankPayload } from "@/types/rank";
+
+const MODE_COPY: Record<RankPayload["dataMode"], { label: string; description: string }> = {
+  database: { label: "真实抓取", description: "来自外部数据源的最近一次成功抓取" },
+  curated: { label: "本站精选", description: "基于工具库字段与场景适配计算" },
+  demo: { label: "降级数据", description: "数据源不可用时的内置可浏览版本" },
+};
+
+const STATUS_COPY: Record<RankPayload["sourceStatus"], string> = {
+  ready: "数据可用",
+  degraded: "降级展示",
+  empty: "等待数据",
+};
 
 export function RankExplorer({ payload }: { payload: RankPayload }) {
   const { search } = useSearch();
@@ -21,56 +35,78 @@ export function RankExplorer({ payload }: { payload: RankPayload }) {
   }, [payload.items, search]);
 
   const source = TAB_CONFIG[payload.type];
-  const updatedLabel = payload.lastUpdated ? formatUpdatedAt(payload.lastUpdated) : "WAITING";
+  const mode = MODE_COPY[payload.dataMode];
+  const updatedLabel = payload.dataMode === "curated"
+    ? "版本化维护"
+    : payload.lastUpdated
+      ? formatUpdatedAt(payload.lastUpdated)
+      : "尚未更新";
 
   return (
-    <main className="pixel-shell">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-        <div className="pixel-overview-grid">
-          <section className="pixel-panel pixel-overview-main pixel-hero">
-            <div className="pixel-hero-main">
-              <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className={`pixel-hero-eyebrow ${source.tone}`}>
-                    <span aria-hidden="true">{source.icon}</span>
-                    <span>{source.label}</span>
-                  </span>
-                  <span className="pixel-chip blue">UPDATED / {updatedLabel}</span>
-                </div>
-                <h1 className="pixel-hero-title">{source.shortLabel}</h1>
-              </div>
-
-              <div className="space-y-3">
-              <p className="pixel-hero-summary">{source.summary}</p>
-                <div className="pixel-hero-meta">
-                  <span className="pixel-chip purple">MATCH / {filteredItems.length}</span>
-                  <span className="pixel-chip yellow">TOTAL / {payload.totalItems}</span>
-                </div>
-              </div>
+    <main id="main-content" className="pixel-shell">
+      <div className="pixel-content-stack">
+        <section className={`pixel-rank-hero tone-${source.tone}`}>
+          <div className="pixel-rank-hero-copy">
+            <div className="pixel-rank-eyebrow">
+              <RankTypeIcon type={payload.type} />
+              <span>{source.label}</span>
             </div>
-          </section>
-        </div>
+            <h1>{source.shortLabel}</h1>
+            <p>{source.summary}</p>
+            <div className="pixel-rank-status-line">
+              <span className={`pixel-source-status is-${payload.sourceStatus}`}>
+                <span aria-hidden="true" /> {STATUS_COPY[payload.sourceStatus]}
+              </span>
+              <span>{mode.description} · {payload.sourceLabel}</span>
+            </div>
+          </div>
 
-        <nav className="pixel-nav" aria-label="榜单导航">
-          {RANK_TYPES.map((type) => {
+          <dl className="pixel-rank-facts">
+            <div>
+              <dt><ListFilter size={16} aria-hidden="true" /> 当前结果</dt>
+              <dd>{filteredItems.length}<small> / {payload.totalItems}</small></dd>
+            </div>
+            <div>
+              <dt><Database size={16} aria-hidden="true" /> 数据模式</dt>
+              <dd className="is-text">{mode.label}</dd>
+            </div>
+            <div>
+              <dt><Clock3 size={16} aria-hidden="true" /> 最近更新</dt>
+              <dd className="is-text">{updatedLabel}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <nav className="pixel-rank-nav" aria-label="榜单导航">
+          {RANK_TYPES.map((type, index) => {
             const config = TAB_CONFIG[type];
             const active = payload.type === type;
 
             return (
-              <Link key={type} href={`/rank/${type}`} className={`pixel-nav-card ${active ? "is-active" : ""}`} aria-current={active ? "page" : undefined}>
-                <span className={`pixel-chip ${active ? config.tone : "blue"}`}>
-                  <span aria-hidden="true">{config.icon}</span>
-                  <span>{config.navLabel}</span>
+              <Link key={type} href={`/rank/${type}`} className={`pixel-rank-nav-card tone-${config.tone} ${active ? "is-active" : ""}`} aria-current={active ? "page" : undefined}>
+                <span className="pixel-rank-nav-icon"><RankTypeIcon type={type} /></span>
+                <span className="pixel-rank-nav-copy">
+                  <strong>{config.navLabel}</strong>
+                  <small>{config.label}</small>
                 </span>
-                <span className="pixel-nav-card-label">{config.label}</span>
+                <span className="pixel-rank-nav-index">0{index + 1}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div key={payload.type} className="transition-all duration-200">
-          <RankTable key={`${payload.type}:${search}`} payload={payload} items={filteredItems} searchQuery={search} onRetry={() => window.location.reload()} />
-        </div>
+        {payload.message ? (
+          <aside className="pixel-source-note" aria-label="数据口径说明">
+            <Info size={18} strokeWidth={1.8} aria-hidden="true" />
+            <div>
+              <strong>数据口径</strong>
+              <p>{payload.message}</p>
+            </div>
+            <span><Layers3 size={15} aria-hidden="true" /> {payload.sourceLabel}</span>
+          </aside>
+        ) : null}
+
+        <RankTable key={`${payload.type}:${search}`} payload={payload} items={filteredItems} searchQuery={search} onRetry={() => window.location.reload()} />
       </div>
     </main>
   );

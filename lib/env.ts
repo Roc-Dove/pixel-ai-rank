@@ -1,10 +1,15 @@
 import { z } from "zod";
 
+const optionalServerString = z.preprocess(
+  (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+  z.string().min(1).optional(),
+);
+
 const serverEnvSchema = z.object({
-  DATABASE_URL: z.string().min(1).optional(),
-  DIRECT_URL: z.string().min(1).optional(),
-  CRON_SECRET: z.string().min(1).default("local-dev-secret"),
-  PUPPETEER_EXECUTABLE_PATH: z.string().optional(),
+  DATABASE_URL: optionalServerString,
+  DIRECT_URL: optionalServerString,
+  CRON_SECRET: optionalServerString,
+  PUPPETEER_EXECUTABLE_PATH: optionalServerString,
 });
 
 export function getServerEnv() {

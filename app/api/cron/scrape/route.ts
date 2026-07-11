@@ -5,6 +5,17 @@ export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   const env = getServerEnv();
+
+  if (!env.CRON_SECRET) {
+    return Response.json(
+      {
+        error: "服务端未配置 CRON_SECRET，抓取接口已禁用。",
+        hint: "请先在部署环境中配置非空 CRON_SECRET。",
+      },
+      { status: 503 },
+    );
+  }
+
   const authorization = request.headers.get("authorization");
 
   if (authorization !== `Bearer ${env.CRON_SECRET}`) {

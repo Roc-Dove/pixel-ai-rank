@@ -9,13 +9,13 @@ import { RANK_TYPE_TO_DB, TAB_CONFIG, type RawRankItem, type RankPayload, type R
 const SCRAPERS: Array<{
   routeType: RankRouteType;
   scrape: () => Promise<RawRankItem[]>;
-  degradedOnFailure?: boolean;
+  usesBrowser?: boolean;
 }> = [
   { routeType: "aicpb", scrape: scrapeAicpb },
   { routeType: "stars", scrape: scrapeAixzdStars },
   { routeType: "month", scrape: scrapeAixzdMonth },
-  { routeType: "xhunt_cn", scrape: () => scrapeXhunt("cn"), degradedOnFailure: true },
-  { routeType: "xhunt_global", scrape: () => scrapeXhunt("all"), degradedOnFailure: true },
+  { routeType: "xhunt_cn", scrape: () => scrapeXhunt("cn"), usesBrowser: true },
+  { routeType: "xhunt_global", scrape: () => scrapeXhunt("all"), usesBrowser: true },
 ];
 
 function normalizeItems(items: RawRankItem[]) {
@@ -80,24 +80,35 @@ async function recordBatch(routeType: RankRouteType, items: RawRankItem[], error
 }
 
 export async function runAllScrapers(): Promise<ScrapeResult[]> {
-  const results = await Promise.all(
-    SCRAPERS.map(async ({ routeType, scrape }) => {
-      try {
-        const items = await scrape();
-        return await recordBatch(
-          routeType,
-          items,
-          items.length === 0 ? `${TAB_CONFIG[routeType].shortLabel} 暂未抓到数据` : undefined,
-        );
-      } catch (error) {
-        return await recordBatch(
-          routeType,
-          [],
-          error instanceof Error ? error.message : `${TAB_CONFIG[routeType].shortLabel} 抓取失败`,
-        );
-      }
-    }),
-  );
+  async function runScraper({ routeType, scrape }: (typeof SCRAPERS)[number]) {
+    try {
+      const items = await scrape();
+      return await recordBatch(
+        routeType,
+        items,
+        items.length === 0 ? `${TAB_CONFIG[routeType].shortLabel} 暂未抓到数据` : undefined,
+      );
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : `${TAB_CONFIG[routeType].shortLabel} 抓取失败`;
+      console.error(`[scraper:${routeType}] ${errorMsg}`, error);
+      return await recordBatch(routeType, [], errorMsg);
+    }
+  }
+
+  const httpScrapers = SCRAPERS.filter((scraper) => !scraper.usesBrowser);
+  const browserScrapers = SCRAPERS.filter((scraper) => scraper.usesBrowser);
+
+  const httpResultsPromise = Promise.all(httpScrapers.map(runScraper));
+  const browserResultsPromise = (async () => {
+    const browserResults: ScrapeResult[] = [];
+    for (const scraper of browserScrapers) {
+      browserResults.push(await runScraper(scraper));
+    }
+    return browserResults;
+  })();
+
+  const [httpResults, browserResults] = await Promise.all([httpResultsPromise, browserResultsPromise]);
+  const results = [...httpResults, ...browserResults];
 
   ["aicpb", "stars", "month", "xhunt_cn", "xhunt_global"].forEach((type) => {
     revalidatePath(`/rank/${type}`);
