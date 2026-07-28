@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { getPrismaClient } from "@/lib/db/prisma";
+import { getSuccessfulBatchStatus } from "@/lib/rank-freshness";
 import { scrapeAicpb } from "@/lib/scrapers/aicpb";
 import { scrapeAixzdMonth } from "@/lib/scrapers/aixzd-month";
 import { scrapeAixzdStars } from "@/lib/scrapers/aixzd-stars";
@@ -132,12 +133,22 @@ export async function getLatestRankPayload(type: RankRouteType): Promise<RankPay
   });
 
   if (latestSuccess) {
+    const sourceStatus = getSuccessfulBatchStatus(latestSuccess.scrapedAt, latestBatch);
+    const staleMessage =
+      sourceStatus === "stale"
+        ? "最近一次成功抓取已超过 72 小时，当前数据仅供历史参考，请等待下一次更新。"
+        : undefined;
+    const latestFailureMessage =
+      latestBatch?.status === "failed" && latestBatch.errorMsg
+        ? latestBatch.errorMsg
+        : undefined;
+
     return {
       type,
       dbType,
       label: TAB_CONFIG[type].label,
-      sourceLabel: TAB_CONFIG[type].sourceLabel,
-      sourceStatus: latestBatch?.status === "failed" && latestBatch.scrapedAt > latestSuccess.scrapedAt ? "degraded" : "ready",
+      sourceLabel: TAB_CONFIG[type].databaseSourceLabel,
+      sourceStatus,
       dataMode: "database",
       totalItems: latestSuccess.items.length,
       lastUpdated: latestSuccess.scrapedAt.toISOString(),
@@ -152,7 +163,7 @@ export async function getLatestRankPayload(type: RankRouteType): Promise<RankPay
         metricSecondary: item.metricSecondary,
         metricTertiary: item.metricTertiary,
       })),
-      message: latestBatch?.status === "failed" && latestBatch.errorMsg ? latestBatch.errorMsg : undefined,
+      message: [staleMessage, latestFailureMessage].filter(Boolean).join(" ") || undefined,
     };
   }
 
@@ -161,7 +172,7 @@ export async function getLatestRankPayload(type: RankRouteType): Promise<RankPay
       type,
       dbType,
       label: TAB_CONFIG[type].label,
-      sourceLabel: TAB_CONFIG[type].sourceLabel,
+      sourceLabel: TAB_CONFIG[type].databaseSourceLabel,
       sourceStatus: type.startsWith("xhunt") ? "degraded" : "empty",
       dataMode: "database",
       totalItems: 0,
@@ -175,7 +186,7 @@ export async function getLatestRankPayload(type: RankRouteType): Promise<RankPay
     type,
     dbType,
     label: TAB_CONFIG[type].label,
-    sourceLabel: TAB_CONFIG[type].sourceLabel,
+    sourceLabel: TAB_CONFIG[type].databaseSourceLabel,
     sourceStatus: type.startsWith("xhunt") ? "degraded" : "empty",
     dataMode: "database",
     totalItems: 0,

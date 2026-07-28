@@ -2,7 +2,7 @@ export const RANK_TYPES = ["aicpb", "stars", "month", "xhunt_cn", "xhunt_global"
 
 export type RankRouteType = (typeof RANK_TYPES)[number];
 export type DbRankType = "AICPB" | "AIXZD_STARS" | "AIXZD_MONTH" | "XHUNT_CN" | "XHUNT_GLOBAL";
-export type SourceStatus = "ready" | "degraded" | "empty";
+export type SourceStatus = "ready" | "stale" | "degraded" | "empty";
 export type DataMode = "database" | "curated" | "demo";
 export type PixelTone = "red" | "blue" | "green" | "yellow" | "purple" | "ghost";
 
@@ -76,6 +76,7 @@ export const TAB_CONFIG: Record<
     icon: string;
     tone: PixelTone;
     sourceLabel: string;
+    databaseSourceLabel: string;
     summary: string;
   }
 > = {
@@ -86,6 +87,7 @@ export const TAB_CONFIG: Record<
     icon: "🌏",
     tone: "red",
     sourceLabel: "Pixel AI Rank 精选",
+    databaseSourceLabel: "AICPB 中国 AI 产品增长榜",
     summary: "基于 AI库导购字段筛选适合海外市场、英文用户和出海团队的 AI 产品。",
   },
   stars: {
@@ -95,6 +97,7 @@ export const TAB_CONFIG: Record<
     icon: "⭐",
     tone: "blue",
     sourceLabel: "Pixel AI Rank 精选",
+    databaseSourceLabel: "AI工具集（AIXZD）趋势新品榜",
     summary: "基于 AI库里的 Agent、编程、视频、设计和自动化方向，观察近期更值得关注的新趋势工具。",
   },
   month: {
@@ -104,6 +107,7 @@ export const TAB_CONFIG: Record<
     icon: "📅",
     tone: "green",
     sourceLabel: "Pixel AI Rank 精选",
+    databaseSourceLabel: "AI工具集（AIXZD）综合月榜",
     summary: "基于 AI库推荐指数、上手难度、人群覆盖和中文友好度计算的本站综合推荐榜。",
   },
   xhunt_cn: {
@@ -113,6 +117,7 @@ export const TAB_CONFIG: Record<
     icon: "🐦",
     tone: "yellow",
     sourceLabel: "Pixel AI Rank 精选",
+    databaseSourceLabel: "Xhunt AI KOL 榜 · 中文",
     summary: "精选中文圈 AI 创作者、产品观察者和信息源，适合跟踪中文 AI 传播影响力。",
   },
   xhunt_global: {
@@ -122,6 +127,7 @@ export const TAB_CONFIG: Record<
     icon: "🌐",
     tone: "purple",
     sourceLabel: "Pixel AI Rank 精选",
+    databaseSourceLabel: "Xhunt AI KOL 榜 · 全球",
     summary: "精选全球 AI 研究、产品、开发者生态和商业应用领域的高信号账号。",
   },
 };

@@ -18,11 +18,11 @@ const themeScript = `
 
 export const metadata: Metadata = {
   title: {
-    default: "Pixel AI Rank｜AI 排行榜与中文工具库",
+    default: "Pixel AI Rank｜最新 AI 情报、排行榜与中文工具库",
     template: "%s｜Pixel AI Rank",
   },
-  description: "聚合 AI 产品榜、KOL 信号与 100+ 中文 AI 工具导购，明确标注真实抓取、本站精选和降级数据。",
-  keywords: ["AI 排行榜", "AI 工具", "AI 导航", "AI KOL", "出海工具"],
+  description: "聚合官方 AI 最新发布、产品榜、KOL 信号与 100+ 中文 AI 工具导购，补充影响判断与下一步行动。",
+  keywords: ["AI 最新消息", "AI 排行榜", "AI 工具", "AI 导航", "AI Agent", "AI 编程"],
   openGraph: {
     title: "Pixel AI Rank",
     description: "把 AI 噪声整理成可行动的清单。",

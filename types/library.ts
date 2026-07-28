@@ -23,8 +23,10 @@ export type LibraryItem = {
   descriptionZh: string;
   officialUrl: string | null;
   tags: string[];
-  sourceName: "AI Collection";
+  sourceName: string;
   sourceUrl: string;
+  verifiedAt?: string;
+  latestSignalId?: string;
 };
 
 export const LIBRARY_AUDIENCES = ["普通用户", "创业者/产品经理", "内容创作者", "出海团队", "开发者"] as const;

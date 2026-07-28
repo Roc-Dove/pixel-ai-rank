@@ -17,6 +17,7 @@ const MODE_COPY: Record<RankPayload["dataMode"], { label: string; description: s
 
 const STATUS_COPY: Record<RankPayload["sourceStatus"], string> = {
   ready: "数据可用",
+  stale: "数据已过期",
   degraded: "降级展示",
   empty: "等待数据",
 };
@@ -36,6 +37,12 @@ export function RankExplorer({ payload }: { payload: RankPayload }) {
 
   const source = TAB_CONFIG[payload.type];
   const mode = MODE_COPY[payload.dataMode];
+  const modeDescription = payload.sourceStatus === "stale"
+    ? "来自外部数据源的历史抓取"
+    : mode.description;
+  const statusClassName = payload.sourceStatus === "stale"
+    ? "is-degraded"
+    : `is-${payload.sourceStatus}`;
   const updatedLabel = payload.dataMode === "curated"
     ? "版本化维护"
     : payload.lastUpdated
@@ -54,10 +61,10 @@ export function RankExplorer({ payload }: { payload: RankPayload }) {
             <h1>{source.shortLabel}</h1>
             <p>{source.summary}</p>
             <div className="pixel-rank-status-line">
-              <span className={`pixel-source-status is-${payload.sourceStatus}`}>
+              <span className={`pixel-source-status ${statusClassName}`}>
                 <span aria-hidden="true" /> {STATUS_COPY[payload.sourceStatus]}
               </span>
-              <span>{mode.description} · {payload.sourceLabel}</span>
+              <span>{modeDescription} · {payload.sourceLabel}</span>
             </div>
           </div>
 

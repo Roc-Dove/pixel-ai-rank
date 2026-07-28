@@ -184,10 +184,60 @@ const GUIDE_OVERRIDES: Record<string, GuideOverride> = {
     bestFor: ["经常处理长文档、方案和复杂推理的人", "重视文字质量和上下文稳定性的团队", "需要分析材料而不是只要短回答的用户"],
     alternatives: ["ChatGPT", "Google Gemini", "Kimi"],
   },
+  gemini: {
+    recommendation: 97,
+    bestFor: ["深度使用 Google Workspace 和 Android 生态的用户", "需要长上下文、多模态与 Computer Use 的开发团队", "想在速度、成本和 Agent 能力之间取平衡的人"],
+    alternatives: ["ChatGPT", "Claude", "Kimi"],
+  },
+  deepseek: {
+    recommendation: 95,
+    bestFor: ["需要中文、推理、代码和 API 性价比的团队", "愿意显式管理模型版本和迁移的开发者", "在国内模型生态中构建 Agent 的产品团队"],
+    alternatives: ["Kimi", "Qwen Code", "Google Gemini"],
+  },
+  kimi: {
+    recommendation: 96,
+    bestFor: ["需要中文长文档、1M 上下文和多模态研究的人", "关注开放权重模型与本土工具链的开发团队", "要处理长时编程和知识工作的用户"],
+    alternatives: ["Claude", "DeepSeek", "Google Gemini"],
+  },
+  grok: {
+    recommendation: 95,
+    bestFor: ["需要实时信息、代码与 Agent 能力的用户", "想在 Cursor 或 API 中评测 Grok 4.5 的开发团队", "需要追踪热点并继续执行知识工作的产品团队"],
+    alternatives: ["ChatGPT", "Claude", "Google Gemini"],
+  },
   cursor: {
     recommendation: 95,
     bestFor: ["已有代码项目、想让 AI 理解整个代码库的开发者", "想加速原型开发的小团队", "需要频繁重构和改 Bug 的工程师"],
     alternatives: ["Windsurf", "GitHub Copilot", "v0"],
+  },
+  "github-copilot": {
+    recommendation: 95,
+    bestFor: ["深度使用 GitHub 与 VS Code 的开发团队", "需要并行 Agent、独立工作台和浏览器验证的人", "希望把 Issue、代码、测试和 Pull Request 串起来的工程组织"],
+    alternatives: ["OpenAI Codex", "Claude Code", "Cursor"],
+  },
+  "openai-codex": {
+    recommendation: 97,
+    bestFor: ["需要在桌面、CLI、IDE 和云端并行推进工程任务的开发者", "想把任务交给独立 Agent 并审查结果的团队", "使用 OpenAI 模型与工具链的工程组织"],
+    alternatives: ["Claude Code", "GitHub Copilot", "Cursor"],
+  },
+  "claude-code": {
+    recommendation: 97,
+    bestFor: ["偏好终端与项目级 Agent 工作方式的开发者", "需要长时理解代码库、运行测试和迭代修复的团队", "希望并行管理多个工程会话的人"],
+    alternatives: ["OpenAI Codex", "GitHub Copilot", "Qwen Code"],
+  },
+  "qwen-code": {
+    recommendation: 93,
+    bestFor: ["重视中文、本土模型渠道和开源可控性的开发团队", "需要实时纠偏与 worktree 隔离的人", "想自选模型和审查 Agent 执行边界的工程师"],
+    alternatives: ["OpenCode", "Claude Code", "OpenAI Codex"],
+  },
+  opencode: {
+    recommendation: 90,
+    bestFor: ["希望在多个模型厂商之间自由切换的开发者", "重视开源、MCP 和本地工作流的团队", "需要终端与桌面双入口的人"],
+    alternatives: ["Qwen Code", "OpenAI Codex", "Claude Code"],
+  },
+  "grok-build": {
+    recommendation: 92,
+    bestFor: ["要把大型工程任务拆给多个 Agent 的团队", "需要实验并行开发与任务编排的工程负责人", "已在评估 Grok 4.5 的开发者"],
+    alternatives: ["OpenAI Codex", "Claude Code", "GitHub Copilot"],
   },
   perplexity: {
     recommendation: 94,
@@ -207,12 +257,32 @@ const GUIDE_OVERRIDES: Record<string, GuideOverride> = {
   gamma: {
     recommendation: 92,
     bestFor: ["需要快速做汇报、提案和演示的人", "重视页面观感但不想手动排版的团队", "需要从文档快速变成演示稿的用户"],
-    alternatives: ["Tome", "Beautiful.ai", "Presentations.AI"],
+    alternatives: ["Beautiful.ai", "Pitch", "Presentations.AI"],
   },
   zapier: {
     recommendation: 90,
     bestFor: ["使用很多 SaaS 工具的团队", "需要把线索、表单、邮件和 CRM 串起来的人", "想少写代码做自动化的运营团队"],
     alternatives: ["Make", "n8n", "Relay.app"],
+  },
+  "kimi-work": {
+    recommendation: 94,
+    bestFor: ["需要处理本地文件和桌面应用的中文团队", "想把资料整理与周期报告交给后台任务的人", "愿意从低风险、可回滚流程开始部署 Agent 的用户"],
+    alternatives: ["Perplexity Computer", "Meta AI", "Manus"],
+  },
+  "meta-ai": {
+    recommendation: 93,
+    bestFor: ["想用个人 AI 助手处理研究、演示和日程的人", "需要可在执行中实时纠偏的任务 Agent 用户", "已在 Meta 生态中工作和创作的人"],
+    alternatives: ["Kimi Work", "Perplexity Computer", "ChatGPT"],
+  },
+  "perplexity-computer": {
+    recommendation: 91,
+    bestFor: ["需要连接应用、持续记忆和并行子 Agent 的知识工作者", "想在隔离云沙箱中完成多步骤任务的团队", "已有明确数字员工工作流的产品负责人"],
+    alternatives: ["Kimi Work", "Manus", "Genspark"],
+  },
+  "nano-banana-2": {
+    recommendation: 91,
+    bestFor: ["需要低成本批量生成商品图和社媒素材的团队", "希望快速迭代视觉方向的内容创作者", "已经在 Google AI 生态中搭建媒体流水线的人"],
+    alternatives: ["GPT Image 2", "Midjourney", "Adobe Firefly"],
   },
 };
 

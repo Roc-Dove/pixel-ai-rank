@@ -1,24 +1,14 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Check, CheckCircle2, CircleMinus, Compass, ExternalLink, Lightbulb, ShieldAlert, Users } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Check, CheckCircle2, CircleMinus, Compass, ExternalLink, Lightbulb, Radio, ShieldAlert, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { notFound } from "next/navigation";
+import { LibraryLogo } from "@/components/library/LibraryLogo";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
 import { getLibraryItemWithGuide } from "@/lib/library/guide";
 import { LIBRARY_ITEMS } from "@/lib/library/items";
 
 type LibraryDetailPageProps = { params: Promise<{ id: string }> };
-
-function getLogoUrl(officialUrl: string | null) {
-  if (!officialUrl) return null;
-  try {
-    const url = new URL(officialUrl);
-    return `https://www.google.com/s2/favicons?domain=${url.hostname}&sz=128`;
-  } catch {
-    return null;
-  }
-}
 
 function DetailList({ title, items, icon: Icon, tone }: { title: string; items: string[]; icon: LucideIcon; tone: string }) {
   return (
@@ -44,7 +34,6 @@ export default async function LibraryDetailPage({ params }: LibraryDetailPagePro
   const { id } = await params;
   const item = getLibraryItemWithGuide(id);
   if (!item) notFound();
-  const logoUrl = getLogoUrl(item.officialUrl);
 
   const signals = [
     ["中文友好", item.guide.isChineseFriendly],
@@ -63,13 +52,13 @@ export default async function LibraryDetailPage({ params }: LibraryDetailPagePro
 
         <section className="pixel-detail-hero">
           <div className="pixel-detail-identity">
-            {logoUrl ? (
-              <Image src={logoUrl} alt="" className="pixel-detail-logo" width={76} height={76} sizes="76px" unoptimized />
-            ) : (
-              <span className="pixel-detail-logo" aria-hidden="true">{item.name.slice(0, 2).toUpperCase()}</span>
-            )}
+            <LibraryLogo name={item.name} officialUrl={item.officialUrl} variant="detail" />
             <div>
-              <div className="pixel-detail-tags"><span>{item.category}</span><span>上手 {item.guide.difficulty}</span></div>
+              <div className="pixel-detail-tags">
+                <span>{item.category}</span>
+                <span>上手 {item.guide.difficulty}</span>
+                {item.verifiedAt ? <span>核验 {item.verifiedAt.replaceAll("-", ".")}</span> : null}
+              </div>
               <h1>{item.name}</h1>
               <p>{item.descriptionZh}</p>
             </div>
@@ -119,8 +108,11 @@ export default async function LibraryDetailPage({ params }: LibraryDetailPagePro
 
         <aside className="pixel-source-card">
           <div><span className="pixel-kicker">SOURCE & METHOD</span><h2>资料来源与使用提醒</h2></div>
-          <p>基础信息整理自 {item.sourceName}，推荐指数与中文导购由 Pixel AI Rank 按分类、人群和场景字段整理。正式采购或商用前，请再次核验官网价格、隐私和授权条款。</p>
-          <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">查看原始来源 <ArrowUpRight size={15} aria-hidden="true" /></a>
+          <p>基础信息整理自 {item.sourceName}{item.verifiedAt ? `，最近核验于 ${item.verifiedAt.replaceAll("-", ".")}` : ""}。推荐指数与中文导购由 Pixel AI Rank 按分类、人群和场景字段整理；正式采购前请再次核验价格、隐私和授权条款。</p>
+          <div className="pixel-source-links">
+            {item.latestSignalId ? <Link href={`/signals/${item.latestSignalId}`}><Radio size={15} aria-hidden="true" /> 查看近期动态</Link> : null}
+            <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">查看原始来源 <ArrowUpRight size={15} aria-hidden="true" /></a>
+          </div>
         </aside>
       </div>
     </main>

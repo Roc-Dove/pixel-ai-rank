@@ -20,14 +20,15 @@ export function Footer() {
         <div className="pixel-footer-column">
           <span className="pixel-footer-heading">探索</span>
           <Link href="/">产品总览</Link>
+          <Link href="/signals">最新 AI 情报</Link>
           <Link href="/rank/aicpb">AI 排行榜</Link>
           <Link href="/library">AI 工具库</Link>
         </div>
 
         <div className="pixel-footer-column">
           <span className="pixel-footer-heading">数据承诺</span>
+          <span><RefreshCw size={15} aria-hidden="true" />最新情报只收录官方一手来源</span>
           <span><Database size={15} aria-hidden="true" />真实抓取与本站精选分开标识</span>
-          <span><RefreshCw size={15} aria-hidden="true" />外部榜单计划每 48 小时更新</span>
           <span><Code2 size={15} aria-hidden="true" />Next.js + Prisma 数据架构</span>
         </div>
       </div>

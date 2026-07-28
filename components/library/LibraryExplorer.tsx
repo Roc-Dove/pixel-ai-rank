@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, ChevronDown, Gauge, LibraryBig, RotateCcw, SearchX, SlidersHorizontal, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
+import { LibraryLogo } from "@/components/library/LibraryLogo";
 import { PixelButton, pixelButtonClassName } from "@/components/ui/PixelButton";
 import { LIBRARY_AUDIENCES, LIBRARY_CATEGORIES, type LibraryAudience, type LibraryCategory, type LibraryItemWithGuide } from "@/types/library";
 
@@ -13,20 +13,6 @@ const ALL_AUDIENCES = "全部人群";
 const PAGE_SIZE = 12;
 type LibrarySort = "recommendation" | "easy" | "name";
 
-function getLogoUrl(item: LibraryItemWithGuide) {
-  if (!item.officialUrl) return null;
-  try {
-    const url = new URL(item.officialUrl);
-    return `https://www.google.com/s2/favicons?domain=${url.hostname}&sz=128`;
-  } catch {
-    return null;
-  }
-}
-
-function initials(name: string) {
-  return name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
-}
-
 function difficultyTone(difficulty: LibraryItemWithGuide["guide"]["difficulty"]) {
   if (difficulty === "低") return "easy";
   if (difficulty === "中") return "medium";
@@ -34,19 +20,16 @@ function difficultyTone(difficulty: LibraryItemWithGuide["guide"]["difficulty"])
 }
 
 function LibraryCard({ item }: { item: LibraryItemWithGuide }) {
-  const logoUrl = getLogoUrl(item);
-
   return (
     <article className="pixel-library-card">
       <div className="pixel-library-card-head">
-        {logoUrl ? (
-          <Image src={logoUrl} alt="" className="pixel-logo" width={50} height={50} sizes="50px" unoptimized />
-        ) : (
-          <span className="pixel-logo-fallback" aria-hidden="true">{initials(item.name)}</span>
-        )}
+        <LibraryLogo name={item.name} officialUrl={item.officialUrl} />
 
         <div>
-          <span className="pixel-library-category">{item.category}</span>
+          <div className="pixel-library-card-labels">
+            <span className="pixel-library-category">{item.category}</span>
+            {item.verifiedAt ? <span className="pixel-library-fresh">近期核验</span> : null}
+          </div>
           <h2><Link href={`/library/${item.id}`}>{item.name}</Link></h2>
         </div>
       </div>
@@ -137,7 +120,7 @@ export function LibraryExplorer({ items }: { items: LibraryItemWithGuide[] }) {
           <div>
             <span className="pixel-kicker"><LibraryBig size={16} aria-hidden="true" /> CURATED AI LIBRARY</span>
             <h1>AI 工具库</h1>
-            <p>从“这个工具是什么”继续追问到“它适不适合我”。按用途、人群和上手难度查找可访问的 AI 工具。</p>
+            <p>从“这个工具是什么”继续追问到“它适不适合我”。已清理停服产品，并优先标出近期经官方来源核验的工具。</p>
           </div>
           <dl>
             <div><dt>精选工具</dt><dd>{items.length}</dd></div>
