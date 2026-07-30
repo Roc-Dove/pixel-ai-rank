@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { SearchProvider } from "@/components/providers/SearchProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const themeScript = `
@@ -17,18 +18,56 @@ const themeScript = `
 `;
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
   title: {
     default: "Pixel AI Rank｜最新 AI 情报、排行榜与中文工具库",
     template: "%s｜Pixel AI Rank",
   },
-  description: "聚合官方 AI 最新发布、产品榜、KOL 信号与 100+ 中文 AI 工具导购，补充影响判断与下一步行动。",
+  description: SITE_DESCRIPTION,
   keywords: ["AI 最新消息", "AI 排行榜", "AI 工具", "AI 导航", "AI Agent", "AI 编程"],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  category: "technology",
+  alternates: {
+    types: { "application/rss+xml": "/feed.xml" },
+  },
   openGraph: {
     title: "Pixel AI Rank",
     description: "把 AI 噪声整理成可行动的清单。",
     locale: "zh_CN",
     type: "website",
+    url: "/",
+    siteName: SITE_NAME,
   },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: "把 AI 噪声整理成可行动的清单。",
+  },
+};
+
+const siteJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: SITE_DESCRIPTION,
+      inLanguage: "zh-CN",
+      publisher: { "@id": `${SITE_URL}/#organization` },
+    },
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: `${SITE_URL}/favicon.ico`,
+    },
+  ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -36,6 +75,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="zh-CN" suppressHydrationWarning>
       <body>
         <Script id="pixel-theme-bootstrap" strategy="beforeInteractive">{themeScript}</Script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd).replace(/</g, "\\u003c") }}
+        />
         <a className="pixel-skip-link" href="#main-content">跳到主要内容</a>
         <ThemeProvider>
           <SearchProvider>

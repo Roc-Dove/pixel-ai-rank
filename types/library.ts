@@ -49,6 +49,18 @@ export type LibraryGuide = {
   isGoodForBuilders: boolean;
 };
 
+export type LibraryGuideDepth = "category" | "individual";
+export type LibrarySourceTier = "community" | "official";
+
 export type LibraryItemWithGuide = LibraryItem & {
   guide: LibraryGuide;
+  guideDepth: LibraryGuideDepth;
+  sourceTier: LibrarySourceTier;
+};
+
+export type LibraryCardItem = Pick<
+  LibraryItemWithGuide,
+  "category" | "descriptionZh" | "guideDepth" | "id" | "name" | "officialUrl" | "sourceTier" | "tags" | "verifiedAt"
+> & {
+  guide: Pick<LibraryGuide, "audiences" | "bestFor" | "difficulty" | "recommendation" | "useCases">;
 };

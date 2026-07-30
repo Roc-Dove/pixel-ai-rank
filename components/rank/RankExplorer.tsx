@@ -50,7 +50,7 @@ export function RankExplorer({ payload }: { payload: RankPayload }) {
       : "尚未更新";
 
   return (
-    <main id="main-content" className="pixel-shell">
+    <main id="main-content" className="pixel-shell" tabIndex={-1}>
       <div className="pixel-content-stack">
         <section className={`pixel-rank-hero tone-${source.tone}`}>
           <div className="pixel-rank-hero-copy">

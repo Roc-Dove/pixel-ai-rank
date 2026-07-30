@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, LibraryBig, Moon, Radio, Search, Sun, X } from "lucide-react";
+import { BookOpen, House, LibraryBig, Moon, Radio, Rss, Search, Sun, Trophy, X } from "lucide-react";
 import { useEffect, useMemo } from "react";
-import { CommunityBanner } from "@/components/layout/CommunityBanner";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { RankTypeIcon } from "@/components/rank/RankTypeIcon";
@@ -49,21 +48,24 @@ export function Header() {
 
           <nav className="pixel-site-nav" aria-label="主导航">
             <Link href="/" className={isHome ? "is-active" : ""} aria-current={isHome ? "page" : undefined}>
-              总览
+              <House size={18} aria-hidden="true" /><span>总览</span>
             </Link>
             <Link href="/signals" className={isSignals ? "is-active" : ""} aria-current={isSignals ? "page" : undefined}>
-              情报
+              <Radio size={18} aria-hidden="true" /><span>情报</span>
             </Link>
             <Link href="/rank/aicpb" className={isRank ? "is-active" : ""} aria-current={isRank ? "page" : undefined}>
-              排行榜
+              <Trophy size={18} aria-hidden="true" /><span>排行榜</span>
             </Link>
             <Link href="/library" className={isLibrary ? "is-active" : ""} aria-current={isLibrary ? "page" : undefined}>
-              工具库
+              <LibraryBig size={18} aria-hidden="true" /><span>工具库</span>
             </Link>
           </nav>
 
           <div className="pixel-header-actions">
-            <CommunityBanner />
+            <a className="pixel-subscribe-link" href="/feed.xml" aria-label="订阅 Pixel AI Rank RSS">
+              <Rss size={18} strokeWidth={1.8} aria-hidden="true" />
+              <span>订阅</span>
+            </a>
             <PixelButton
               tone="ghost"
               className="pixel-icon-button"

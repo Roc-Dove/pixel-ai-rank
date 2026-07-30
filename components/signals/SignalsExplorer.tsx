@@ -5,7 +5,7 @@ import { ArrowRight, ArrowUpRight, CalendarClock, Filter, RotateCcw, SearchX, Sh
 import { useMemo, useState } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { PixelButton, pixelButtonClassName } from "@/components/ui/PixelButton";
-import { formatSignalDate } from "@/lib/signals/items";
+import { formatSignalDate, getSignalLifecycle } from "@/lib/signals/utils";
 import { SIGNAL_CATEGORIES, SIGNAL_IMPACTS, type SignalCategory, type SignalImpact, type SignalItem } from "@/types/signal";
 
 const ALL_CATEGORIES = "全部";
@@ -18,6 +18,8 @@ function impactClassName(impact: SignalImpact) {
 }
 
 function SignalCard({ item }: { item: SignalItem }) {
+  const lifecycle = getSignalLifecycle(item);
+
   return (
     <article className={`pixel-news-card tone-${impactClassName(item.impact)}`}>
       <div className="pixel-news-card-meta">
@@ -25,10 +27,13 @@ function SignalCard({ item }: { item: SignalItem }) {
         <span>{item.company}</span>
         <span>{item.category}</span>
         <strong>{item.impact}</strong>
+        {lifecycle.status !== "ongoing" ? (
+          <span className={`pixel-news-lifecycle is-${lifecycle.status}`}>{lifecycle.label}</span>
+        ) : null}
       </div>
 
       <div className="pixel-news-card-copy">
-        <h2><Link href={`/signals/${item.id}`}>{item.title}</Link></h2>
+        <h2><Link href={`/signals/${item.id}`} prefetch={false}>{item.title}</Link></h2>
         <p>{item.summary}</p>
       </div>
 
@@ -42,7 +47,7 @@ function SignalCard({ item }: { item: SignalItem }) {
       </div>
 
       <div className="pixel-news-card-actions">
-        <Link href={`/signals/${item.id}`} className={pixelButtonClassName({ tone: "ghost" })}>
+        <Link href={`/signals/${item.id}`} prefetch={false} className={pixelButtonClassName({ tone: "ghost" })}>
           查看行动建议 <ArrowRight size={15} aria-hidden="true" />
         </Link>
         <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="pixel-official-link">

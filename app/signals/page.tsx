@@ -1,21 +1,43 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, CircleAlert, Radio, ShieldCheck } from "lucide-react";
+import { ArrowRight, CalendarDays, CircleAlert, Radio, Rss, ShieldCheck } from "lucide-react";
 import { SignalsExplorer } from "@/components/signals/SignalsExplorer";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
-import { formatSignalDate, SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
+import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
+import { getSignalLifecycle } from "@/lib/signals/utils";
 
 export const metadata: Metadata = {
   title: "最新 AI 情报",
-  description: "截至 2026 年 7 月 28 日核验的 AI 模型、Agent、编程工具和产品变更，全部链接到官方信源并给出行动建议。",
+  description: "截至 2026 年 7 月 30 日核验的 AI 模型、Agent、编程工具和产品变更，全部链接到官方信源并给出行动建议。",
+  alternates: {
+    canonical: "/signals",
+    types: { "application/rss+xml": "/feed.xml" },
+  },
 };
 
+export const revalidate = 3600;
+
 export default function SignalsPage() {
-  const urgentItems = SIGNAL_ITEMS.filter((item) => item.impact === "立即行动");
+  const actionPriority = {
+    "due-today": 0,
+    overdue: 1,
+    open: 2,
+    upcoming: 3,
+    retired: 4,
+    ongoing: 5,
+  } as const;
+  const urgentItems = SIGNAL_ITEMS
+    .filter((item) => item.impact === "立即行动")
+    .sort(
+      (left, right) =>
+        actionPriority[getSignalLifecycle(left).status] - actionPriority[getSignalLifecycle(right).status] ||
+        right.date.localeCompare(left.date),
+    );
   const companies = new Set(SIGNAL_ITEMS.map((item) => item.company)).size;
+  const verifiedStamp = SIGNALS_LAST_VERIFIED.replaceAll("-", ".");
 
   return (
-    <main id="main-content" className="pixel-shell pixel-news-page">
+    <main id="main-content" className="pixel-shell pixel-news-page" tabIndex={-1}>
       <div className="pixel-content-stack">
         <section className="pixel-news-hero">
           <div className="pixel-news-hero-copy">
@@ -25,6 +47,7 @@ export default function SignalsPage() {
             <div className="pixel-news-hero-actions">
               <a href="#latest-signals" className={pixelButtonClassName({ tone: "blue" })}>查看最新情报 <ArrowRight size={16} aria-hidden="true" /></a>
               <Link href="/library" className={pixelButtonClassName({ tone: "ghost" })}>浏览工具库</Link>
+              <a href="/feed.xml" className={pixelButtonClassName({ tone: "ghost" })}><Rss size={16} aria-hidden="true" /> 订阅 RSS</a>
             </div>
           </div>
 
@@ -37,18 +60,18 @@ export default function SignalsPage() {
         </section>
 
         {urgentItems.length ? (
-          <section className="pixel-news-alert" aria-labelledby="urgent-signals-heading">
+          <section id="action-required" className="pixel-news-alert" aria-labelledby="urgent-signals-heading">
             <div className="pixel-news-alert-icon"><CircleAlert size={21} aria-hidden="true" /></div>
             <div>
               <span className="pixel-kicker">ACTION REQUIRED</span>
-              <h2 id="urgent-signals-heading">有 {urgentItems.length} 条产品变更需要处理</h2>
+              <h2 id="urgent-signals-heading">有 {urgentItems.length} 条行动项需要处理</h2>
             </div>
             <div className="pixel-news-alert-items">
               {urgentItems.map((item) => (
                 <Link href={`/signals/${item.id}`} key={item.id}>
                   <span>{item.company}</span>
                   <strong>{item.title}</strong>
-                  <small>{item.deadline ? `截止 ${formatSignalDate(item.deadline)}` : formatSignalDate(item.date)}</small>
+                  <small className={`is-${getSignalLifecycle(item).status}`}>{getSignalLifecycle(item).label}</small>
                 </Link>
               ))}
             </div>
@@ -57,7 +80,7 @@ export default function SignalsPage() {
 
         <section id="latest-signals" className="pixel-news-feed">
           <div className="pixel-section-heading">
-            <div><span className="pixel-kicker"><CalendarDays size={15} aria-hidden="true" /> VERIFIED 2026.07.28</span><h2>今天值得知道的变化</h2></div>
+            <div><span className="pixel-kicker"><CalendarDays size={15} aria-hidden="true" /> VERIFIED {verifiedStamp}</span><h2>最近值得知道的变化</h2></div>
             <p><ShieldCheck size={15} aria-hidden="true" /> 所有条目直达厂商官方原文</p>
           </div>
           <SignalsExplorer items={SIGNAL_ITEMS} />

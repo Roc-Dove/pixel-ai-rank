@@ -1,8 +1,52 @@
 import type { SignalItem } from "@/types/signal";
 
-export const SIGNALS_LAST_VERIFIED = "2026-07-28";
+export { SIGNALS_LAST_VERIFIED } from "@/lib/signals/constants";
 
 export const SIGNAL_ITEMS = ([
+  {
+    id: "chatgpt-academic-researchers",
+    title: "OpenAI 向 10 万名学术研究者开放免费前沿模型计划",
+    company: "OpenAI",
+    date: "2026-07-29",
+    category: "产品变更",
+    impact: "立即行动",
+    summary: "ChatGPT for Academic Researchers 已开放申请，将从今年夏天的 1 万名研究者起步，并计划在 2027 年扩展到 10 万名。",
+    whyItMatters: "符合条件的高校研究者可以免费获得 GPT-5.6、Codex、Deep Research、更高用量和更大上下文；这是有明确资格门槛、但可以立即申请的资源。",
+    nextStep: "在高研究活动的学位授予院校任职的研究者，现在可核对机构资格、准备研究用途说明并提交申请；获批者最多可邀请 4 位同校协作者。",
+    facts: [
+      "计划面向科学、数学与工程研究者，官方目标是在 2027 年前覆盖 10 万人。",
+      "今年夏天先从 1 万名研究者开始，申请已经开放。",
+      "参与者可免费使用 ChatGPT、ChatGPT Work 与 Codex 的前沿模型，数据默认不用于训练模型。",
+    ],
+    tags: ["学术研究", "免费申请", "GPT-5.6", "Codex"],
+    sourceLabel: "OpenAI",
+    sourceUrl: "https://openai.com/index/chatgpt-for-academic-researchers/",
+    relatedToolIds: ["chatgpt", "openai-codex"],
+    featured: true,
+    availability: "open",
+    actionLabel: "申请已开放",
+  },
+  {
+    id: "gpt-5-6-efficiency-engineering",
+    title: "OpenAI 公开 GPT-5.6 降本路线：服务成本降 20%",
+    company: "OpenAI",
+    date: "2026-07-29",
+    category: "AI 编程",
+    impact: "重点关注",
+    summary: "OpenAI 披露 GPT-5.6 与 Codex 参与推理服务优化，官方称负载均衡、内核等改进合计把端到端服务成本降低了 20%。",
+    whyItMatters: "模型竞争正在从榜单能力延伸到整套推理系统效率；更低服务成本会继续影响 API 定价、Agent 可运行时长和高频工作负载。",
+    nextStep: "评估 GPT-5.6 时，把每个成功任务的总成本、缓存命中、工具输出和失败重试一起纳入基准，不只比较模型标价。",
+    facts: [
+      "OpenAI 官方称综合工程优化使端到端服务成本降低 20%。",
+      "对 draft / speculator model 的改进使 token 生成效率提升 15% 以上。",
+      "Codex Agent harness 使用 Rust 编排层、延迟工具发现和默认 1 万 token 工具输出上限控制上下文成本。",
+    ],
+    tags: ["GPT-5.6", "推理成本", "Codex", "Agent 工程"],
+    sourceLabel: "OpenAI Engineering",
+    sourceUrl: "https://openai.com/index/gpt-5-6-frontier-intelligence-efficiency/",
+    relatedToolIds: ["openai-codex", "chatgpt"],
+    featured: true,
+  },
   {
     id: "microsoft-project-perception",
     title: "微软提出 Project Perception，重做 Agent 时代的安全边界",
@@ -107,6 +151,8 @@ export const SIGNAL_ITEMS = ([
     relatedToolIds: ["deepseek"],
     featured: true,
     deadline: "2026-07-24",
+    availability: "retired",
+    actionLabel: "旧别名已停用 · 未迁移需排障",
   },
   {
     id: "grok-build-workflows",
@@ -377,6 +423,7 @@ export const SIGNAL_ITEMS = ([
     relatedToolIds: [],
     featured: true,
     deadline: "2026-07-30",
+    availability: "retired",
   },
   {
     id: "claude-fable-5-redeployed",
@@ -424,7 +471,10 @@ export function getSignalItem(id: string) {
   return SIGNAL_ITEMS.find((item) => item.id === id) ?? null;
 }
 
-export function formatSignalDate(value: string) {
-  const [, month, day] = value.split("-");
-  return `${Number(month)} 月 ${Number(day)} 日`;
+export function getRelatedSignals(item: SignalItem, limit = 3) {
+  return SIGNAL_ITEMS.filter(
+    (candidate) =>
+      candidate.id !== item.id &&
+      (candidate.company === item.company || candidate.category === item.category),
+  ).slice(0, limit);
 }

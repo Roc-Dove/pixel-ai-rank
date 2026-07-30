@@ -1,7 +1,7 @@
 import { createConnection } from "node:net";
 import { getPrismaClient } from "@/lib/db/prisma";
 import { buildDemoRankPayload } from "@/lib/mock/rank";
-import { getLatestRankPayload } from "@/lib/scrapers";
+import { getLatestRankPayload } from "@/lib/rank-repository";
 import { getServerEnv } from "@/lib/env";
 import { buildSelectedLibraryRankPayload } from "@/lib/library/rank-sync";
 import { type RankPayload, type RankRouteType } from "@/types/rank";

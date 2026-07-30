@@ -13,6 +13,8 @@ export const SIGNAL_IMPACTS = ["立即行动", "重点关注", "持续观察"] a
 
 export type SignalImpact = (typeof SIGNAL_IMPACTS)[number];
 
+export type SignalAvailability = "open" | "ongoing" | "retired";
+
 export type SignalItem = {
   id: string;
   title: string;
@@ -30,4 +32,6 @@ export type SignalItem = {
   relatedToolIds: string[];
   featured?: boolean;
   deadline?: string;
+  availability?: SignalAvailability;
+  actionLabel?: string;
 };

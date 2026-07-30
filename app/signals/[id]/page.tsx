@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Check, CircleAlert, Compass, ExternalLink, Radio, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Check, CircleAlert, Compass, ExternalLink, Radio, ShieldCheck } from "lucide-react";
 import { notFound } from "next/navigation";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
-import { formatSignalDate, getSignalItem, SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
+import { getRelatedSignals, getSignalItem, SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
+import { absoluteUrl } from "@/lib/site";
+import { formatSignalDate, getSignalLifecycle } from "@/lib/signals/utils";
 import { getLibraryItemWithGuide } from "@/lib/library/guide";
 
 type SignalDetailPageProps = { params: Promise<{ id: string }> };
+
+export const revalidate = 3600;
 
 export function generateStaticParams() {
   return SIGNAL_ITEMS.map((item) => ({ id: item.id }));
@@ -16,7 +20,23 @@ export async function generateMetadata({ params }: SignalDetailPageProps): Promi
   const { id } = await params;
   const item = getSignalItem(id);
   if (!item) return {};
-  return { title: item.title, description: item.summary };
+  return {
+    title: item.title,
+    description: item.summary,
+    alternates: {
+      canonical: `/signals/${item.id}`,
+      types: { "application/rss+xml": "/feed.xml" },
+    },
+    openGraph: {
+      title: item.title,
+      description: item.summary,
+      type: "article",
+      url: `/signals/${item.id}`,
+      publishedTime: `${item.date}T00:00:00+08:00`,
+      modifiedTime: `${SIGNALS_LAST_VERIFIED}T00:00:00+08:00`,
+      tags: item.tags,
+    },
+  };
 }
 
 export default async function SignalDetailPage({ params }: SignalDetailPageProps) {
@@ -27,9 +47,29 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
   const relatedTools = item.relatedToolIds
     .map((toolId) => getLibraryItemWithGuide(toolId))
     .filter((tool) => tool !== null);
+  const relatedSignals = getRelatedSignals(item);
+  const lifecycle = getSignalLifecycle(item);
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: item.title,
+    description: item.summary,
+    datePublished: item.date,
+    dateModified: SIGNALS_LAST_VERIFIED,
+    inLanguage: "zh-CN",
+    mainEntityOfPage: absoluteUrl(`/signals/${item.id}`),
+    author: { "@type": "Organization", name: "Pixel AI Rank", url: absoluteUrl("/") },
+    publisher: { "@type": "Organization", name: "Pixel AI Rank", url: absoluteUrl("/") },
+    isBasedOn: item.sourceUrl,
+    keywords: item.tags.join(", "),
+  };
 
   return (
-    <main id="main-content" className="pixel-shell pixel-news-detail-page">
+    <main id="main-content" className="pixel-shell pixel-news-detail-page" tabIndex={-1}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c") }}
+      />
       <div className="pixel-content-stack">
         <nav className="pixel-breadcrumb" aria-label="面包屑">
           <Link href="/signals"><ArrowLeft size={15} aria-hidden="true" /> 最新 AI 情报</Link>
@@ -43,6 +83,7 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
               <time dateTime={item.date}>{formatSignalDate(item.date)}</time>
               <span>{item.company}</span>
               <span>{item.category}</span>
+              {lifecycle.status !== "ongoing" ? <span className={`is-${lifecycle.status}`}>{lifecycle.label}</span> : null}
             </div>
             <h1>{item.title}</h1>
             <p>{item.summary}</p>
@@ -103,6 +144,24 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
             </aside>
           </div>
         </article>
+
+        {relatedSignals.length ? (
+          <section className="pixel-news-more" aria-labelledby="more-signals-heading">
+            <div className="pixel-section-heading compact">
+              <div><span className="pixel-kicker">KEEP READING</span><h2 id="more-signals-heading">继续追踪相关变化</h2></div>
+              <Link href="/signals">查看全部情报 <ArrowRight size={16} aria-hidden="true" /></Link>
+            </div>
+            <div className="pixel-news-more-grid">
+              {relatedSignals.map((related) => (
+                <Link href={`/signals/${related.id}`} key={related.id}>
+                  <span>{related.company} · {formatSignalDate(related.date)}</span>
+                  <strong>{related.title}</strong>
+                  <small>{related.impact} <ArrowRight size={14} aria-hidden="true" /></small>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <aside className="pixel-news-method-note">
           <ShieldCheck size={19} aria-hidden="true" />

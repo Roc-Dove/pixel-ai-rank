@@ -1,5 +1,5 @@
 import { LIBRARY_ITEMS } from "@/lib/library/items";
-import { type LibraryAudience, type LibraryCategory, type LibraryDifficulty, type LibraryGuide, type LibraryItem, type LibraryItemWithGuide } from "@/types/library";
+import { type LibraryAudience, type LibraryCardItem, type LibraryCategory, type LibraryDifficulty, type LibraryGuide, type LibraryItem, type LibraryItemWithGuide } from "@/types/library";
 
 type CategoryGuide = Omit<LibraryGuide, "alternatives">;
 type GuideOverride = Partial<LibraryGuide>;
@@ -316,11 +316,44 @@ export function getLibraryGuide(item: LibraryItem): LibraryGuide {
   };
 }
 
+function enrichLibraryItem(item: LibraryItem): LibraryItemWithGuide {
+  return {
+    ...item,
+    guide: getLibraryGuide(item),
+    guideDepth: GUIDE_OVERRIDES[item.id] ? "individual" : "category",
+    sourceTier: item.verifiedAt && item.sourceName !== "AI Collection" ? "official" : "community",
+  };
+}
+
 export function getLibraryItemsWithGuide(items: LibraryItem[] = LIBRARY_ITEMS): LibraryItemWithGuide[] {
-  return items.map((item) => ({ ...item, guide: getLibraryGuide(item) }));
+  return items.map(enrichLibraryItem);
+}
+
+export function getLibraryCardItems(items: LibraryItem[] = LIBRARY_ITEMS): LibraryCardItem[] {
+  return items.map((item) => {
+    const enriched = enrichLibraryItem(item);
+    return {
+      id: enriched.id,
+      name: enriched.name,
+      category: enriched.category,
+      descriptionZh: enriched.descriptionZh,
+      officialUrl: enriched.officialUrl,
+      tags: enriched.tags,
+      verifiedAt: enriched.verifiedAt,
+      guideDepth: enriched.guideDepth,
+      sourceTier: enriched.sourceTier,
+      guide: {
+        recommendation: enriched.guide.recommendation,
+        difficulty: enriched.guide.difficulty,
+        audiences: enriched.guide.audiences,
+        bestFor: enriched.guide.bestFor,
+        useCases: enriched.guide.useCases,
+      },
+    };
+  });
 }
 
 export function getLibraryItemWithGuide(id: string): LibraryItemWithGuide | null {
   const item = LIBRARY_ITEMS.find((entry) => entry.id === id);
-  return item ? { ...item, guide: getLibraryGuide(item) } : null;
+  return item ? enrichLibraryItem(item) : null;
 }

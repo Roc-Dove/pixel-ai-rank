@@ -6,20 +6,22 @@ import { useMemo, useState } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { LibraryLogo } from "@/components/library/LibraryLogo";
 import { PixelButton, pixelButtonClassName } from "@/components/ui/PixelButton";
-import { LIBRARY_AUDIENCES, LIBRARY_CATEGORIES, type LibraryAudience, type LibraryCategory, type LibraryItemWithGuide } from "@/types/library";
+import { LIBRARY_AUDIENCES, LIBRARY_CATEGORIES, type LibraryAudience, type LibraryCardItem, type LibraryCategory } from "@/types/library";
 
 const ALL_CATEGORIES = "全部";
 const ALL_AUDIENCES = "全部人群";
+const ALL_SOURCES = "全部来源";
 const PAGE_SIZE = 12;
 type LibrarySort = "recommendation" | "easy" | "name";
+type LibrarySourceFilter = typeof ALL_SOURCES | LibraryCardItem["sourceTier"];
 
-function difficultyTone(difficulty: LibraryItemWithGuide["guide"]["difficulty"]) {
+function difficultyTone(difficulty: LibraryCardItem["guide"]["difficulty"]) {
   if (difficulty === "低") return "easy";
   if (difficulty === "中") return "medium";
   return "hard";
 }
 
-function LibraryCard({ item }: { item: LibraryItemWithGuide }) {
+function LibraryCard({ item }: { item: LibraryCardItem }) {
   return (
     <article className="pixel-library-card">
       <div className="pixel-library-card-head">
@@ -28,9 +30,14 @@ function LibraryCard({ item }: { item: LibraryItemWithGuide }) {
         <div>
           <div className="pixel-library-card-labels">
             <span className="pixel-library-category">{item.category}</span>
-            {item.verifiedAt ? <span className="pixel-library-fresh">近期核验</span> : null}
+            <span className={`pixel-library-source is-${item.sourceTier}`}>
+              {item.sourceTier === "official" ? `官方核验${item.verifiedAt ? ` ${item.verifiedAt.slice(5).replace("-", ".")}` : ""}` : "聚合资料"}
+            </span>
+            <span className={`pixel-library-guide-depth is-${item.guideDepth}`}>
+              {item.guideDepth === "individual" ? "个体导购" : "分类基线"}
+            </span>
           </div>
-          <h2><Link href={`/library/${item.id}`}>{item.name}</Link></h2>
+          <h2><Link href={`/library/${item.id}`} prefetch={false}>{item.name}</Link></h2>
         </div>
       </div>
 
@@ -62,9 +69,9 @@ function LibraryCard({ item }: { item: LibraryItemWithGuide }) {
       </div>
 
       <div className="pixel-library-actions">
-        <Link href={`/library/${item.id}`} className={pixelButtonClassName({ tone: "ghost" })}>查看详情</Link>
+        <Link href={`/library/${item.id}`} prefetch={false} className={pixelButtonClassName({ tone: "blue" })}>查看详情</Link>
         {item.officialUrl ? (
-          <a href={item.officialUrl} target="_blank" rel="noopener noreferrer" className={pixelButtonClassName({ tone: "blue" })} aria-label={`访问 ${item.name} 官网`}>
+          <a href={item.officialUrl} target="_blank" rel="noopener noreferrer" className={pixelButtonClassName({ tone: "ghost" })} aria-label={`访问 ${item.name} 官网`}>
             官网 <ArrowUpRight size={16} aria-hidden="true" />
           </a>
         ) : null}
@@ -73,10 +80,11 @@ function LibraryCard({ item }: { item: LibraryItemWithGuide }) {
   );
 }
 
-export function LibraryExplorer({ items }: { items: LibraryItemWithGuide[] }) {
+export function LibraryExplorer({ items }: { items: LibraryCardItem[] }) {
   const { search } = useSearch();
   const [activeCategory, setActiveCategory] = useState<LibraryCategory | typeof ALL_CATEGORIES>(ALL_CATEGORIES);
   const [activeAudience, setActiveAudience] = useState<LibraryAudience | typeof ALL_AUDIENCES>(ALL_AUDIENCES);
+  const [activeSource, setActiveSource] = useState<LibrarySourceFilter>(ALL_SOURCES);
   const [sortMode, setSortMode] = useState<LibrarySort>("recommendation");
   const [pagination, setPagination] = useState({ key: "", limit: PAGE_SIZE });
 
@@ -85,6 +93,7 @@ export function LibraryExplorer({ items }: { items: LibraryItemWithGuide[] }) {
     const filtered = items.filter((item) => {
       if (activeCategory !== ALL_CATEGORIES && item.category !== activeCategory) return false;
       if (activeAudience !== ALL_AUDIENCES && !item.guide.audiences.includes(activeAudience)) return false;
+      if (activeSource !== ALL_SOURCES && item.sourceTier !== activeSource) return false;
       if (!query) return true;
 
       const haystack = [item.name, item.category, item.descriptionZh, ...item.tags, ...item.guide.audiences, ...item.guide.useCases, ...item.guide.bestFor].join(" ").toLowerCase();
@@ -99,33 +108,37 @@ export function LibraryExplorer({ items }: { items: LibraryItemWithGuide[] }) {
       }
       return right.guide.recommendation - left.guide.recommendation || left.name.localeCompare(right.name);
     });
-  }, [activeAudience, activeCategory, items, search, sortMode]);
+  }, [activeAudience, activeCategory, activeSource, items, search, sortMode]);
 
   const categories = useMemo(() => LIBRARY_CATEGORIES.map((category) => ({ category, count: items.filter((item) => item.category === category).length })), [items]);
-  const filterKey = `${activeCategory}:${activeAudience}:${sortMode}:${search.trim().toLowerCase()}`;
+  const officialCount = useMemo(() => items.filter((item) => item.sourceTier === "official").length, [items]);
+  const individualGuideCount = useMemo(() => items.filter((item) => item.guideDepth === "individual").length, [items]);
+  const filterKey = `${activeCategory}:${activeAudience}:${activeSource}:${sortMode}:${search.trim().toLowerCase()}`;
   const visibleLimit = pagination.key === filterKey ? pagination.limit : PAGE_SIZE;
   const visibleItems = filteredItems.slice(0, visibleLimit);
   const hasMore = visibleItems.length < filteredItems.length;
-  const hasFilters = activeCategory !== ALL_CATEGORIES || activeAudience !== ALL_AUDIENCES;
+  const hasFilters = activeCategory !== ALL_CATEGORIES || activeAudience !== ALL_AUDIENCES || activeSource !== ALL_SOURCES;
 
   const resetFilters = () => {
     setActiveCategory(ALL_CATEGORIES);
     setActiveAudience(ALL_AUDIENCES);
+    setActiveSource(ALL_SOURCES);
   };
 
   return (
-    <main id="main-content" className="pixel-shell">
+    <main id="main-content" className="pixel-shell" tabIndex={-1}>
       <div className="pixel-content-stack">
         <section className="pixel-library-hero">
           <div>
             <span className="pixel-kicker"><LibraryBig size={16} aria-hidden="true" /> CURATED AI LIBRARY</span>
             <h1>AI 工具库</h1>
-            <p>从“这个工具是什么”继续追问到“它适不适合我”。已清理停服产品，并优先标出近期经官方来源核验的工具。</p>
+            <p>从“这个工具是什么”继续追问到“它适不适合我”。资料明确区分官方核验与社区聚合，推荐判断也标出个体导购或分类基线。</p>
           </div>
           <dl>
             <div><dt>精选工具</dt><dd>{items.length}</dd></div>
+            <div><dt>官方核验</dt><dd>{officialCount}</dd></div>
+            <div><dt>个体导购</dt><dd>{individualGuideCount}</dd></div>
             <div><dt>实用分类</dt><dd>{LIBRARY_CATEGORIES.length}</dd></div>
-            <div><dt>筛选维度</dt><dd>4</dd></div>
           </dl>
         </section>
 
@@ -154,9 +167,18 @@ export function LibraryExplorer({ items }: { items: LibraryItemWithGuide[] }) {
               ))}
             </div>
           </div>
+
+          <div className="pixel-filter-row">
+            <span className="pixel-filter-label">资料状态</span>
+            <div className="pixel-filter-options">
+              <button className={pixelButtonClassName({ tone: activeSource === ALL_SOURCES ? "green" : "ghost", active: activeSource === ALL_SOURCES })} aria-pressed={activeSource === ALL_SOURCES} onClick={() => setActiveSource(ALL_SOURCES)}>全部来源</button>
+              <button className={pixelButtonClassName({ tone: activeSource === "official" ? "green" : "ghost", active: activeSource === "official" })} aria-pressed={activeSource === "official"} onClick={() => setActiveSource("official")}>官方核验 / {officialCount}</button>
+              <button className={pixelButtonClassName({ tone: activeSource === "community" ? "green" : "ghost", active: activeSource === "community" })} aria-pressed={activeSource === "community"} onClick={() => setActiveSource("community")}>聚合资料 / {items.length - officialCount}</button>
+            </div>
+          </div>
         </section>
 
-        <div className="pixel-library-toolbar">
+        <div className="pixel-library-toolbar" aria-live="polite">
           <div><strong>{filteredItems.length}</strong><span> 个匹配工具</span>{search ? <small>关键词：{search}</small> : null}</div>
           <label>
             <span>排序</span>

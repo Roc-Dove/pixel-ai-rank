@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Code2, Database, RefreshCw } from "lucide-react";
+import { Code2, Database, RefreshCw, Rss } from "lucide-react";
 import { PixelMark } from "@/components/ui/PixelMark";
 
 export function Footer() {
@@ -23,6 +23,7 @@ export function Footer() {
           <Link href="/signals">最新 AI 情报</Link>
           <Link href="/rank/aicpb">AI 排行榜</Link>
           <Link href="/library">AI 工具库</Link>
+          <a href="/feed.xml"><Rss size={15} aria-hidden="true" />订阅 RSS</a>
         </div>
 
         <div className="pixel-footer-column">

@@ -19,6 +19,16 @@ export async function generateMetadata({ params }: { params: Promise<{ type: str
   return {
     title: TAB_CONFIG[type].label,
     description: TAB_CONFIG[type].summary,
+    alternates: {
+      canonical: `/rank/${type}`,
+      types: { "application/rss+xml": "/feed.xml" },
+    },
+    openGraph: {
+      title: TAB_CONFIG[type].label,
+      description: TAB_CONFIG[type].summary,
+      url: `/rank/${type}`,
+      type: "website",
+    },
   };
 }
 

@@ -1,9 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BookOpenCheck, CalendarDays, LibraryBig, Radio, Radar, ShieldCheck, Sparkles } from "lucide-react";
 import { RankTypeIcon } from "@/components/rank/RankTypeIcon";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
 import { getLibraryItemsWithGuide } from "@/lib/library/guide";
-import { formatSignalDate, SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
+import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
+import { formatSignalDate, getSignalLifecycle } from "@/lib/signals/utils";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+    types: { "application/rss+xml": "/feed.xml" },
+  },
+};
+
+export const revalidate = 3600;
 
 export default function HomePage() {
   const libraryItems = getLibraryItemsWithGuide();
@@ -12,20 +23,38 @@ export default function HomePage() {
     .sort((left, right) => right.guide.recommendation - left.guide.recommendation || left.name.localeCompare(right.name))
     .slice(0, 6);
   const latestSignals = SIGNAL_ITEMS.slice(0, 6);
-  const urgentCount = SIGNAL_ITEMS.filter((item) => item.impact === "立即行动").length;
+  const urgentItems = SIGNAL_ITEMS.filter((item) => item.impact === "立即行动");
+  const urgentCount = urgentItems.length;
+  const dueTodayCount = urgentItems.filter((item) => getSignalLifecycle(item).status === "due-today").length;
+  const lifecyclePriority = {
+    "due-today": 0,
+    overdue: 1,
+    open: 2,
+    upcoming: 3,
+    retired: 4,
+    ongoing: 5,
+  } as const;
+  const radarSignals = [...urgentItems]
+    .sort(
+      (left, right) =>
+        lifecyclePriority[getSignalLifecycle(left).status] - lifecyclePriority[getSignalLifecycle(right).status] ||
+        right.date.localeCompare(left.date),
+    )
+    .slice(0, 3);
+  const verifiedStamp = SIGNALS_LAST_VERIFIED.replaceAll("-", ".");
 
   return (
-    <main id="main-content" className="pixel-home">
+    <main id="main-content" className="pixel-home" tabIndex={-1}>
       <section className="pixel-home-hero pixel-home-hero-v2">
         <div className="pixel-home-hero-copy">
-          <span className="pixel-kicker"><Radio size={16} aria-hidden="true" /> VERIFIED 2026.07.28</span>
+          <span className="pixel-kicker"><Radio size={16} aria-hidden="true" /> VERIFIED {verifiedStamp}</span>
           <h1>AI 更新太快，<br /><span>先看值得行动的。</span></h1>
           <p>
             Pixel AI Rank 把官方最新发布、产品变更、排行榜和中文工具导购放进同一个决策界面。少一点追热点，多一点下一步。
           </p>
           <div className="pixel-home-actions">
-            <Link href="/signals" className={pixelButtonClassName({ tone: "blue" })}>
-              查看最新情报 <ArrowRight size={17} aria-hidden="true" />
+            <Link href="/signals#action-required" className={pixelButtonClassName({ tone: "blue" })}>
+              处理 {urgentCount} 条行动项{dueTodayCount ? ` · ${dueTodayCount} 条今日截止` : ""} <ArrowRight size={17} aria-hidden="true" />
             </Link>
             <Link href="/library" className={pixelButtonClassName({ tone: "ghost" })}>
               浏览 {libraryItems.length} 个工具
@@ -42,24 +71,33 @@ export default function HomePage() {
           <div className="pixel-radar-header">
             <div>
               <span className="pixel-live-dot" aria-hidden="true" />
-              <strong>LATEST SIGNALS</strong>
+              <strong>ACTION QUEUE</strong>
             </div>
             <span>OFFICIAL ONLY</span>
           </div>
           <div className="pixel-radar-list">
-            {latestSignals.slice(0, 3).map((item, index) => (
-              <Link href={`/signals/${item.id}`} key={item.id} className="pixel-radar-item">
-                <span className="pixel-radar-rank">0{index + 1}</span>
-                <span className="pixel-radar-tool">
-                  <strong>{item.title}</strong>
-                  <small>{item.company} · {formatSignalDate(item.date)}</small>
-                </span>
-                <span className={`pixel-radar-impact is-${item.impact === "立即行动" ? "urgent" : item.impact === "重点关注" ? "focus" : "watch"}`}>{item.impact}</span>
-              </Link>
-            ))}
+            {radarSignals.map((item, index) => {
+              const lifecycle = getSignalLifecycle(item);
+              const lifecycleTone = lifecycle.status === "due-today" || lifecycle.status === "overdue"
+                ? "urgent"
+                : lifecycle.status === "open"
+                  ? "focus"
+                  : "watch";
+
+              return (
+                <Link href={`/signals/${item.id}`} key={item.id} className="pixel-radar-item">
+                  <span className="pixel-radar-rank">0{index + 1}</span>
+                  <span className="pixel-radar-tool">
+                    <strong>{item.title}</strong>
+                    <small>{item.company} · {formatSignalDate(item.date)}</small>
+                  </span>
+                  <span className={`pixel-radar-impact is-${lifecycleTone}`}>{lifecycle.label}</span>
+                </Link>
+              );
+            })}
           </div>
           <div className="pixel-radar-footer">
-            <span>{urgentCount} 条需行动</span>
+            <Link href="/signals#action-required">{urgentCount} 条待处理</Link>
             <div><span style={{ width: "100%" }} /></div>
             <span>已核验</span>
           </div>
@@ -68,7 +106,7 @@ export default function HomePage() {
 
       <section className="pixel-home-stats" aria-label="内容规模">
         <div><strong>{SIGNAL_ITEMS.length}</strong><span>官方信源情报</span></div>
-        <div><strong>100%</strong><span>一手来源链接</span></div>
+        <div><strong>100%</strong><span>情报官方源</span></div>
         <div><strong>{libraryItems.length}</strong><span>精选 AI 工具</span></div>
         <div><strong>{SIGNALS_LAST_VERIFIED.slice(5).replace("-", ".")}</strong><span>最近核验</span></div>
       </section>
