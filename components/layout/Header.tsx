@@ -92,7 +92,7 @@ export function Header() {
               <PixelInput
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder={currentTab ? "搜索名称、简介或标签" : isSignals ? "搜索公司、发布、行动建议或标签" : "搜索工具、分类、人群或使用场景"}
+                placeholder={currentTab ? "搜索名称、简介或标签" : isSignals ? "搜索公司、产品、主题或标签" : "搜索工具、分类、人群或使用场景"}
                 aria-label={searchLabel}
                 autoComplete="off"
               />

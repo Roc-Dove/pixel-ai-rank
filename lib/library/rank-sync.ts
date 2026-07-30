@@ -52,7 +52,7 @@ function rankConfig(type: RankRouteType) {
   if (type === "aicpb") {
     return {
       primaryLabel: "出海适配",
-      secondaryLabel: "推荐指数",
+      secondaryLabel: "编辑评分",
       score: globalScore,
       filter: (item: LibraryItemWithGuide) => item.guide.isGoodForGlobal || item.guide.audiences.includes("出海团队"),
     };
@@ -61,15 +61,15 @@ function rankConfig(type: RankRouteType) {
   if (type === "stars") {
     return {
       primaryLabel: "趋势潜力",
-      secondaryLabel: "推荐指数",
+      secondaryLabel: "编辑评分",
       score: trendScore,
       filter: (item: LibraryItemWithGuide) => ["AI Agent", "AI 编程", "AI 视频生成", "AI 设计", "AI 自动化"].includes(item.category),
     };
   }
 
   return {
-    primaryLabel: "综合推荐",
-    secondaryLabel: "推荐指数",
+    primaryLabel: "综合评分",
+    secondaryLabel: "编辑评分",
     score: monthlyScore,
     filter: () => true,
   };
@@ -110,6 +110,6 @@ export function buildSelectedLibraryRankPayload(payload: RankPayload): RankPaylo
     totalItems: items.length,
     lastUpdated: null,
     items,
-    message: `${config.primaryLabel} = 基于 AI库导购字段、适合人群、分类和可用官网综合计算。${config.secondaryLabel}来自 AI库推荐指数。`,
+    message: `${config.primaryLabel} = 基于 AI 库评测字段、适用人群、分类和可用官网综合计算。${config.secondaryLabel}来自 AI 库编辑评分。`,
   };
 }

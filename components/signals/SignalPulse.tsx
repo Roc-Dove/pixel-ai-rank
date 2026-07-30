@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { Activity } from "lucide-react";
+import { formatSignalImpact } from "@/lib/signals/utils";
 import type { SignalCategory, SignalImpact } from "@/types/signal";
 
 type SignalPulseProps = {
@@ -31,7 +32,7 @@ export function SignalPulse({
   return (
     <figure
       className={`pixel-signal-pulse ${compact ? "is-compact" : ""}`}
-      aria-label={`共 ${total} 条官方情报：立即行动 ${urgent} 条，重点关注 ${focus} 条，持续观察 ${watch} 条，覆盖 ${companies} 家公司。`}
+      aria-label={`共 ${total} 条官方动态：${formatSignalImpact("立即行动")} ${urgent} 条，${formatSignalImpact("重点关注")} ${focus} 条，${formatSignalImpact("持续观察")} ${watch} 条，覆盖 ${companies} 家公司。`}
     >
       <div className="pixel-signal-pulse-head">
         <span><Activity size={15} aria-hidden="true" /> SIGNAL MAP</span>
@@ -39,7 +40,7 @@ export function SignalPulse({
       </div>
 
       <div className="pixel-signal-pulse-body">
-        <div className="pixel-signal-donut" style={chartStyle} role="img" aria-label="情报优先级分布">
+        <div className="pixel-signal-donut" style={chartStyle} role="img" aria-label="信息类型分布">
           <div>
             <strong>{total}</strong>
             <span>本期信号</span>
@@ -60,9 +61,9 @@ export function SignalPulse({
       </div>
 
       <figcaption className="pixel-signal-pulse-legend">
-        <span className="is-urgent"><i aria-hidden="true" /> 立即行动 <strong>{urgent}</strong></span>
-        <span className="is-focus"><i aria-hidden="true" /> 重点关注 <strong>{focus}</strong></span>
-        <span className="is-watch"><i aria-hidden="true" /> 持续观察 <strong>{watch}</strong></span>
+        <span className="is-urgent"><i aria-hidden="true" /> {formatSignalImpact("立即行动")} <strong>{urgent}</strong></span>
+        <span className="is-focus"><i aria-hidden="true" /> {formatSignalImpact("重点关注")} <strong>{focus}</strong></span>
+        <span className="is-watch"><i aria-hidden="true" /> {formatSignalImpact("持续观察")} <strong>{watch}</strong></span>
       </figcaption>
     </figure>
   );

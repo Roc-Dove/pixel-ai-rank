@@ -6,56 +6,51 @@ import { useMemo, useState } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { SignalCategoryVisual } from "@/components/signals/SignalCategoryVisual";
 import { PixelButton, pixelButtonClassName } from "@/components/ui/PixelButton";
-import { formatSignalDate, getSignalLifecycle } from "@/lib/signals/utils";
+import { formatSignalImpact, getSignalLifecycle } from "@/lib/signals/utils";
 import { SIGNAL_CATEGORIES, SIGNAL_IMPACTS, type SignalCategory, type SignalImpact, type SignalItem } from "@/types/signal";
+import styles from "./SignalsExplorer.module.css";
 
 const ALL_CATEGORIES = "全部";
-const ALL_IMPACTS = "全部级别";
+const ALL_IMPACTS = "全部类型";
 const PAGE_SIZE = 9;
-
-function impactClassName(impact: SignalImpact) {
-  if (impact === "立即行动") return "urgent";
-  if (impact === "重点关注") return "focus";
-  return "watch";
-}
 
 function SignalCard({ item }: { item: SignalItem }) {
   const lifecycle = getSignalLifecycle(item);
 
   return (
-    <article className={`pixel-news-card tone-${impactClassName(item.impact)}`}>
+    <article className={styles.card}>
       <SignalCategoryVisual
         category={item.category}
         company={item.company}
         date={item.date}
+        id={item.id}
+        impact={item.impact}
+        sourceLabel={item.sourceLabel}
         sourceUrl={item.sourceUrl}
+        title={item.title}
       />
 
-      <div className="pixel-news-card-meta">
-        <time dateTime={item.date}>{formatSignalDate(item.date)}</time>
-        <span>{item.company}</span>
-        <span>{item.category}</span>
-        <strong>{item.impact}</strong>
-        {lifecycle.status !== "ongoing" ? (
-          <span className={`pixel-news-lifecycle is-${lifecycle.status}`}>{lifecycle.label}</span>
-        ) : null}
-      </div>
-
-      <div className="pixel-news-card-copy">
-        <h2><Link href={`/signals/${item.id}`} prefetch={false}>{item.title}</Link></h2>
+      <div className={styles.copy}>
         <p>{item.summary}</p>
       </div>
 
-      <div className="pixel-news-quick-action">
-        <span>下一步</span>
-        <strong>{item.actionLabel ?? "查看具体行动建议"}</strong>
-      </div>
+      {lifecycle.status !== "ongoing" ? (
+        <div className={`${styles.lifecycle} ${styles[lifecycle.status]}`}>
+          <CalendarClock size={14} aria-hidden="true" />
+          <span>{lifecycle.label}</span>
+        </div>
+      ) : null}
 
-      <div className="pixel-news-card-actions">
-        <Link href={`/signals/${item.id}`} prefetch={false} className={pixelButtonClassName({ tone: "blue" })}>
-          打开情报卡 <ArrowRight size={15} aria-hidden="true" />
+      <div className={styles.actions}>
+        <Link
+          href={`/signals/${item.id}`}
+          prefetch={false}
+          className={`${pixelButtonClassName({ tone: "blue" })} ${styles.detailLink}`}
+          aria-label={`查看“${item.title}”详情`}
+        >
+          查看详情 <ArrowRight size={15} aria-hidden="true" />
         </Link>
-        <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="pixel-official-link">
+        <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className={styles.officialLink}>
           官方原文 <ArrowUpRight size={15} aria-hidden="true" />
         </a>
       </div>
@@ -80,6 +75,7 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
         item.company,
         item.category,
         item.impact,
+        formatSignalImpact(item.impact),
         item.summary,
         item.whyItMatters,
         item.nextStep,
@@ -104,7 +100,7 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
     <>
       <section className="pixel-news-filter" aria-labelledby="news-filter-heading">
         <div className="pixel-news-filter-head">
-          <div><Filter size={17} aria-hidden="true" /><h2 id="news-filter-heading">情报筛选</h2></div>
+          <div><Filter size={17} aria-hidden="true" /><h2 id="news-filter-heading">动态筛选</h2></div>
           {hasFilters ? (
             <button type="button" onClick={resetFilters}><RotateCcw size={15} aria-hidden="true" /> 重置</button>
           ) : null}
@@ -121,18 +117,18 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
         </div>
 
         <div className="pixel-news-filter-group">
-          <span>优先级</span>
+          <span>信息类型</span>
           <div>
-            <button type="button" className={impact === ALL_IMPACTS ? "is-active" : ""} aria-pressed={impact === ALL_IMPACTS} onClick={() => setImpact(ALL_IMPACTS)}>全部级别</button>
+            <button type="button" className={impact === ALL_IMPACTS ? "is-active" : ""} aria-pressed={impact === ALL_IMPACTS} onClick={() => setImpact(ALL_IMPACTS)}>全部类型</button>
             {SIGNAL_IMPACTS.map((item) => (
-              <button type="button" key={item} className={impact === item ? "is-active" : ""} aria-pressed={impact === item} onClick={() => setImpact(item)}>{item}</button>
+              <button type="button" key={item} className={impact === item ? "is-active" : ""} aria-pressed={impact === item} onClick={() => setImpact(item)}>{formatSignalImpact(item)}</button>
             ))}
           </div>
         </div>
       </section>
 
       <div className="pixel-news-toolbar" aria-live="polite">
-        <div><ShieldCheck size={16} aria-hidden="true" /><strong>{filteredItems.length}</strong><span> 条官方信源情报</span></div>
+        <div><ShieldCheck size={16} aria-hidden="true" /><strong>{filteredItems.length}</strong><span> 条官方来源动态</span></div>
         {search ? <span>搜索：{search}</span> : <span><CalendarClock size={15} aria-hidden="true" /> 按发布时间倒序</span>}
       </div>
 
@@ -148,7 +144,7 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
                 tone="ghost"
                 onClick={() => setPagination({ key: filterKey, limit: visibleLimit + PAGE_SIZE })}
               >
-                再看 {Math.min(PAGE_SIZE, filteredItems.length - visibleItems.length)} 条情报
+                加载更多（{Math.min(PAGE_SIZE, filteredItems.length - visibleItems.length)} 条）
               </PixelButton>
             </div>
           ) : null}
@@ -156,7 +152,7 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
       ) : (
         <section className="pixel-empty">
           <SearchX size={26} aria-hidden="true" />
-          <div><h2>没有匹配的情报</h2><p>换一个关键词，或者重置主题和优先级。</p></div>
+          <div><h2>没有匹配的动态</h2><p>换一个关键词，或者重置主题和信息类型。</p></div>
           {hasFilters ? <PixelButton tone="blue" onClick={resetFilters}>重置筛选</PixelButton> : null}
         </section>
       )}

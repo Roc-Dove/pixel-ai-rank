@@ -22,7 +22,7 @@ import { SignalPulse } from "@/components/signals/SignalPulse";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
 import { getLibraryItemsWithGuide } from "@/lib/library/guide";
 import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
-import { formatSignalDate, getSignalLifecycle } from "@/lib/signals/utils";
+import { formatSignalDate, formatSignalImpact } from "@/lib/signals/utils";
 import { SIGNAL_CATEGORIES, SIGNAL_IMPACTS, type SignalCategory, type SignalImpact } from "@/types/signal";
 
 export const metadata: Metadata = {
@@ -89,22 +89,6 @@ export default function HomePage() {
     .sort((left, right) => right.guide.recommendation - left.guide.recommendation || left.name.localeCompare(right.name))
     .slice(0, 6);
   const latestSignals = SIGNAL_ITEMS.slice(0, 4);
-  const urgentItems = SIGNAL_ITEMS.filter((item) => item.impact === "立即行动");
-  const lifecyclePriority = {
-    "due-today": 0,
-    overdue: 1,
-    open: 2,
-    upcoming: 3,
-    retired: 4,
-    ongoing: 5,
-  } as const;
-  const radarSignals = [...urgentItems]
-    .sort(
-      (left, right) =>
-        lifecyclePriority[getSignalLifecycle(left).status] - lifecyclePriority[getSignalLifecycle(right).status] ||
-        right.date.localeCompare(left.date),
-    )
-    .slice(0, 3);
   const impactCounts = SIGNAL_IMPACTS.reduce(
     (counts, impact) => {
       counts[impact] = SIGNAL_ITEMS.filter((item) => item.impact === impact).length;
@@ -125,13 +109,13 @@ export default function HomePage() {
         <div className="pixel-home-hero-copy">
           <span className="pixel-kicker"><Radio size={16} aria-hidden="true" /> VERIFIED {verifiedStamp}</span>
           <h1>每天 3 分钟，<br /><span>看懂 AI 在变什么。</span></h1>
-          <p>官方动态已经替你筛好：哪些要立刻做，哪些值得看，哪些先观察。</p>
+          <p>收录经核验的官方 AI 动态，并标注发布时间、来源和信息类型。</p>
           <div className="pixel-home-actions">
-            <Link href="/signals#action-required" className={pixelButtonClassName({ tone: "blue" })}>
-              先处理 {urgentItems.length} 条行动项 <ArrowRight size={17} aria-hidden="true" />
+            <Link href="/signals" className={pixelButtonClassName({ tone: "blue" })}>
+              浏览 AI 动态 <ArrowRight size={17} aria-hidden="true" />
             </Link>
             <Link href="/library" className={pixelButtonClassName({ tone: "ghost" })}>
-              找 AI 工具
+              浏览工具库
             </Link>
           </div>
           <div className="pixel-home-proofline" aria-label="情报核验摘要">
@@ -151,43 +135,11 @@ export default function HomePage() {
         />
       </section>
 
-      <section id="action-required" className="pixel-action-board" aria-labelledby="home-action-heading">
-        <header>
-          <div>
-            <span className="pixel-kicker"><Activity size={15} aria-hidden="true" /> TODAY&apos;S ACTIONS</span>
-            <h2 id="home-action-heading">今天先处理这 {radarSignals.length} 件事</h2>
-          </div>
-          <Link href="/signals#action-required">全部行动项 <ArrowRight size={16} aria-hidden="true" /></Link>
-        </header>
-        <div className="pixel-action-cards">
-          {radarSignals.map((item, index) => {
-            const lifecycle = getSignalLifecycle(item);
-            const tone = lifecycle.status === "due-today" || lifecycle.status === "overdue"
-              ? "urgent"
-              : lifecycle.status === "open"
-                ? "focus"
-                : "watch";
-
-            return (
-              <Link href={`/signals/${item.id}`} key={item.id} className={`pixel-action-card is-${tone}`}>
-                <span className="pixel-action-index">0{index + 1}</span>
-                <div>
-                  <small>{item.company}</small>
-                  <strong>{item.title}</strong>
-                </div>
-                <span className="pixel-action-status">{lifecycle.label}</span>
-                <ArrowRight size={17} aria-hidden="true" />
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
       <section className="pixel-home-section pixel-home-news pixel-home-visual-news">
         <div className="pixel-section-heading">
           <div>
             <span className="pixel-kicker"><Radio size={15} aria-hidden="true" /> SIGNAL SNAPSHOT</span>
-            <h2>最近最值得关注的 AI 动态</h2>
+            <h2>近期 AI 动态</h2>
           </div>
           <Link href="/signals">查看全部 {SIGNAL_ITEMS.length} 条 <ArrowRight size={16} aria-hidden="true" /></Link>
         </div>
@@ -206,7 +158,7 @@ export default function HomePage() {
                 <div className="pixel-snapshot-meta">
                   <span>{item.company}</span>
                   <time dateTime={item.date}>{formatSignalDate(item.date)}</time>
-                  <strong>{item.impact}</strong>
+                  <strong>{formatSignalImpact(item.impact)}</strong>
                 </div>
                 <div className="pixel-snapshot-visual">
                   <span className="pixel-snapshot-icon"><VisualIcon size={index === 0 ? 34 : 26} strokeWidth={1.65} aria-hidden="true" /></span>
@@ -221,7 +173,7 @@ export default function HomePage() {
                   ) : null}
                 </div>
                 <h3>{item.title}</h3>
-                <span className="pixel-entry-link">看行动建议 <ArrowRight size={16} aria-hidden="true" /></span>
+                <span className="pixel-entry-link">查看详情 <ArrowRight size={16} aria-hidden="true" /></span>
               </Link>
             );
           })}
@@ -231,8 +183,8 @@ export default function HomePage() {
       <section className="pixel-home-section pixel-home-decisions">
         <div className="pixel-section-heading">
           <div>
-            <span className="pixel-kicker">CHOOSE YOUR PATH</span>
-            <h2>你现在想解决什么？</h2>
+            <span className="pixel-kicker">SITE INDEX</span>
+            <h2>按内容类型浏览</h2>
           </div>
         </div>
 
@@ -245,8 +197,8 @@ export default function HomePage() {
             </div>
             <div>
               <span><Radio size={18} aria-hidden="true" /> {SIGNAL_ITEMS.length} 条已核验</span>
-              <h3>今天发生了什么</h3>
-              <p>3 分钟扫完值得行动的变化。</p>
+              <h3>最新 AI 动态</h3>
+              <p>按发布时间查看官方发布。</p>
             </div>
             <ArrowRight size={19} aria-hidden="true" />
           </Link>
@@ -257,8 +209,8 @@ export default function HomePage() {
             </div>
             <div>
               <span><LibraryBig size={18} aria-hidden="true" /> {libraryItems.length} 个工具</span>
-              <h3>下一款工具选什么</h3>
-              <p>按人群和场景直接筛。</p>
+              <h3>AI 工具分类</h3>
+              <p>按人群、场景与难度筛选。</p>
             </div>
             <ArrowRight size={19} aria-hidden="true" />
           </Link>
@@ -269,8 +221,8 @@ export default function HomePage() {
             </div>
             <div>
               <span><Trophy size={18} aria-hidden="true" /> 5 份榜单</span>
-              <h3>哪些产品值得跟踪</h3>
-              <p>从当前榜单先看前三。</p>
+              <h3>AI 产品榜单</h3>
+              <p>查看榜单结果与数据口径。</p>
             </div>
             <ArrowRight size={19} aria-hidden="true" />
           </Link>
@@ -281,7 +233,7 @@ export default function HomePage() {
         <div className="pixel-section-heading">
           <div>
             <span className="pixel-kicker"><Sparkles size={15} aria-hidden="true" /> TOOL RADAR</span>
-            <h2>现在最值得试的 6 个工具</h2>
+            <h2>综合评分靠前的 6 个工具</h2>
           </div>
           <Link href="/library">打开工具库 <ArrowRight size={16} aria-hidden="true" /></Link>
         </div>
@@ -299,7 +251,7 @@ export default function HomePage() {
                 className="pixel-tool-score-ring"
                 style={{ "--tool-score": `${item.guide.recommendation * 3.6}deg` } as CSSProperties}
                 role="img"
-                aria-label={`${item.name} 推荐指数 ${item.guide.recommendation}`}
+                aria-label={`${item.name} 编辑评分 ${item.guide.recommendation}`}
               >
                 <strong>{item.guide.recommendation}</strong>
               </div>
@@ -310,8 +262,8 @@ export default function HomePage() {
 
       <section className="pixel-trust-flow" aria-labelledby="trust-flow-heading">
         <header>
-          <span className="pixel-kicker">HOW IT WORKS</span>
-          <h2 id="trust-flow-heading">从官方原文，到你的下一步</h2>
+          <span className="pixel-kicker">EDITORIAL METHOD</span>
+          <h2 id="trust-flow-heading">信息整理方式</h2>
         </header>
         <div>
           <span className="pixel-trust-node">
@@ -328,8 +280,8 @@ export default function HomePage() {
           <ArrowRight className="pixel-trust-arrow" size={20} aria-hidden="true" />
           <span className="pixel-trust-node">
             <i><ListChecks size={23} aria-hidden="true" /></i>
-            <strong>行动建议</strong>
-            <small>明确下一步怎么做</small>
+            <strong>编辑解读</strong>
+            <small>标注影响范围与评估维度</small>
           </span>
         </div>
       </section>

@@ -77,7 +77,7 @@ export default async function LibraryDetailPage({ params }: LibraryDetailPagePro
     ["适合产品 / 开发", item.guide.isGoodForBuilders],
   ] as const;
   const sourceLabel = item.sourceTier === "official" ? "官方来源核验" : "社区聚合资料";
-  const guideLabel = item.guideDepth === "individual" ? "个体导购" : "分类基线";
+  const guideLabel = item.guideDepth === "individual" ? "个体评测" : "分类基线";
   const softwareJsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -118,7 +118,7 @@ export default async function LibraryDetailPage({ params }: LibraryDetailPagePro
           </div>
 
           <div className="pixel-detail-score-block">
-            <span>推荐指数 · {guideLabel}</span><strong>{item.guide.recommendation}</strong><small>/ 100</small>
+            <span>编辑评分 · {guideLabel}</span><strong>{item.guide.recommendation}</strong><small>/ 100</small>
             <div><span style={{ width: `${item.guide.recommendation}%` }} /></div>
           </div>
 
@@ -138,16 +138,16 @@ export default async function LibraryDetailPage({ params }: LibraryDetailPagePro
         </section>
 
         <div className="pixel-detail-grid">
-          <DetailList title="最适合谁" items={item.guide.bestFor} icon={Compass} tone="blue" />
-          <DetailList title="可能不适合" items={item.guide.notFor} icon={ShieldAlert} tone="red" />
+          <DetailList title="适用对象" items={item.guide.bestFor} icon={Compass} tone="blue" />
+          <DetailList title="使用限制" items={item.guide.notFor} icon={ShieldAlert} tone="red" />
           <DetailList title="典型使用场景" items={item.guide.useCases} icon={Lightbulb} tone="yellow" />
-          <DetailList title="可以对比的工具" items={item.guide.alternatives} icon={ExternalLink} tone="purple" itemLinks={alternativeLinks} />
+          <DetailList title="同类工具" items={item.guide.alternatives} icon={ExternalLink} tone="purple" itemLinks={alternativeLinks} />
         </div>
 
         <section className="pixel-signal-card">
           <div className="pixel-section-heading compact">
-            <div><span className="pixel-kicker">DECISION SIGNALS</span><h2>选择判断</h2></div>
-            <p>“一般”不代表不好，只说明它不是这个场景的优先选项。</p>
+            <div><span className="pixel-kicker">FIT SIGNALS</span><h2>适用维度</h2></div>
+            <p>“一般”表示当前资料未显示该维度具有明显优势。</p>
           </div>
           <div className="pixel-detail-signals">
             {signals.map(([label, positive]) => (
@@ -164,9 +164,9 @@ export default async function LibraryDetailPage({ params }: LibraryDetailPagePro
           <p>
             基础信息整理自 {item.sourceName}{item.verifiedAt ? `，最近通过官方来源核验于 ${item.verifiedAt.replaceAll("-", ".")}` : "，当前属于社区聚合资料，尚待逐项官方复核"}。
             {item.guideDepth === "individual"
-              ? " 推荐指数和“最适合谁”已加入该工具的个体化编辑判断。"
-              : ` 当前推荐指数和适用判断沿用「${item.category}」分类基线，不代表已经完成单工具深度评测。`}
-            正式采购前请再次核验价格、隐私和授权条款。
+              ? " 编辑评分和“适用对象”包含该工具的个体化编辑评测。"
+              : ` 当前编辑评分和适用范围沿用「${item.category}」分类基线，不代表已经完成单工具深度评测。`}
+            价格、隐私和授权条款需以官方最新页面为准。
           </p>
           <div className="pixel-source-links">
             {item.latestSignalId ? <Link href={`/signals/${item.latestSignalId}`}><Radio size={15} aria-hidden="true" /> 查看近期动态</Link> : null}

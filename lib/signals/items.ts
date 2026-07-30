@@ -11,8 +11,8 @@ export const SIGNAL_ITEMS = ([
     category: "产品变更",
     impact: "立即行动",
     summary: "ChatGPT for Academic Researchers 已开放申请，将从今年夏天的 1 万名研究者起步，并计划在 2027 年扩展到 10 万名。",
-    whyItMatters: "符合条件的高校研究者可以免费获得 GPT-5.6、Codex、Deep Research、更高用量和更大上下文；这是有明确资格门槛、但可以立即申请的资源。",
-    nextStep: "在高研究活动的学位授予院校任职的研究者，现在可核对机构资格、准备研究用途说明并提交申请；获批者最多可邀请 4 位同校协作者。",
+    whyItMatters: "符合条件的高校研究者可以免费获得 GPT-5.6、Codex、Deep Research、更高用量和更大上下文；该项目有明确资格门槛，当前申请已经开放。",
+    nextStep: "资格范围：高研究活动的学位授予院校研究者；申请涉及机构资格与研究用途说明，获批者最多可邀请 4 位同校协作者。",
     facts: [
       "计划面向科学、数学与工程研究者，官方目标是在 2027 年前覆盖 10 万人。",
       "今年夏天先从 1 万名研究者开始，申请已经开放。",
@@ -35,7 +35,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "OpenAI 披露 GPT-5.6 与 Codex 参与推理服务优化，官方称负载均衡、内核等改进合计把端到端服务成本降低了 20%。",
     whyItMatters: "模型竞争正在从榜单能力延伸到整套推理系统效率；更低服务成本会继续影响 API 定价、Agent 可运行时长和高频工作负载。",
-    nextStep: "评估 GPT-5.6 时，把每个成功任务的总成本、缓存命中、工具输出和失败重试一起纳入基准，不只比较模型标价。",
+    nextStep: "评估维度：单个成功任务的总成本、缓存命中、工具输出和失败重试；模型标价只是其中一项。",
     facts: [
       "OpenAI 官方称综合工程优化使端到端服务成本降低 20%。",
       "对 draft / speculator model 的改进使 token 生成效率提升 15% 以上。",
@@ -56,7 +56,7 @@ export const SIGNAL_ITEMS = ([
     impact: "持续观察",
     summary: "微软发布 Project Perception，探索面向会观察、推理和执行任务的 AI Agent 的新型安全架构。",
     whyItMatters: "Agent 的风险不再只来自回答内容，而来自它能访问什么、代表谁执行、以及行动能否被追踪和撤销。",
-    nextStep: "团队在引入 Agent 前，先盘点身份、权限、审批、审计和回滚五个控制面。",
+    nextStep: "相关控制面包括身份、权限、审批、审计和回滚。",
     facts: [
       "研究重点从单次模型输出扩展到持续运行的 Agent 行为。",
       "强调身份、上下文、权限与执行环境需要一起设计。",
@@ -77,7 +77,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "Muse Spark 1.1 可以处理邮件和日历、生成幻灯片、执行研究，并支持定时任务与实时纠偏。",
     whyItMatters: "消费级 AI 助手正在吸收原本属于自动化平台的能力，入口、记忆和执行开始合并。",
-    nextStep: "如果你在评估个人工作 Agent，把持续任务、可中断性和应用连接能力加入测试清单。",
+    nextStep: "评估维度：持续任务、可中断性与应用连接能力。",
     facts: [
       "支持邮件、日历、演示和研究等跨步骤任务。",
       "可创建日常简报等周期任务。",
@@ -98,7 +98,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "Anthropic 发布 Claude Opus 5，官方称其在编码与知识工作评测上达到新 SOTA，并以约 Fable 5 一半的价格提供。",
     whyItMatters: "高端模型的竞争开始从单纯扩张能力，转向能否用可持续成本承接日常长任务。",
-    nextStep: "把 Opus 5 与当前主力模型放进同一组真实仓库和知识工作任务，比较每个成功任务的总成本，而不只比较 token 单价。",
+    nextStep: "对比维度：同一真实仓库与知识工作任务下的成功任务总成本和 token 单价。",
     facts: [
       "Claude Opus 5 于 7 月 24 日发布，并在 Claude 产品与 API 提供。",
       "API 模型名为 claude-opus-5。",
@@ -119,7 +119,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "Midjourney 发布 V8.2，重点提升默认审美、画面质量与个性化结果。",
     whyItMatters: "图片模型的竞争已经从“能不能生成”转向审美一致性、可控性和持续生产效率。",
-    nextStep: "品牌和内容团队应使用自己的固定提示词与参考图做 A/B 复测，再决定是否迁移工作流。",
+    nextStep: "评估维度：固定提示词和参考图下的审美一致性、稳定性、授权条款与迁移成本。",
     facts: [
       "V8.2 于 7 月 24 日发布。",
       "更新重点包括审美、图像质量与个性化。",
@@ -132,14 +132,14 @@ export const SIGNAL_ITEMS = ([
   },
   {
     id: "deepseek-legacy-aliases-retired",
-    title: "DeepSeek 旧 API 别名已停用，生产调用需要立即迁移",
+    title: "DeepSeek 旧 API 别名已停用，未迁移调用可能失败",
     company: "DeepSeek",
     date: "2026-07-24",
     category: "产品变更",
     impact: "立即行动",
     summary: "DeepSeek V4 Pro / Flash 已上线，旧的 deepseek-chat 与 deepseek-reasoner 别名于 7 月 24 日停止服务。",
     whyItMatters: "仍依赖旧模型别名的应用可能直接出现调用失败，这是一条明确的工程迁移信号。",
-    nextStep: "检查生产环境模型名、回归关键提示词与工具调用，并为模型切换增加显式版本和降级策略。",
+    nextStep: "受影响范围：生产环境中的旧模型名、关键提示词和工具调用；迁移内容包括新模型 ID、回归验证与降级策略。",
     facts: [
       "DeepSeek V4 于 4 月 24 日进入 API。",
       "新入口包括 deepseek-v4-pro 与 deepseek-v4-flash。",
@@ -152,7 +152,7 @@ export const SIGNAL_ITEMS = ([
     featured: true,
     deadline: "2026-07-24",
     availability: "retired",
-    actionLabel: "旧别名已停用 · 未迁移需排障",
+    actionLabel: "旧别名已停用",
   },
   {
     id: "grok-build-workflows",
@@ -163,7 +163,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "Grok Build Workflows 面向大型工程任务，可把工作拆给大量 Agent 并行执行和汇总。",
     whyItMatters: "AI 编程的竞争正在从单个 Agent 的聪明程度转向任务拆分、隔离执行、验证和合并能力。",
-    nextStep: "评估时不要只测一次生成；用真实代码库验证任务隔离、冲突处理、测试闭环和成本上限。",
+    nextStep: "评估维度：真实代码库中的任务隔离、冲突处理、测试闭环与成本上限；单次生成结果不足以反映整体表现。",
     facts: [
       "Workflows 聚焦多 Agent 并行编排。",
       "官方场景包括复杂代码库与长链路工程任务。",
@@ -184,7 +184,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "Qwen Code v0.20.x 支持执行中实时 steering、Git worktree 隔离，以及内置 web_search / web_fetch。",
     whyItMatters: "开源 Coding Agent 正快速补齐闭源产品的关键交互与隔离能力，团队有了更多可控部署选择。",
-    nextStep: "开发团队可选一个中型仓库，对比它与现有主力工具在改动正确率、权限边界和总耗时上的差异。",
+    nextStep: "对比维度：中型仓库中的改动正确率、权限边界与总耗时。",
     facts: [
       "v0.20.x 在 7 月 23 日周更中公布。",
       "执行中可以追加方向，无需等待整个任务结束。",
@@ -205,11 +205,11 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "Kimi Work 是面向桌面的工作 Agent，可处理本地资料、调用应用，并在后台按计划继续任务。",
     whyItMatters: "桌面 Agent 的价值不只在模型，而在能否安全地跨文件、应用和时间持续完成工作。",
-    nextStep: "优先用低风险、可回滚的资料整理和周期报告测试，并明确本地文件与账户授权范围。",
+    nextStep: "适用测试场景：低风险、可回滚的资料整理与周期报告；关键变量包括本地文件和账户授权范围。",
     facts: [
       "产品定位是运行在桌面环境的工作 Agent。",
       "覆盖本地文件、应用操作与计划任务。",
-      "长期后台运行意味着权限和审计必须先于规模化使用。",
+      "规模化使用会增加权限与审计要求。",
     ],
     tags: ["桌面 Agent", "本地文件", "计划任务", "Kimi"],
     sourceLabel: "Kimi Resources",
@@ -226,7 +226,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "Presence 面向符合条件的企业有限开放，用于部署语音和聊天 Agent，并集成策略、批准动作、模拟评测、人工升级与持续改进。",
     whyItMatters: "企业 Agent 的竞争焦点正在从“模型会不会答”转向“能不能被治理、评测、接管和持续运维”。",
-    nextStep: "即使暂时无法采购，也应按 Presence 暴露出的能力面检查自有 Agent：护栏、审批、模拟评测、人工升级与版本迭代缺一不可。",
+    nextStep: "能力维度：护栏、审批、模拟评测、人工升级与版本迭代。",
     facts: [
       "Presence 于 7 月 22 日发布。",
       "当前是面向符合条件企业的 limited GA，不是自助式公开产品。",
@@ -247,7 +247,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "Gemini 3.6 Flash 正式可用，提供 1M 上下文、最高 64K 输出，并强化 Computer Use、代码与多模态任务。",
     whyItMatters: "高频生产工作更关注速度、价格和可调用工具的平衡，Flash 级模型正成为 Agent 的默认候选。",
-    nextStep: "用你现有的批量任务与工具调用基准评测，重点记录长上下文稳定性、延迟和失败重试成本。",
+    nextStep: "评估维度：批量任务和工具调用中的长上下文稳定性、延迟、失败重试与总成本。",
     facts: [
       "Gemini 3.6 Flash 于 7 月 21 日 GA。",
       "支持 1M 上下文与最高 64K 输出。",
@@ -268,7 +268,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "xAI 发布 Grok 4.5，定位于代码、代理任务与知识工作，并进入 Grok Build、Cursor 和 API。",
     whyItMatters: "模型已经不只比静态问答分数，而是比在工具链里持续执行、检查和修正的能力。",
-    nextStep: "如果团队使用 Cursor 或自建 Agent，把 Grok 4.5 纳入相同任务集对比，避免只看官方基准。",
+    nextStep: "对比维度：Cursor 或自建 Agent 的同一任务集结果，以及官方基准与实际结果的差异。",
     facts: [
       "Grok 4.5 于 7 月 16 日发布。",
       "官方重点场景为 coding、agentic tasks 和 knowledge work。",
@@ -288,11 +288,11 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "Kimi K3 是 2.8T 参数、原生多模态、1M 上下文的开放权重 Agent 模型，面向长程编码、知识工作与推理。",
     whyItMatters: "中文团队获得了新的可部署长上下文、多模态 Agent 底座，也为 Kimi Work 与 Kimi Code 提供同源能力。",
-    nextStep: "有私有化或超长上下文需求的团队可先核对 Kimi K3 License、显存与推理成本，再做小规模任务基准。",
+    nextStep: "私有化或超长上下文场景涉及 License、显存、推理成本与小规模任务基准。",
     facts: [
       "Kimi K3 于 7 月 16 日发布。",
       "模型为 2.8T 参数、原生多模态，并提供 1M 上下文。",
-      "完整权重于 7 月 27 日发布；应称“开放权重”，不是笼统的开源。",
+      "完整权重于 7 月 27 日发布；官方口径为“开放权重”，并非笼统的开源。",
     ],
     tags: ["Kimi K3", "开放权重", "1M 上下文", "多模态"],
     sourceLabel: "Kimi",
@@ -309,7 +309,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "GPT-5.6 系列已进入 ChatGPT、Codex 与 API，以三档模型覆盖高强度推理、日常代理任务和高吞吐工作负载。",
     whyItMatters: "同一模型家族提供更清晰的能力与成本梯度，应用可以按任务动态路由，而不是固定押注一个模型。",
-    nextStep: "按任务风险和复杂度建立 Sol / Terra / Luna 路由，分别监控成功率、延迟和每个完成任务的总成本。",
+    nextStep: "评估维度：按任务风险与复杂度的 Sol / Terra / Luna 路由，以及各档的成功率、延迟和单任务总成本。",
     facts: [
       "GPT-5.6 于 7 月 9 日发布。",
       "Sol、Terra、Luna 已在 ChatGPT、Codex 与 API 提供。",
@@ -330,7 +330,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "VS Code 六月版本把代理式浏览器操作与并行 Agent 会话带入 Copilot 开发流。",
     whyItMatters: "编码 Agent 正从编辑器内部扩展到浏览器验证和并行任务，开发闭环进一步缩短。",
-    nextStep: "在测试环境验证登录态、浏览器权限、并行分支隔离和自动化测试结果，再逐步扩大授权。",
+    nextStep: "测试环境关注项：登录态、浏览器权限、并行分支隔离、自动化测试结果与授权范围。",
     facts: [
       "更新包含 agentic browser tools。",
       "支持并行会话处理多个开发任务。",
@@ -350,7 +350,7 @@ export const SIGNAL_ITEMS = ([
     impact: "持续观察",
     summary: "GitHub Copilot App 正式进入 GA，为多任务、仓库上下文和 Agent 协作提供独立入口。",
     whyItMatters: "AI 编程产品不再只是 IDE 插件，正在演化成管理多个异步工程任务的工作台。",
-    nextStep: "适合有多仓库或多任务并行需求的团队试用；个人单仓库用户可先观察工作流收益。",
+    nextStep: "适配场景：多仓库或多任务并行；单仓库场景的工作流收益仍需验证。",
     facts: [
       "Copilot App 于 6 月 17 日正式 GA。",
       "产品形态从编辑器辅助扩展为独立工作台。",
@@ -370,7 +370,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "Google 扩展 Gemini API Managed Agents，加入后台异步执行、远程 MCP、定制函数与跨交互凭据刷新。",
     whyItMatters: "开发者可以少自建一层调度和沙箱，把长任务 Agent 更快推进到可运行的生产架构。",
-    nextStep: "适合正在自建 Agent 基础设施的团队对比托管方案，但仍要保留权限最小化、成本上限与可迁移性评估。",
+    nextStep: "对比维度：自建 Agent 基础设施与托管方案，以及最小权限、成本上限与可迁移性。",
     facts: [
       "Managed Agents 更新于 7 月 7 日公布。",
       "一次 API 调用可让 Agent 在隔离云沙箱中执行代码、管理文件并访问网页。",
@@ -391,7 +391,7 @@ export const SIGNAL_ITEMS = ([
     impact: "持续观察",
     summary: "GitHub Copilot Vision 正式可用，开发者可以把界面截图等视觉上下文带入编码任务。",
     whyItMatters: "从设计稿或错误界面到代码的沟通成本下降，但视觉理解仍需要浏览器实测和无障碍检查兜底。",
-    nextStep: "用真实 UI 修复任务测试生成结果，并把响应式、键盘操作和对比度纳入验收。",
+    nextStep: "验证维度：真实 UI 修复任务中的响应式、键盘操作、对比度与运行结果。",
     facts: [
       "Copilot Vision 于 7 月 1 日 GA。",
       "视觉输入可用于解释和实现界面相关任务。",
@@ -411,7 +411,7 @@ export const SIGNAL_ITEMS = ([
     impact: "立即行动",
     summary: "GitHub Models 的 playground、catalog 与相关 API 将在 7 月 30 日结束服务。",
     whyItMatters: "仍把 GitHub Models 当作开发或生产依赖的项目需要在截止日前迁移，避免服务中断。",
-    nextStep: "立刻搜索代码和密钥配置中的 GitHub Models 依赖，迁移 API、更新模型 ID，并完成一次端到端回归。",
+    nextStep: "受影响范围：代码与密钥配置中的 GitHub Models 依赖；迁移内容包括 API、模型 ID 与端到端回归。",
     facts: [
       "GitHub 于 7 月 1 日公布完全退役计划。",
       "服务截止日期为 7 月 30 日。",
@@ -434,7 +434,7 @@ export const SIGNAL_ITEMS = ([
     impact: "重点关注",
     summary: "Anthropic 在完成额外安全工作后，于 7 月 1 日重新向全球提供 Claude Fable 5。",
     whyItMatters: "长时间软件工程与知识工作模型的能力边界和安全发布流程，都在成为产品选择的一部分。",
-    nextStep: "需要长链路工程任务的团队可重新评测，并把长时任务的权限、成本上限与中途检查点写进流程。",
+    nextStep: "评估维度：长链路工程任务的权限、成本上限、中途检查点和重新发布后的表现。",
     facts: [
       "Claude Fable 5 最初于 6 月发布。",
       "Anthropic 公布额外安全措施后，于 7 月 1 日恢复全球提供。",
@@ -454,7 +454,7 @@ export const SIGNAL_ITEMS = ([
     impact: "持续观察",
     summary: "Nano Banana 2 与 2 Lite 进入可用阶段，Lite 版本面向更低成本、更高吞吐的图片生成任务。",
     whyItMatters: "批量商品图、社媒素材和迭代预览的成本继续下降，视觉工作流会更重视自动质检与品牌一致性。",
-    nextStep: "高频出图团队可以从低风险素材开始跑成本与合格率对比，不要只比较单张标价。",
+    nextStep: "对比维度：高频出图场景的总成本、合格率、返工率与人工审核成本，而非单张标价。",
     facts: [
       "Nano Banana 2 Lite 面向快速、低成本图片生成。",
       "官方公布的 Lite 目标速度约为 4 秒一张。",

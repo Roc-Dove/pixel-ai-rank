@@ -98,7 +98,7 @@ export const TAB_CONFIG: Record<
     tone: "blue",
     sourceLabel: "Pixel AI Rank 精选",
     databaseSourceLabel: "AI工具集（AIXZD）趋势新品榜",
-    summary: "基于 AI库里的 Agent、编程、视频、设计和自动化方向，观察近期更值得关注的新趋势工具。",
+    summary: "基于 AI 库里的 Agent、编程、视频、设计和自动化方向，整理近期新趋势工具。",
   },
   month: {
     label: "LV.3 综合月榜",
@@ -108,7 +108,7 @@ export const TAB_CONFIG: Record<
     tone: "green",
     sourceLabel: "Pixel AI Rank 精选",
     databaseSourceLabel: "AI工具集（AIXZD）综合月榜",
-    summary: "基于 AI库推荐指数、上手难度、人群覆盖和中文友好度计算的本站综合推荐榜。",
+    summary: "基于 AI 库编辑评分、上手难度、人群覆盖和中文友好度计算的本站综合评分榜。",
   },
   xhunt_cn: {
     label: "LV.4 KOL CN",

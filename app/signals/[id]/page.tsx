@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Check, CircleAlert, Compass, ExternalLink, Radio, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Check, Compass, ExternalLink, ListChecks, Radio, ShieldCheck } from "lucide-react";
 import { notFound } from "next/navigation";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
 import { getRelatedSignals, getSignalItem, SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
 import { absoluteUrl } from "@/lib/site";
-import { formatSignalDate, getSignalLifecycle } from "@/lib/signals/utils";
+import { formatSignalDate, formatSignalImpact, getSignalLifecycle } from "@/lib/signals/utils";
 import { getLibraryItemWithGuide } from "@/lib/library/guide";
 
 type SignalDetailPageProps = { params: Promise<{ id: string }> };
@@ -79,7 +79,7 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
         <article className="pixel-news-detail">
           <header className="pixel-news-detail-header">
             <div className="pixel-news-detail-meta">
-              <span>{item.impact}</span>
+              <span>{formatSignalImpact(item.impact)}</span>
               <time dateTime={item.date}>{formatSignalDate(item.date)}</time>
               <span>{item.company}</span>
               <span>{item.category}</span>
@@ -105,12 +105,12 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
               </section>
 
               <section>
-                <div className="pixel-news-detail-section-title"><Compass size={18} aria-hidden="true" /><h2>为什么值得你关注</h2></div>
+                <div className="pixel-news-detail-section-title"><Compass size={18} aria-hidden="true" /><h2>编辑解读</h2></div>
                 <p>{item.whyItMatters}</p>
               </section>
 
               <section className="pixel-news-action-card">
-                <div className="pixel-news-detail-section-title"><CircleAlert size={18} aria-hidden="true" /><h2>建议下一步</h2></div>
+                <div className="pixel-news-detail-section-title"><ListChecks size={18} aria-hidden="true" /><h2>评估维度</h2></div>
                 <p>{item.nextStep}</p>
               </section>
             </div>
@@ -135,7 +135,7 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
                   <div className="pixel-news-related-tools">
                     {relatedTools.map((tool) => (
                       <Link href={`/library/${tool.id}`} key={tool.id}>
-                        <span>{tool.category}</span><strong>{tool.name}</strong><small>推荐指数 {tool.guide.recommendation}</small>
+                        <span>{tool.category}</span><strong>{tool.name}</strong><small>编辑评分 {tool.guide.recommendation}</small>
                       </Link>
                     ))}
                   </div>
@@ -148,7 +148,7 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
         {relatedSignals.length ? (
           <section className="pixel-news-more" aria-labelledby="more-signals-heading">
             <div className="pixel-section-heading compact">
-              <div><span className="pixel-kicker">KEEP READING</span><h2 id="more-signals-heading">继续追踪相关变化</h2></div>
+              <div><span className="pixel-kicker">RELATED UPDATES</span><h2 id="more-signals-heading">相关动态</h2></div>
               <Link href="/signals">查看全部情报 <ArrowRight size={16} aria-hidden="true" /></Link>
             </div>
             <div className="pixel-news-more-grid">
@@ -156,7 +156,7 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
                 <Link href={`/signals/${related.id}`} key={related.id}>
                   <span>{related.company} · {formatSignalDate(related.date)}</span>
                   <strong>{related.title}</strong>
-                  <small>{related.impact} <ArrowRight size={14} aria-hidden="true" /></small>
+                  <small>{formatSignalImpact(related.impact)} <ArrowRight size={14} aria-hidden="true" /></small>
                 </Link>
               ))}
             </div>
@@ -165,7 +165,7 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
 
         <aside className="pixel-news-method-note">
           <ShieldCheck size={19} aria-hidden="true" />
-          <div><strong>编辑说明</strong><p>事实字段只整理官方页面明确披露的信息；“为什么重要”和“建议下一步”是 Pixel AI Rank 的编辑判断，不代表发布方观点。</p></div>
+          <div><strong>编辑说明</strong><p>事实字段整理官方页面明确披露的信息；“编辑解读”和“评估维度”为 Pixel AI Rank 的编辑说明，不代表发布方观点。</p></div>
         </aside>
       </div>
     </main>

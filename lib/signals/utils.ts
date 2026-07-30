@@ -1,4 +1,14 @@
-import type { SignalItem } from "@/types/signal";
+import type { SignalImpact, SignalItem } from "@/types/signal";
+
+const SIGNAL_IMPACT_LABELS = {
+  "立即行动": "时效信息",
+  "重点关注": "重点更新",
+  "持续观察": "持续动态",
+} satisfies Record<SignalImpact, string>;
+
+export function formatSignalImpact(impact: SignalImpact) {
+  return SIGNAL_IMPACT_LABELS[impact];
+}
 
 export function formatSignalDate(value: string) {
   const [, month, day] = value.split("-");

@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Pixel AI Rank",
-    description: "把 AI 噪声整理成可行动的清单。",
+    description: "汇总 AI 官方动态、排行榜与工具资料。",
     locale: "zh_CN",
     type: "website",
     url: "/",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: SITE_NAME,
-    description: "把 AI 噪声整理成可行动的清单。",
+    description: "汇总 AI 官方动态、排行榜与工具资料。",
   },
 };
 

@@ -11,10 +11,10 @@ export function Footer() {
             <PixelMark />
             <div>
               <strong>PIXEL AI RANK</strong>
-              <span>把 AI 噪声整理成可行动的清单。</span>
+              <span>汇总 AI 官方动态、排行榜与工具资料。</span>
             </div>
           </div>
-          <p>产品榜、KOL 信号与中文 AI 工具导购。数据来源、降级状态和算法口径都会明确标注。</p>
+          <p>产品榜、KOL 信号与中文 AI 工具资料。数据来源、降级状态和算法口径都会明确标注。</p>
         </div>
 
         <div className="pixel-footer-column">
@@ -35,7 +35,7 @@ export function Footer() {
       </div>
       <div className="pixel-footer-bottom">
         <span>© {new Date().getFullYear()} Pixel AI Rank</span>
-        <span>Made for clearer AI decisions.</span>
+        <span>Official signals, clearly organized.</span>
       </div>
     </footer>
   );

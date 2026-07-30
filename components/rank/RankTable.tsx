@@ -12,9 +12,9 @@ import { type RankItemDto, type RankPayload } from "@/types/rank";
 const PAGE_SIZE = 12;
 
 const PRODUCT_METRIC_LABELS: Record<"aicpb" | "stars" | "month", { primary: string; secondary: string }> = {
-  aicpb: { primary: "出海适配", secondary: "推荐指数" },
-  stars: { primary: "趋势潜力", secondary: "推荐指数" },
-  month: { primary: "综合推荐", secondary: "推荐指数" },
+  aicpb: { primary: "出海适配", secondary: "编辑评分" },
+  stars: { primary: "趋势潜力", secondary: "编辑评分" },
+  month: { primary: "综合评分", secondary: "编辑评分" },
 };
 
 type SortMode = "rank" | "primary" | "secondary";

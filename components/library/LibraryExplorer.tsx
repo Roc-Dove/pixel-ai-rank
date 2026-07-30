@@ -34,10 +34,10 @@ function LibraryCard({ item }: { item: LibraryCardItem }) {
           className="pixel-library-score-ring"
           style={{ "--library-score": `${item.guide.recommendation * 3.6}deg` } as CSSProperties}
           role="img"
-          aria-label={`${item.name} 推荐指数 ${item.guide.recommendation}`}
+          aria-label={`${item.name} 编辑评分 ${item.guide.recommendation}`}
         >
           <strong>{item.guide.recommendation}</strong>
-          <small>推荐</small>
+          <small>评分</small>
         </div>
         <i aria-hidden="true" />
         <i aria-hidden="true" />
@@ -59,7 +59,7 @@ function LibraryCard({ item }: { item: LibraryCardItem }) {
       <div className="pixel-library-meta-line">
         <span className={`pixel-library-difficulty ${difficultyTone(item.guide.difficulty)}`}><Gauge size={14} aria-hidden="true" /> 上手 {item.guide.difficulty}</span>
         <span>{item.guide.audiences[0]}</span>
-        <span>{item.guideDepth === "individual" ? "个体导购" : "分类基线"}</span>
+        <span>{item.guideDepth === "individual" ? "个体评测" : "分类基线"}</span>
       </div>
 
       <div className="pixel-library-tags">
@@ -132,7 +132,7 @@ export function LibraryExplorer({ items }: { items: LibraryCardItem[] }) {
           <div>
             <span className="pixel-kicker"><LibraryBig size={16} aria-hidden="true" /> CURATED AI LIBRARY</span>
             <h1>AI 工具库</h1>
-            <p>按场景、人群和上手难度筛选；完整判断留在工具详情里。</p>
+            <p>按场景、人群和上手难度筛选；工具详情补充评分口径与适用范围。</p>
           </div>
           <figure className="pixel-library-category-map" aria-label={`${items.length} 个工具的热门分类分布`}>
             <header>
@@ -155,7 +155,7 @@ export function LibraryExplorer({ items }: { items: LibraryCardItem[] }) {
                 </button>
               ))}
             </div>
-            <figcaption><span>{officialCount} 个官方核验</span><span>{individualGuideCount} 个个体导购</span></figcaption>
+            <figcaption><span>{officialCount} 个官方核验</span><span>{individualGuideCount} 个个体评测</span></figcaption>
           </figure>
         </section>
 
@@ -200,7 +200,7 @@ export function LibraryExplorer({ items }: { items: LibraryCardItem[] }) {
           <label>
             <span>排序</span>
             <select value={sortMode} onChange={(event) => setSortMode(event.target.value as LibrarySort)}>
-              <option value="recommendation">推荐优先</option>
+              <option value="recommendation">评分从高到低</option>
               <option value="easy">更易上手</option>
               <option value="name">名称 A–Z</option>
             </select>

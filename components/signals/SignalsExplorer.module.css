@@ -1,0 +1,136 @@
+.card {
+  display: flex;
+  min-width: 0;
+  min-height: 398px;
+  flex-direction: column;
+  border: 1px solid var(--px-border);
+  border-radius: 20px;
+  background: var(--px-surface);
+  padding: 9px;
+  box-shadow: var(--px-shadow-sm);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--px-primary) 28%, var(--px-border));
+  box-shadow: var(--px-shadow-md);
+}
+
+.card:focus-within {
+  border-color: var(--px-primary);
+}
+
+.copy {
+  padding: 0.9rem 0.65rem 0.65rem;
+}
+
+.copy p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--px-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.68;
+}
+
+.lifecycle {
+  display: inline-flex;
+  min-height: 32px;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.38rem;
+  margin: 0 0.65rem 0.72rem;
+  border: 1px solid var(--px-border);
+  border-radius: 999px;
+  background: var(--px-surface-soft);
+  padding: 0.3rem 0.65rem;
+  color: var(--px-text-muted);
+  font-size: 0.72rem;
+  font-weight: 720;
+}
+
+.lifecycle.open,
+.lifecycle.upcoming {
+  border-color: color-mix(in srgb, var(--px-green) 24%, var(--px-border));
+  background: var(--px-success-soft);
+  color: var(--px-green);
+}
+
+.lifecycle.due-today,
+.lifecycle.overdue {
+  border-color: color-mix(in srgb, var(--px-red) 24%, var(--px-border));
+  background: var(--px-danger-soft);
+  color: var(--px-red);
+}
+
+.lifecycle.retired {
+  color: var(--px-text-subtle);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: auto;
+  border-top: 1px solid var(--px-border);
+  padding: 0.78rem 0.55rem 0.3rem;
+}
+
+.detailLink {
+  flex: 1;
+  padding-inline: 0.85rem;
+  font-size: 0.76rem;
+}
+
+.officialLink {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+  color: var(--px-primary);
+  font-size: 0.75rem;
+  font-weight: 760;
+  white-space: nowrap;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.officialLink:hover {
+  background: var(--px-info-soft);
+}
+
+@media (max-width: 520px) {
+  .card {
+    min-height: 372px;
+  }
+
+  .actions {
+    padding-inline: 0.4rem;
+  }
+
+  .detailLink,
+  .officialLink {
+    padding-inline: 0.65rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .officialLink {
+    transition: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+}

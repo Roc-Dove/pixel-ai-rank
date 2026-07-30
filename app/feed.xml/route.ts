@@ -1,6 +1,6 @@
 import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
 import { absoluteUrl, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
-import { getSignalLifecycle } from "@/lib/signals/utils";
+import { formatSignalImpact, getSignalLifecycle } from "@/lib/signals/utils";
 
 export const dynamic = "force-static";
 export const revalidate = 3600;
@@ -25,8 +25,9 @@ export function GET() {
     const description = [
       item.summary,
       `状态：${lifecycle.label}`,
-      `为什么重要：${item.whyItMatters}`,
-      `建议下一步：${item.nextStep}`,
+      `信息类型：${formatSignalImpact(item.impact)}`,
+      `编辑解读：${item.whyItMatters}`,
+      `评估维度：${item.nextStep}`,
     ].join("\n\n");
 
     return [
