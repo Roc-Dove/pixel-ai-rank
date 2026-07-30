@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, CircleAlert, Radio, Rss, ShieldCheck } from "lucide-react";
 import { SignalsExplorer } from "@/components/signals/SignalsExplorer";
+import { SignalPulse } from "@/components/signals/SignalPulse";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
 import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
 import { getSignalLifecycle } from "@/lib/signals/utils";
+import { SIGNAL_CATEGORIES, SIGNAL_IMPACTS, type SignalImpact } from "@/types/signal";
 
 export const metadata: Metadata = {
   title: "最新 AI 情报",
@@ -35,43 +37,58 @@ export default function SignalsPage() {
     );
   const companies = new Set(SIGNAL_ITEMS.map((item) => item.company)).size;
   const verifiedStamp = SIGNALS_LAST_VERIFIED.replaceAll("-", ".");
+  const impactCounts = SIGNAL_IMPACTS.reduce(
+    (counts, impact) => {
+      counts[impact] = SIGNAL_ITEMS.filter((item) => item.impact === impact).length;
+      return counts;
+    },
+    {} as Record<SignalImpact, number>,
+  );
+  const categoryCounts = SIGNAL_CATEGORIES.map((category) => ({
+    category,
+    count: SIGNAL_ITEMS.filter((item) => item.category === category).length,
+  }));
 
   return (
     <main id="main-content" className="pixel-shell pixel-news-page" tabIndex={-1}>
       <div className="pixel-content-stack">
-        <section className="pixel-news-hero">
+        <section className="pixel-news-hero pixel-news-hero-visual">
           <div className="pixel-news-hero-copy">
             <span className="pixel-kicker"><Radio size={16} aria-hidden="true" /> OFFICIAL SIGNAL FEED</span>
-            <h1>最新 AI 情报，<br /><span>只保留能改变决策的。</span></h1>
-            <p>从官方发布中筛掉重复转述，补上“为什么重要”和“下一步做什么”。不是新闻搬运，而是给产品、开发和内容团队的行动层。</p>
+            <h1>{SIGNAL_ITEMS.length} 条官方 AI 动态，<br /><span>一眼看完重点。</span></h1>
+            <p>按“立刻做、值得看、先观察”整理，完整解释留在情报详情里。</p>
             <div className="pixel-news-hero-actions">
-              <a href="#latest-signals" className={pixelButtonClassName({ tone: "blue" })}>查看最新情报 <ArrowRight size={16} aria-hidden="true" /></a>
-              <Link href="/library" className={pixelButtonClassName({ tone: "ghost" })}>浏览工具库</Link>
+              <a href="#latest-signals" className={pixelButtonClassName({ tone: "blue" })}>开始速览 <ArrowRight size={16} aria-hidden="true" /></a>
               <a href="/feed.xml" className={pixelButtonClassName({ tone: "ghost" })}><Rss size={16} aria-hidden="true" /> 订阅 RSS</a>
             </div>
           </div>
 
-          <dl className="pixel-news-hero-facts">
-            <div><dt>已核验情报</dt><dd>{SIGNAL_ITEMS.length}</dd></div>
-            <div><dt>覆盖公司</dt><dd>{companies}</dd></div>
-            <div><dt>官方信源</dt><dd>100%</dd></div>
-            <div><dt>核验日期</dt><dd>{SIGNALS_LAST_VERIFIED.slice(5).replace("-", ".")}</dd></div>
-          </dl>
+          <SignalPulse
+            total={SIGNAL_ITEMS.length}
+            companies={companies}
+            impactCounts={impactCounts}
+            categoryCounts={categoryCounts}
+            compact
+          />
         </section>
 
         {urgentItems.length ? (
-          <section id="action-required" className="pixel-news-alert" aria-labelledby="urgent-signals-heading">
-            <div className="pixel-news-alert-icon"><CircleAlert size={21} aria-hidden="true" /></div>
-            <div>
-              <span className="pixel-kicker">ACTION REQUIRED</span>
-              <h2 id="urgent-signals-heading">有 {urgentItems.length} 条行动项需要处理</h2>
-            </div>
-            <div className="pixel-news-alert-items">
+          <section id="action-required" className="pixel-news-action-board" aria-labelledby="urgent-signals-heading">
+            <header>
+              <span className="pixel-news-alert-icon"><CircleAlert size={21} aria-hidden="true" /></span>
+              <div>
+                <span className="pixel-kicker">ACTION REQUIRED</span>
+                <h2 id="urgent-signals-heading">今天先处理这 {urgentItems.length} 件事</h2>
+              </div>
+            </header>
+            <div className="pixel-news-action-timeline">
               {urgentItems.map((item) => (
                 <Link href={`/signals/${item.id}`} key={item.id}>
+                  <i aria-hidden="true" />
                   <span>{item.company}</span>
                   <strong>{item.title}</strong>
                   <small className={`is-${getSignalLifecycle(item).status}`}>{getSignalLifecycle(item).label}</small>
+                  <b>{item.actionLabel ?? "查看怎么做"} <ArrowRight size={15} aria-hidden="true" /></b>
                 </Link>
               ))}
             </div>
@@ -80,7 +97,7 @@ export default function SignalsPage() {
 
         <section id="latest-signals" className="pixel-news-feed">
           <div className="pixel-section-heading">
-            <div><span className="pixel-kicker"><CalendarDays size={15} aria-hidden="true" /> VERIFIED {verifiedStamp}</span><h2>最近值得知道的变化</h2></div>
+            <div><span className="pixel-kicker"><CalendarDays size={15} aria-hidden="true" /> VERIFIED {verifiedStamp}</span><h2>最近最值得关注的 AI 动态</h2></div>
             <p><ShieldCheck size={15} aria-hidden="true" /> 所有条目直达厂商官方原文</p>
           </div>
           <SignalsExplorer items={SIGNAL_ITEMS} />

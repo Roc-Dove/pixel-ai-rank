@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowUpRight, ChevronDown, Gauge, LibraryBig, RotateCcw, SearchX, SlidersHorizontal, Users } from "lucide-react";
+import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { LibraryLogo } from "@/components/library/LibraryLogo";
@@ -24,17 +25,29 @@ function difficultyTone(difficulty: LibraryCardItem["guide"]["difficulty"]) {
 function LibraryCard({ item }: { item: LibraryCardItem }) {
   return (
     <article className="pixel-library-card">
-      <div className="pixel-library-card-head">
-        <LibraryLogo name={item.name} officialUrl={item.officialUrl} />
+      <div className="pixel-library-card-visual">
+        <span className="pixel-library-logo-plate">
+          <LibraryLogo name={item.name} officialUrl={item.officialUrl} />
+        </span>
+        <span className="pixel-library-category">{item.category}</span>
+        <div
+          className="pixel-library-score-ring"
+          style={{ "--library-score": `${item.guide.recommendation * 3.6}deg` } as CSSProperties}
+          role="img"
+          aria-label={`${item.name} 推荐指数 ${item.guide.recommendation}`}
+        >
+          <strong>{item.guide.recommendation}</strong>
+          <small>推荐</small>
+        </div>
+        <i aria-hidden="true" />
+        <i aria-hidden="true" />
+      </div>
 
+      <div className="pixel-library-card-head">
         <div>
           <div className="pixel-library-card-labels">
-            <span className="pixel-library-category">{item.category}</span>
             <span className={`pixel-library-source is-${item.sourceTier}`}>
               {item.sourceTier === "official" ? `官方核验${item.verifiedAt ? ` ${item.verifiedAt.slice(5).replace("-", ".")}` : ""}` : "聚合资料"}
-            </span>
-            <span className={`pixel-library-guide-depth is-${item.guideDepth}`}>
-              {item.guideDepth === "individual" ? "个体导购" : "分类基线"}
             </span>
           </div>
           <h2><Link href={`/library/${item.id}`} prefetch={false}>{item.name}</Link></h2>
@@ -43,29 +56,14 @@ function LibraryCard({ item }: { item: LibraryCardItem }) {
 
       <p className="pixel-library-description">{item.descriptionZh}</p>
 
-      <div className="pixel-library-score">
-        <div className="pixel-library-score-head">
-          <span>推荐指数</span><strong>{item.guide.recommendation}</strong>
-        </div>
-        <div
-          className="pixel-library-score-track"
-          role="progressbar"
-          aria-label={`${item.name} 推荐指数`}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={item.guide.recommendation}
-        >
-          <span style={{ width: `${item.guide.recommendation}%` }} />
-        </div>
-      </div>
-
       <div className="pixel-library-meta-line">
         <span className={`pixel-library-difficulty ${difficultyTone(item.guide.difficulty)}`}><Gauge size={14} aria-hidden="true" /> 上手 {item.guide.difficulty}</span>
-        {item.guide.audiences.slice(0, 2).map((audience) => <span key={audience}>{audience}</span>)}
+        <span>{item.guide.audiences[0]}</span>
+        <span>{item.guideDepth === "individual" ? "个体导购" : "分类基线"}</span>
       </div>
 
       <div className="pixel-library-tags">
-        {[...item.tags, ...item.guide.useCases.slice(0, 1)].slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
+        {item.guide.useCases.slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}
       </div>
 
       <div className="pixel-library-actions">
@@ -111,6 +109,8 @@ export function LibraryExplorer({ items }: { items: LibraryCardItem[] }) {
   }, [activeAudience, activeCategory, activeSource, items, search, sortMode]);
 
   const categories = useMemo(() => LIBRARY_CATEGORIES.map((category) => ({ category, count: items.filter((item) => item.category === category).length })), [items]);
+  const visualCategories = useMemo(() => [...categories].sort((left, right) => right.count - left.count).slice(0, 6), [categories]);
+  const maxVisualCategoryCount = Math.max(...visualCategories.map((item) => item.count), 1);
   const officialCount = useMemo(() => items.filter((item) => item.sourceTier === "official").length, [items]);
   const individualGuideCount = useMemo(() => items.filter((item) => item.guideDepth === "individual").length, [items]);
   const filterKey = `${activeCategory}:${activeAudience}:${activeSource}:${sortMode}:${search.trim().toLowerCase()}`;
@@ -132,14 +132,31 @@ export function LibraryExplorer({ items }: { items: LibraryCardItem[] }) {
           <div>
             <span className="pixel-kicker"><LibraryBig size={16} aria-hidden="true" /> CURATED AI LIBRARY</span>
             <h1>AI 工具库</h1>
-            <p>从“这个工具是什么”继续追问到“它适不适合我”。资料明确区分官方核验与社区聚合，推荐判断也标出个体导购或分类基线。</p>
+            <p>按场景、人群和上手难度筛选；完整判断留在工具详情里。</p>
           </div>
-          <dl>
-            <div><dt>精选工具</dt><dd>{items.length}</dd></div>
-            <div><dt>官方核验</dt><dd>{officialCount}</dd></div>
-            <div><dt>个体导购</dt><dd>{individualGuideCount}</dd></div>
-            <div><dt>实用分类</dt><dd>{LIBRARY_CATEGORIES.length}</dd></div>
-          </dl>
+          <figure className="pixel-library-category-map" aria-label={`${items.length} 个工具的热门分类分布`}>
+            <header>
+              <div><strong>{items.length}</strong><span>精选工具</span></div>
+              <small>{LIBRARY_CATEGORIES.length} 个分类</small>
+            </header>
+            <div>
+              {visualCategories.map(({ category, count }) => (
+                <button
+                  type="button"
+                  key={category}
+                  className={activeCategory === category ? "is-active" : ""}
+                  aria-label={`筛选 ${category}，${count} 个工具`}
+                  aria-pressed={activeCategory === category}
+                  onClick={() => setActiveCategory(category)}
+                >
+                  <span>{category}</span>
+                  <i aria-hidden="true"><b style={{ width: `${(count / maxVisualCategoryCount) * 100}%` }} /></i>
+                  <strong>{count}</strong>
+                </button>
+              ))}
+            </div>
+            <figcaption><span>{officialCount} 个官方核验</span><span>{individualGuideCount} 个个体导购</span></figcaption>
+          </figure>
         </section>
 
         <section className="pixel-filter-panel" aria-labelledby="library-filter-title">

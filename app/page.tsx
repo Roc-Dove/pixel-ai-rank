@@ -1,11 +1,29 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Link from "next/link";
-import { ArrowRight, BookOpenCheck, CalendarDays, LibraryBig, Radio, Radar, ShieldCheck, Sparkles } from "lucide-react";
-import { RankTypeIcon } from "@/components/rank/RankTypeIcon";
+import {
+  Activity,
+  ArrowRight,
+  FileCheck2,
+  Gauge,
+  GraduationCap,
+  LibraryBig,
+  ListChecks,
+  Radio,
+  Scale,
+  ShieldCheck,
+  Sparkles,
+  Trophy,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react";
+import { LibraryLogo } from "@/components/library/LibraryLogo";
+import { SignalPulse } from "@/components/signals/SignalPulse";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
 import { getLibraryItemsWithGuide } from "@/lib/library/guide";
 import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
 import { formatSignalDate, getSignalLifecycle } from "@/lib/signals/utils";
+import { SIGNAL_CATEGORIES, SIGNAL_IMPACTS, type SignalCategory, type SignalImpact } from "@/types/signal";
 
 export const metadata: Metadata = {
   alternates: {
@@ -16,16 +34,62 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
+type HomeSignalVisual = {
+  value: string;
+  label: string;
+  icon: LucideIcon;
+  tone: "blue" | "coral" | "purple" | "green";
+  nodes?: string[];
+};
+
+const HOME_SIGNAL_VISUALS: Record<string, HomeSignalVisual> = {
+  "chatgpt-academic-researchers": {
+    value: "10万",
+    label: "计划覆盖研究者",
+    icon: GraduationCap,
+    tone: "blue",
+    nodes: ["1 万起步", "2027", "10 万"],
+  },
+  "gpt-5-6-efficiency-engineering": {
+    value: "−20%",
+    label: "披露服务成本",
+    icon: Gauge,
+    tone: "green",
+    nodes: ["推理", "负载", "内核"],
+  },
+  "microsoft-project-perception": {
+    value: "4 层",
+    label: "Agent 安全边界",
+    icon: ShieldCheck,
+    tone: "purple",
+    nodes: ["身份", "权限", "执行", "审计"],
+  },
+  "meta-muse-spark-acts": {
+    value: "执行",
+    label: "从回答走向行动",
+    icon: Workflow,
+    tone: "coral",
+    nodes: ["观察", "推理", "行动"],
+  },
+};
+
+function getFallbackSignalVisual(category: SignalCategory): HomeSignalVisual {
+  return {
+    value: category.replace("升级", ""),
+    label: "最新官方动态",
+    icon: Activity,
+    tone: "blue",
+  };
+}
+
 export default function HomePage() {
   const libraryItems = getLibraryItemsWithGuide();
   const topTools = [...libraryItems]
-    .filter((item) => item.officialUrl)
+    .filter((item) => item.officialUrl && item.guideDepth === "individual")
     .sort((left, right) => right.guide.recommendation - left.guide.recommendation || left.name.localeCompare(right.name))
     .slice(0, 6);
-  const latestSignals = SIGNAL_ITEMS.slice(0, 6);
+  const latestSignals = SIGNAL_ITEMS.slice(0, 4);
   const urgentItems = SIGNAL_ITEMS.filter((item) => item.impact === "立即行动");
-  const urgentCount = urgentItems.length;
-  const dueTodayCount = urgentItems.filter((item) => getSignalLifecycle(item).status === "due-today").length;
   const lifecyclePriority = {
     "due-today": 0,
     overdue: 1,
@@ -41,159 +105,202 @@ export default function HomePage() {
         right.date.localeCompare(left.date),
     )
     .slice(0, 3);
+  const impactCounts = SIGNAL_IMPACTS.reduce(
+    (counts, impact) => {
+      counts[impact] = SIGNAL_ITEMS.filter((item) => item.impact === impact).length;
+      return counts;
+    },
+    {} as Record<SignalImpact, number>,
+  );
+  const categoryCounts = SIGNAL_CATEGORIES.map((category) => ({
+    category,
+    count: SIGNAL_ITEMS.filter((item) => item.category === category).length,
+  }));
+  const companies = new Set(SIGNAL_ITEMS.map((item) => item.company)).size;
   const verifiedStamp = SIGNALS_LAST_VERIFIED.replaceAll("-", ".");
 
   return (
-    <main id="main-content" className="pixel-home" tabIndex={-1}>
-      <section className="pixel-home-hero pixel-home-hero-v2">
+    <main id="main-content" className="pixel-home pixel-home-visual-refresh" tabIndex={-1}>
+      <section className="pixel-home-hero pixel-home-hero-visual">
         <div className="pixel-home-hero-copy">
           <span className="pixel-kicker"><Radio size={16} aria-hidden="true" /> VERIFIED {verifiedStamp}</span>
-          <h1>AI 更新太快，<br /><span>先看值得行动的。</span></h1>
-          <p>
-            Pixel AI Rank 把官方最新发布、产品变更、排行榜和中文工具导购放进同一个决策界面。少一点追热点，多一点下一步。
-          </p>
+          <h1>每天 3 分钟，<br /><span>看懂 AI 在变什么。</span></h1>
+          <p>官方动态已经替你筛好：哪些要立刻做，哪些值得看，哪些先观察。</p>
           <div className="pixel-home-actions">
             <Link href="/signals#action-required" className={pixelButtonClassName({ tone: "blue" })}>
-              处理 {urgentCount} 条行动项{dueTodayCount ? ` · ${dueTodayCount} 条今日截止` : ""} <ArrowRight size={17} aria-hidden="true" />
+              先处理 {urgentItems.length} 条行动项 <ArrowRight size={17} aria-hidden="true" />
             </Link>
             <Link href="/library" className={pixelButtonClassName({ tone: "ghost" })}>
-              浏览 {libraryItems.length} 个工具
+              找 AI 工具
             </Link>
           </div>
-          <div className="pixel-home-trust">
-            <span><ShieldCheck size={16} aria-hidden="true" /> 情报直达官方原文</span>
-            <span><CalendarDays size={16} aria-hidden="true" /> 标注发布时间与核验日</span>
-            <span><BookOpenCheck size={16} aria-hidden="true" /> 每条补充行动建议</span>
+          <div className="pixel-home-proofline" aria-label="情报核验摘要">
+            <span><strong>100%</strong> 官方源</span>
+            <i aria-hidden="true" />
+            <span><strong>{companies}</strong> 家公司</span>
+            <i aria-hidden="true" />
+            <span><strong>{SIGNAL_ITEMS.length}</strong> 条信号</span>
           </div>
         </div>
 
-        <div className="pixel-home-radar pixel-home-radar-news" aria-label="最新高信号 AI 情报">
-          <div className="pixel-radar-header">
-            <div>
-              <span className="pixel-live-dot" aria-hidden="true" />
-              <strong>ACTION QUEUE</strong>
-            </div>
-            <span>OFFICIAL ONLY</span>
-          </div>
-          <div className="pixel-radar-list">
-            {radarSignals.map((item, index) => {
-              const lifecycle = getSignalLifecycle(item);
-              const lifecycleTone = lifecycle.status === "due-today" || lifecycle.status === "overdue"
-                ? "urgent"
-                : lifecycle.status === "open"
-                  ? "focus"
-                  : "watch";
+        <SignalPulse
+          total={SIGNAL_ITEMS.length}
+          companies={companies}
+          impactCounts={impactCounts}
+          categoryCounts={categoryCounts}
+        />
+      </section>
 
-              return (
-                <Link href={`/signals/${item.id}`} key={item.id} className="pixel-radar-item">
-                  <span className="pixel-radar-rank">0{index + 1}</span>
-                  <span className="pixel-radar-tool">
-                    <strong>{item.title}</strong>
-                    <small>{item.company} · {formatSignalDate(item.date)}</small>
-                  </span>
-                  <span className={`pixel-radar-impact is-${lifecycleTone}`}>{lifecycle.label}</span>
-                </Link>
-              );
-            })}
+      <section id="action-required" className="pixel-action-board" aria-labelledby="home-action-heading">
+        <header>
+          <div>
+            <span className="pixel-kicker"><Activity size={15} aria-hidden="true" /> TODAY&apos;S ACTIONS</span>
+            <h2 id="home-action-heading">今天先处理这 {radarSignals.length} 件事</h2>
           </div>
-          <div className="pixel-radar-footer">
-            <Link href="/signals#action-required">{urgentCount} 条待处理</Link>
-            <div><span style={{ width: "100%" }} /></div>
-            <span>已核验</span>
-          </div>
+          <Link href="/signals#action-required">全部行动项 <ArrowRight size={16} aria-hidden="true" /></Link>
+        </header>
+        <div className="pixel-action-cards">
+          {radarSignals.map((item, index) => {
+            const lifecycle = getSignalLifecycle(item);
+            const tone = lifecycle.status === "due-today" || lifecycle.status === "overdue"
+              ? "urgent"
+              : lifecycle.status === "open"
+                ? "focus"
+                : "watch";
+
+            return (
+              <Link href={`/signals/${item.id}`} key={item.id} className={`pixel-action-card is-${tone}`}>
+                <span className="pixel-action-index">0{index + 1}</span>
+                <div>
+                  <small>{item.company}</small>
+                  <strong>{item.title}</strong>
+                </div>
+                <span className="pixel-action-status">{lifecycle.label}</span>
+                <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+            );
+          })}
         </div>
       </section>
 
-      <section className="pixel-home-stats" aria-label="内容规模">
-        <div><strong>{SIGNAL_ITEMS.length}</strong><span>官方信源情报</span></div>
-        <div><strong>100%</strong><span>情报官方源</span></div>
-        <div><strong>{libraryItems.length}</strong><span>精选 AI 工具</span></div>
-        <div><strong>{SIGNALS_LAST_VERIFIED.slice(5).replace("-", ".")}</strong><span>最近核验</span></div>
-      </section>
-
-      <section className="pixel-home-section pixel-home-news">
+      <section className="pixel-home-section pixel-home-news pixel-home-visual-news">
         <div className="pixel-section-heading">
           <div>
-            <span className="pixel-kicker"><Radio size={15} aria-hidden="true" /> SIGNALS, NOT NOISE</span>
-            <h2>这几条，正在改变选择</h2>
+            <span className="pixel-kicker"><Radio size={15} aria-hidden="true" /> SIGNAL SNAPSHOT</span>
+            <h2>最近最值得关注的 AI 动态</h2>
           </div>
           <Link href="/signals">查看全部 {SIGNAL_ITEMS.length} 条 <ArrowRight size={16} aria-hidden="true" /></Link>
         </div>
 
-        <div className="pixel-home-news-grid">
-          {latestSignals.slice(0, 4).map((item, index) => (
-            <Link href={`/signals/${item.id}`} key={item.id} className={index === 0 ? "pixel-home-news-card is-lead" : "pixel-home-news-card"}>
-              <div className="pixel-home-news-meta">
-                <span>{formatSignalDate(item.date)}</span>
-                <span>{item.company}</span>
-                <strong>{item.impact}</strong>
-              </div>
-              <h3>{item.title}</h3>
-              <p>{item.summary}</p>
-              <div className="pixel-home-news-why">
-                <span>WHY IT MATTERS</span>
-                <p>{item.whyItMatters}</p>
-              </div>
-              <span className="pixel-entry-link">打开情报卡 <ArrowRight size={16} aria-hidden="true" /></span>
-            </Link>
-          ))}
+        <div className="pixel-snapshot-grid">
+          {latestSignals.map((item, index) => {
+            const visual = HOME_SIGNAL_VISUALS[item.id] ?? getFallbackSignalVisual(item.category);
+            const VisualIcon = visual.icon;
+
+            return (
+              <Link
+                href={`/signals/${item.id}`}
+                key={item.id}
+                className={`pixel-snapshot-card tone-${visual.tone} ${index === 0 ? "is-lead" : ""}`}
+              >
+                <div className="pixel-snapshot-meta">
+                  <span>{item.company}</span>
+                  <time dateTime={item.date}>{formatSignalDate(item.date)}</time>
+                  <strong>{item.impact}</strong>
+                </div>
+                <div className="pixel-snapshot-visual">
+                  <span className="pixel-snapshot-icon"><VisualIcon size={index === 0 ? 34 : 26} strokeWidth={1.65} aria-hidden="true" /></span>
+                  <div>
+                    <strong>{visual.value}</strong>
+                    <span>{visual.label}</span>
+                  </div>
+                  {visual.nodes ? (
+                    <div className="pixel-snapshot-nodes" aria-label={visual.nodes.join("，")}>
+                      {visual.nodes.map((node) => <span key={node}>{node}</span>)}
+                    </div>
+                  ) : null}
+                </div>
+                <h3>{item.title}</h3>
+                <span className="pixel-entry-link">看行动建议 <ArrowRight size={16} aria-hidden="true" /></span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
-      <section className="pixel-home-section">
+      <section className="pixel-home-section pixel-home-decisions">
         <div className="pixel-section-heading">
           <div>
-            <span className="pixel-kicker">START WITH A DECISION</span>
-            <h2>按你要解决的问题进入</h2>
+            <span className="pixel-kicker">CHOOSE YOUR PATH</span>
+            <h2>你现在想解决什么？</h2>
           </div>
-          <p>先明确决策，再选择信息入口。</p>
         </div>
 
-        <div className="pixel-entry-grid">
-          <Link href="/signals" className="pixel-entry-card tone-red">
-            <span className="pixel-entry-icon"><Radio size={24} strokeWidth={1.8} aria-hidden="true" /></span>
-            <span className="pixel-entry-index">01</span>
-            <h3>今天发生了什么</h3>
-            <p>从官方发布里找到模型升级、Agent、AI 编程和产品迁移信号，并直接拿到下一步建议。</p>
-            <span className="pixel-entry-link">打开最新情报 <ArrowRight size={16} aria-hidden="true" /></span>
+        <div className="pixel-decision-grid">
+          <Link href="/signals" className="pixel-decision-card tone-red">
+            <div className="pixel-decision-graphic is-wave" aria-hidden="true">
+              {[28, 58, 42, 84, 52, 70, 34].map((height, index) => (
+                <i key={`${height}-${index}`} style={{ "--wave-height": `${height}%` } as CSSProperties} />
+              ))}
+            </div>
+            <div>
+              <span><Radio size={18} aria-hidden="true" /> {SIGNAL_ITEMS.length} 条已核验</span>
+              <h3>今天发生了什么</h3>
+              <p>3 分钟扫完值得行动的变化。</p>
+            </div>
+            <ArrowRight size={19} aria-hidden="true" />
           </Link>
-          <Link href="/library" className="pixel-entry-card tone-blue">
-            <span className="pixel-entry-icon"><LibraryBig size={24} strokeWidth={1.8} aria-hidden="true" /></span>
-            <span className="pixel-entry-index">02</span>
-            <h3>下一款工具选什么</h3>
-            <p>按人群、用途、上手难度和中文友好度筛选，并查看哪些资料刚刚经过官方核验。</p>
-            <span className="pixel-entry-link">进入 AI 工具库 <ArrowRight size={16} aria-hidden="true" /></span>
+
+          <Link href="/library" className="pixel-decision-card tone-blue">
+            <div className="pixel-decision-graphic is-mosaic" aria-hidden="true">
+              {Array.from({ length: 9 }, (_, index) => <i key={index} />)}
+            </div>
+            <div>
+              <span><LibraryBig size={18} aria-hidden="true" /> {libraryItems.length} 个工具</span>
+              <h3>下一款工具选什么</h3>
+              <p>按人群和场景直接筛。</p>
+            </div>
+            <ArrowRight size={19} aria-hidden="true" />
           </Link>
-          <Link href="/rank/aicpb" className="pixel-entry-card tone-purple">
-            <span className="pixel-entry-icon"><RankTypeIcon type="aicpb" size={24} /></span>
-            <span className="pixel-entry-index">03</span>
-            <h3>哪些产品和人值得跟踪</h3>
-            <p>查看产品榜与中外 AI KOL；真实抓取、历史过期、本站精选和演示模式都会明确标注。</p>
-            <span className="pixel-entry-link">查看排行榜 <ArrowRight size={16} aria-hidden="true" /></span>
+
+          <Link href="/rank/month" className="pixel-decision-card tone-purple">
+            <div className="pixel-decision-graphic is-podium" aria-hidden="true">
+              <i><span>2</span></i><i><span>1</span></i><i><span>3</span></i>
+            </div>
+            <div>
+              <span><Trophy size={18} aria-hidden="true" /> 5 份榜单</span>
+              <h3>哪些产品值得跟踪</h3>
+              <p>从当前榜单先看前三。</p>
+            </div>
+            <ArrowRight size={19} aria-hidden="true" />
           </Link>
         </div>
       </section>
 
-      <section className="pixel-home-section pixel-home-picks">
+      <section className="pixel-home-section pixel-home-picks pixel-home-tool-radar">
         <div className="pixel-section-heading">
           <div>
-            <span className="pixel-kicker"><Sparkles size={15} aria-hidden="true" /> UPDATED TOOL RADAR</span>
+            <span className="pixel-kicker"><Sparkles size={15} aria-hidden="true" /> TOOL RADAR</span>
             <h2>现在最值得试的 6 个工具</h2>
           </div>
-          <Link href="/library">查看全部 {libraryItems.length} 个 <ArrowRight size={16} aria-hidden="true" /></Link>
+          <Link href="/library">打开工具库 <ArrowRight size={16} aria-hidden="true" /></Link>
         </div>
 
-        <div className="pixel-picks-grid">
+        <div className="pixel-tool-radar-grid">
           {topTools.map((item, index) => (
-            <Link href={`/library/${item.id}`} key={item.id} className="pixel-pick-card">
-              <div className="pixel-pick-topline">
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <span>{item.verifiedAt ? "近期核验" : item.category}</span>
+            <Link href={`/library/${item.id}`} key={item.id} className="pixel-tool-radar-card">
+              <span className="pixel-tool-rank">0{index + 1}</span>
+              <LibraryLogo name={item.name} officialUrl={item.officialUrl} />
+              <div className="pixel-tool-radar-copy">
+                <h3>{item.name}</h3>
+                <span>{item.category}</span>
               </div>
-              <h3>{item.name}</h3>
-              <p>{item.descriptionZh}</p>
-              <div className="pixel-pick-footer">
-                <span>推荐指数</span>
+              <div
+                className="pixel-tool-score-ring"
+                style={{ "--tool-score": `${item.guide.recommendation * 3.6}deg` } as CSSProperties}
+                role="img"
+                aria-label={`${item.name} 推荐指数 ${item.guide.recommendation}`}
+              >
                 <strong>{item.guide.recommendation}</strong>
               </div>
             </Link>
@@ -201,16 +308,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="pixel-method-section">
+      <section className="pixel-trust-flow" aria-labelledby="trust-flow-heading">
+        <header>
+          <span className="pixel-kicker">HOW IT WORKS</span>
+          <h2 id="trust-flow-heading">从官方原文，到你的下一步</h2>
+        </header>
         <div>
-          <span className="pixel-kicker"><Radar size={15} aria-hidden="true" /> EDITORIAL METHOD</span>
-          <h2>新鲜只是门槛，<br />可信才是价值。</h2>
+          <span className="pixel-trust-node">
+            <i><FileCheck2 size={23} aria-hidden="true" /></i>
+            <strong>官方原文</strong>
+            <small>只从一手信源开始</small>
+          </span>
+          <ArrowRight className="pixel-trust-arrow" size={20} aria-hidden="true" />
+          <span className="pixel-trust-node">
+            <i><Scale size={23} aria-hidden="true" /></i>
+            <strong>编辑核验</strong>
+            <small>事实和判断分开</small>
+          </span>
+          <ArrowRight className="pixel-trust-arrow" size={20} aria-hidden="true" />
+          <span className="pixel-trust-node">
+            <i><ListChecks size={23} aria-hidden="true" /></i>
+            <strong>行动建议</strong>
+            <small>明确下一步怎么做</small>
+          </span>
         </div>
-        <ol className="pixel-method-list">
-          <li><span>01</span><div><strong>官方源优先</strong><p>最新情报只使用公司公告、产品文档和官方模型仓库，不用二次转载补事实。</p></div></li>
-          <li><span>02</span><div><strong>事实与判断分开</strong><p>产品披露、编辑影响判断和下一步建议分别呈现，保留你的判断空间。</p></div></li>
-          <li><span>03</span><div><strong>状态明确</strong><p>榜单会区分实时、过期、降级和精选数据；预览、限量开放和正式 GA 不混写。</p></div></li>
-        </ol>
       </section>
     </main>
   );

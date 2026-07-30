@@ -4,12 +4,14 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, CalendarClock, Filter, RotateCcw, SearchX, ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
+import { SignalCategoryVisual } from "@/components/signals/SignalCategoryVisual";
 import { PixelButton, pixelButtonClassName } from "@/components/ui/PixelButton";
 import { formatSignalDate, getSignalLifecycle } from "@/lib/signals/utils";
 import { SIGNAL_CATEGORIES, SIGNAL_IMPACTS, type SignalCategory, type SignalImpact, type SignalItem } from "@/types/signal";
 
 const ALL_CATEGORIES = "全部";
 const ALL_IMPACTS = "全部级别";
+const PAGE_SIZE = 9;
 
 function impactClassName(impact: SignalImpact) {
   if (impact === "立即行动") return "urgent";
@@ -22,6 +24,13 @@ function SignalCard({ item }: { item: SignalItem }) {
 
   return (
     <article className={`pixel-news-card tone-${impactClassName(item.impact)}`}>
+      <SignalCategoryVisual
+        category={item.category}
+        company={item.company}
+        date={item.date}
+        sourceUrl={item.sourceUrl}
+      />
+
       <div className="pixel-news-card-meta">
         <time dateTime={item.date}>{formatSignalDate(item.date)}</time>
         <span>{item.company}</span>
@@ -37,18 +46,14 @@ function SignalCard({ item }: { item: SignalItem }) {
         <p>{item.summary}</p>
       </div>
 
-      <div className="pixel-news-takeaway">
-        <span>WHY IT MATTERS</span>
-        <p>{item.whyItMatters}</p>
-      </div>
-
-      <div className="pixel-news-tags" aria-label="相关标签">
-        {item.tags.slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
+      <div className="pixel-news-quick-action">
+        <span>下一步</span>
+        <strong>{item.actionLabel ?? "查看具体行动建议"}</strong>
       </div>
 
       <div className="pixel-news-card-actions">
-        <Link href={`/signals/${item.id}`} prefetch={false} className={pixelButtonClassName({ tone: "ghost" })}>
-          查看行动建议 <ArrowRight size={15} aria-hidden="true" />
+        <Link href={`/signals/${item.id}`} prefetch={false} className={pixelButtonClassName({ tone: "blue" })}>
+          打开情报卡 <ArrowRight size={15} aria-hidden="true" />
         </Link>
         <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="pixel-official-link">
           官方原文 <ArrowUpRight size={15} aria-hidden="true" />
@@ -62,6 +67,7 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
   const { search } = useSearch();
   const [category, setCategory] = useState<SignalCategory | typeof ALL_CATEGORIES>(ALL_CATEGORIES);
   const [impact, setImpact] = useState<SignalImpact | typeof ALL_IMPACTS>(ALL_IMPACTS);
+  const [pagination, setPagination] = useState({ key: "", limit: PAGE_SIZE });
 
   const filteredItems = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -84,6 +90,10 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
     });
   }, [category, impact, items, search]);
 
+  const filterKey = `${category}:${impact}:${search.trim().toLowerCase()}`;
+  const visibleLimit = pagination.key === filterKey ? pagination.limit : PAGE_SIZE;
+  const visibleItems = filteredItems.slice(0, visibleLimit);
+  const hasMore = visibleItems.length < filteredItems.length;
   const hasFilters = category !== ALL_CATEGORIES || impact !== ALL_IMPACTS;
   const resetFilters = () => {
     setCategory(ALL_CATEGORIES);
@@ -127,9 +137,22 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
       </div>
 
       {filteredItems.length ? (
-        <section className="pixel-news-grid" aria-label="最新 AI 情报">
-          {filteredItems.map((item) => <SignalCard key={item.id} item={item} />)}
-        </section>
+        <>
+          <section className="pixel-news-grid" aria-label="最新 AI 情报">
+            {visibleItems.map((item) => <SignalCard key={item.id} item={item} />)}
+          </section>
+          {hasMore ? (
+            <div className="pixel-load-more">
+              <p>已显示 {visibleItems.length} / {filteredItems.length}</p>
+              <PixelButton
+                tone="ghost"
+                onClick={() => setPagination({ key: filterKey, limit: visibleLimit + PAGE_SIZE })}
+              >
+                再看 {Math.min(PAGE_SIZE, filteredItems.length - visibleItems.length)} 条情报
+              </PixelButton>
+            </div>
+          ) : null}
+        </>
       ) : (
         <section className="pixel-empty">
           <SearchX size={26} aria-hidden="true" />

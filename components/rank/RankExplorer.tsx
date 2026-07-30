@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Clock3, Database, Info, Layers3, ListFilter } from "lucide-react";
+import { Info, Layers3, Trophy } from "lucide-react";
 import { useMemo } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { RankTable } from "@/components/rank/RankTable";
@@ -48,6 +48,7 @@ export function RankExplorer({ payload }: { payload: RankPayload }) {
     : payload.lastUpdated
       ? formatUpdatedAt(payload.lastUpdated)
       : "尚未更新";
+  const topThree = [...payload.items].sort((left, right) => left.rank - right.rank).slice(0, 3);
 
   return (
     <main id="main-content" className="pixel-shell" tabIndex={-1}>
@@ -68,20 +69,24 @@ export function RankExplorer({ payload }: { payload: RankPayload }) {
             </div>
           </div>
 
-          <dl className="pixel-rank-facts">
+          <figure className="pixel-rank-podium" aria-label={`当前榜单前三：${topThree.map((item) => `第 ${item.rank} 名 ${item.name}`).join("，")}`}>
+            <header><span><Trophy size={16} aria-hidden="true" /> CURRENT TOP 3</span><small>{mode.label}</small></header>
             <div>
-              <dt><ListFilter size={16} aria-hidden="true" /> 当前结果</dt>
-              <dd>{filteredItems.length}<small> / {payload.totalItems}</small></dd>
+              {topThree.map((item) => (
+                <div key={`${item.rank}-${item.name}`} className={`is-rank-${item.rank}`}>
+                  <span>{item.name.trim().charAt(0).toUpperCase()}</span>
+                  <strong>{item.name}</strong>
+                  <small>{item.metricPrimary ?? "—"}</small>
+                  <i><b>{item.rank}</b></i>
+                </div>
+              ))}
             </div>
-            <div>
-              <dt><Database size={16} aria-hidden="true" /> 数据模式</dt>
-              <dd className="is-text">{mode.label}</dd>
-            </div>
-            <div>
-              <dt><Clock3 size={16} aria-hidden="true" /> 最近更新</dt>
-              <dd className="is-text">{updatedLabel}</dd>
-            </div>
-          </dl>
+            <figcaption>
+              <span><strong>{filteredItems.length}</strong> 当前结果</span>
+              <span><strong>{mode.label}</strong> 数据模式</span>
+              <span><strong>{updatedLabel}</strong> 最近更新</span>
+            </figcaption>
+          </figure>
         </section>
 
         <nav className="pixel-rank-nav" aria-label="榜单导航">
@@ -103,14 +108,10 @@ export function RankExplorer({ payload }: { payload: RankPayload }) {
         </nav>
 
         {payload.message ? (
-          <aside className="pixel-source-note" aria-label="数据口径说明">
-            <Info size={18} strokeWidth={1.8} aria-hidden="true" />
-            <div>
-              <strong>数据口径</strong>
-              <p>{payload.message}</p>
-            </div>
-            <span><Layers3 size={15} aria-hidden="true" /> {payload.sourceLabel}</span>
-          </aside>
+          <details className="pixel-source-details">
+            <summary><Info size={17} strokeWidth={1.8} aria-hidden="true" /><strong>数据口径</strong><span>{payload.sourceLabel}</span></summary>
+            <div><p>{payload.message}</p><span><Layers3 size={15} aria-hidden="true" /> {payload.sourceLabel}</span></div>
+          </details>
         ) : null}
 
         <RankTable key={`${payload.type}:${search}`} payload={payload} items={filteredItems} searchQuery={search} onRetry={() => window.location.reload()} />
