@@ -1,1 +1,1 @@
-export const SIGNALS_LAST_VERIFIED = "2026-07-30";
+export const SIGNALS_LAST_VERIFIED = "2026-07-31";

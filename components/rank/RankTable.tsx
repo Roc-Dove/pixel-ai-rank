@@ -12,7 +12,7 @@ import { type RankItemDto, type RankPayload } from "@/types/rank";
 const PAGE_SIZE = 12;
 
 const PRODUCT_METRIC_LABELS: Record<"aicpb" | "stars" | "month", { primary: string; secondary: string }> = {
-  aicpb: { primary: "出海适配", secondary: "编辑评分" },
+  aicpb: { primary: "月度访问", secondary: "月度增长" },
   stars: { primary: "趋势潜力", secondary: "编辑评分" },
   month: { primary: "综合评分", secondary: "编辑评分" },
 };
@@ -47,12 +47,12 @@ const FALLBACK_LOGO_NAMES = new Set(["Gamma", "Cursor", "HeyGen", "Midjourney", 
 function metricConfig(payload: RankPayload) {
   if (payload.type === "xhunt_cn" || payload.type === "xhunt_global") {
     if (payload.dataMode === "database") {
-      return { primary: "关注者", secondary: "账号", secondarySortable: false };
+      return { primary: "关注者", secondary: "账号", primarySortable: true, secondarySortable: false };
     }
-    return { primary: "影响力", secondary: "活跃度", secondarySortable: true };
+    return { primary: "收录方式", secondary: "账号", primarySortable: false, secondarySortable: false };
   }
 
-  return { ...PRODUCT_METRIC_LABELS[payload.type], secondarySortable: true };
+  return { ...PRODUCT_METRIC_LABELS[payload.type], primarySortable: true, secondarySortable: true };
 }
 
 function parseMetricValue(value: string | null) {
@@ -231,7 +231,9 @@ export function RankTable({ payload, items, searchQuery, onRetry }: { payload: R
           <span><ArrowDownUp size={15} aria-hidden="true" /> 排序</span>
           <div className="pixel-sort-controls" aria-label="排序方式">
             <SortButton active={sortMode === "rank"} mode="rank" onSelect={handleSortChange}>排名</SortButton>
-            <SortButton active={sortMode === "primary"} mode="primary" onSelect={handleSortChange}>{labels.primary}</SortButton>
+            {labels.primarySortable ? (
+              <SortButton active={sortMode === "primary"} mode="primary" onSelect={handleSortChange}>{labels.primary}</SortButton>
+            ) : null}
             {labels.secondarySortable ? (
               <SortButton active={sortMode === "secondary"} mode="secondary" onSelect={handleSortChange}>{labels.secondary}</SortButton>
             ) : null}

@@ -1007,7 +1007,18 @@ const DEMO_ITEMS: Record<RankRouteType, RankItemDto[]> = {
 };
 
 export function buildDemoRankPayload(type: RankRouteType, errorMessage?: string): RankPayload {
-  const items = DEMO_ITEMS[type];
+  const items = type === "xhunt_cn" || type === "xhunt_global"
+    ? DEMO_ITEMS[type].map((item) => {
+        let account = item.externalLink;
+        try {
+          const handle = new URL(item.externalLink).pathname.split("/").filter(Boolean)[0];
+          account = handle ? `@${handle}` : item.externalLink;
+        } catch {
+          account = item.externalLink;
+        }
+        return { ...item, metricPrimary: "本站精选", metricSecondary: account };
+      })
+    : DEMO_ITEMS[type];
 
   return {
     type,

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, House, LibraryBig, Moon, Radio, Rss, Search, Sun, Trophy, X } from "lucide-react";
+import { BookOpen, Globe2, LibraryBig, Moon, Rocket, Rss, Search, Sun, UsersRound, X } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
@@ -27,12 +27,12 @@ export function Header() {
   }, [pathname]);
 
   const currentTab = currentType ? TAB_CONFIG[currentType] : null;
-  const isHome = pathname === "/";
-  const isRank = pathname.startsWith("/rank/");
   const isLibrary = pathname.startsWith("/library");
   const isSignals = pathname.startsWith("/signals");
+  const isProductRank = currentType === "aicpb" || currentType === "stars" || currentType === "month";
+  const isKolRank = currentType === "xhunt_cn" || currentType === "xhunt_global";
   const showSearch = Boolean(currentTab) || pathname === "/library" || pathname === "/signals";
-  const searchLabel = currentTab ? `搜索${currentTab.shortLabel}` : isSignals ? "搜索最新 AI 情报" : "搜索 AI 工具库";
+  const searchLabel = currentTab ? `搜索${currentTab.shortLabel}` : isSignals ? "搜索出海观察" : "搜索 AI 产品库";
 
   return (
     <header className="pixel-topbar">
@@ -42,22 +42,22 @@ export function Header() {
             <PixelMark />
             <span className="pixel-brand-copy">
               <strong>PIXEL AI RANK</strong>
-              <small>AI 信号导航站</small>
+              <small>产品 · KOL · 出海</small>
             </span>
           </Link>
 
           <nav className="pixel-site-nav" aria-label="主导航">
-            <Link href="/" className={isHome ? "is-active" : ""} aria-current={isHome ? "page" : undefined}>
-              <House size={18} aria-hidden="true" /><span>总览</span>
-            </Link>
-            <Link href="/signals" className={isSignals ? "is-active" : ""} aria-current={isSignals ? "page" : undefined}>
-              <Radio size={18} aria-hidden="true" /><span>情报</span>
-            </Link>
-            <Link href="/rank/aicpb" className={isRank ? "is-active" : ""} aria-current={isRank ? "page" : undefined}>
-              <Trophy size={18} aria-hidden="true" /><span>排行榜</span>
+            <Link href="/rank/aicpb" className={isProductRank ? "is-active" : ""} aria-current={isProductRank ? "page" : undefined}>
+              <Rocket size={18} aria-hidden="true" /><span>出海产品</span>
             </Link>
             <Link href="/library" className={isLibrary ? "is-active" : ""} aria-current={isLibrary ? "page" : undefined}>
-              <LibraryBig size={18} aria-hidden="true" /><span>工具库</span>
+              <LibraryBig size={18} aria-hidden="true" /><span>产品库</span>
+            </Link>
+            <Link href="/rank/xhunt_cn" className={isKolRank ? "is-active" : ""} aria-current={isKolRank ? "page" : undefined}>
+              <UsersRound size={18} aria-hidden="true" /><span>KOL</span>
+            </Link>
+            <Link href="/signals" className={isSignals ? "is-active" : ""} aria-current={isSignals ? "page" : undefined}>
+              <Globe2 size={18} aria-hidden="true" /><span>出海观察</span>
             </Link>
           </nav>
 
@@ -82,8 +82,8 @@ export function Header() {
         {showSearch ? (
           <div className="pixel-header-search-row">
             <div className="pixel-search-context">
-              {currentType ? <RankTypeIcon type={currentType} /> : isSignals ? <Radio size={18} strokeWidth={1.8} aria-hidden="true" /> : <LibraryBig size={18} strokeWidth={1.8} aria-hidden="true" />}
-              <span>{currentTab?.shortLabel ?? (isSignals ? "最新 AI 情报" : "AI 工具库")}</span>
+              {currentType ? <RankTypeIcon type={currentType} /> : isSignals ? <Globe2 size={18} strokeWidth={1.8} aria-hidden="true" /> : <LibraryBig size={18} strokeWidth={1.8} aria-hidden="true" />}
+              <span>{currentTab?.shortLabel ?? (isSignals ? "出海观察" : "AI 产品库")}</span>
               <span className="pixel-live-dot" aria-hidden="true" />
             </div>
 
@@ -92,7 +92,7 @@ export function Header() {
               <PixelInput
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder={currentTab ? "搜索名称、简介或标签" : isSignals ? "搜索公司、产品、主题或标签" : "搜索工具、分类、人群或使用场景"}
+                placeholder={currentTab ? "搜索名称、简介或标签" : isSignals ? "搜索市场、平台、产品或渠道" : "搜索产品、分类、人群或使用场景"}
                 aria-label={searchLabel}
                 autoComplete="off"
               />
@@ -105,7 +105,7 @@ export function Header() {
 
             <div className="pixel-search-hint" aria-hidden="true">
               <BookOpen size={16} strokeWidth={1.8} />
-              <span>{currentTab ? "在当前榜单内检索" : isSignals ? "官方信源 · 持续核验" : "精选工具 · 场景化导购"}</span>
+              <span>{currentTab ? "在当前榜单内检索" : isSignals ? "原始来源 · 持续核验" : "产品资料 · 场景筛选"}</span>
             </div>
           </div>
         ) : null}

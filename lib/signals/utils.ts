@@ -1,9 +1,9 @@
 import type { SignalImpact, SignalItem } from "@/types/signal";
 
 const SIGNAL_IMPACT_LABELS = {
-  "立即行动": "时效信息",
-  "重点关注": "重点更新",
-  "持续观察": "持续动态",
+  "平台与规则": "平台与规则",
+  "产品案例": "产品案例",
+  "KOL 与渠道": "KOL 与渠道",
 } satisfies Record<SignalImpact, string>;
 
 export function formatSignalImpact(impact: SignalImpact) {
@@ -44,7 +44,7 @@ export function getSignalLifecycle(
     }
 
     if (comparison > 0) {
-      return { status: "upcoming", label: `截止 ${formatSignalDate(item.deadline)}` };
+      return { status: "upcoming", label: item.actionLabel ?? `截止 ${formatSignalDate(item.deadline)}` };
     }
 
     if (item.availability === "retired") {

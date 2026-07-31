@@ -81,17 +81,17 @@ export const TAB_CONFIG: Record<
   }
 > = {
   aicpb: {
-    label: "LV.1 出海精选",
-    shortLabel: "出海榜",
-    navLabel: "出海榜",
+    label: "中国 AI 产品出海榜",
+    shortLabel: "出海产品",
+    navLabel: "出海产品",
     icon: "🌏",
     tone: "red",
-    sourceLabel: "Pixel AI Rank 精选",
+    sourceLabel: "内置出海产品样本",
     databaseSourceLabel: "AICPB 中国 AI 产品增长榜",
-    summary: "基于 AI库导购字段筛选适合海外市场、英文用户和出海团队的 AI 产品。",
+    summary: "观察中国 AI 产品在海外市场的访问规模与增长变化；数据不可用时展示明确标注的内置样本，不用工具评分替代出海表现。",
   },
   stars: {
-    label: "LV.2 趋势新品",
+    label: "AI 产品新品榜",
     shortLabel: "新品榜",
     navLabel: "新品榜",
     icon: "⭐",
@@ -101,7 +101,7 @@ export const TAB_CONFIG: Record<
     summary: "基于 AI 库里的 Agent、编程、视频、设计和自动化方向，整理近期新趋势工具。",
   },
   month: {
-    label: "LV.3 综合月榜",
+    label: "AI 产品月榜",
     shortLabel: "月榜",
     navLabel: "月榜",
     icon: "📅",
@@ -111,24 +111,24 @@ export const TAB_CONFIG: Record<
     summary: "基于 AI 库编辑评分、上手难度、人群覆盖和中文友好度计算的本站综合评分榜。",
   },
   xhunt_cn: {
-    label: "LV.4 KOL CN",
+    label: "中文 AI KOL",
     shortLabel: "KOL 中文",
     navLabel: "KOL 中文",
     icon: "🐦",
     tone: "yellow",
     sourceLabel: "Pixel AI Rank 精选",
     databaseSourceLabel: "Xhunt AI KOL 榜 · 中文",
-    summary: "精选中文圈 AI 创作者、产品观察者和信息源，适合跟踪中文 AI 传播影响力。",
+    summary: "跟踪中文圈 AI 产品、创业增长与开发者生态创作者；本站精选与外部抓取会分开标注。",
   },
   xhunt_global: {
-    label: "LV.5 KOL Global",
+    label: "Global AI KOL",
     shortLabel: "KOL 全球",
     navLabel: "KOL 全球",
     icon: "🌐",
     tone: "purple",
     sourceLabel: "Pixel AI Rank 精选",
     databaseSourceLabel: "Xhunt AI KOL 榜 · 全球",
-    summary: "精选全球 AI 研究、产品、开发者生态和商业应用领域的高信号账号。",
+    summary: "跟踪全球 AI 产品、开发者生态、创业增长与商业应用领域的创作者和一线账号。",
   },
 };
 

@@ -1,15 +1,12 @@
 export const SIGNAL_CATEGORIES = [
-  "模型升级",
-  "Agent",
-  "AI 编程",
-  "多模态",
-  "产品变更",
-  "安全与产业",
+  "产品",
+  "KOL",
+  "出海",
 ] as const;
 
 export type SignalCategory = (typeof SIGNAL_CATEGORIES)[number];
 
-export const SIGNAL_IMPACTS = ["立即行动", "重点关注", "持续观察"] as const;
+export const SIGNAL_IMPACTS = ["平台与规则", "产品案例", "KOL 与渠道"] as const;
 
 export type SignalImpact = (typeof SIGNAL_IMPACTS)[number];
 
@@ -30,6 +27,9 @@ export type SignalItem = {
   sourceLabel: string;
   sourceUrl: string;
   relatedToolIds: string[];
+  market: string;
+  focus: string[];
+  applicableTo: string[];
   featured?: boolean;
   deadline?: string;
   availability?: SignalAvailability;

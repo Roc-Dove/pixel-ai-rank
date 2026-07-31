@@ -37,8 +37,14 @@ test("精选榜不会覆盖可用的真实数据库结果", () => {
   assert.equal(buildSelectedLibraryRankPayload(payload), payload);
 });
 
-test("没有可用真实条目时才生成 curated 精选榜", () => {
-  const payload = buildPayload({ totalItems: 0, items: [] });
+test("出海产品榜不会被站内工具评分替换", () => {
+  const payload = buildPayload({ dataMode: "demo", sourceStatus: "degraded", totalItems: 0, items: [] });
+
+  assert.equal(buildSelectedLibraryRankPayload(payload), payload);
+});
+
+test("没有可用真实条目时才为站内产品榜生成 curated 精选榜", () => {
+  const payload = buildPayload({ type: "stars", dbType: "AIXZD_STARS", totalItems: 0, items: [] });
   const result = buildSelectedLibraryRankPayload(payload);
 
   assert.equal(result.dataMode, "curated");

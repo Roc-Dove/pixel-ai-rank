@@ -11,7 +11,7 @@ import { RANK_TYPES, TAB_CONFIG, type RankPayload } from "@/types/rank";
 
 const MODE_COPY: Record<RankPayload["dataMode"], { label: string; description: string }> = {
   database: { label: "真实抓取", description: "来自外部数据源的最近一次成功抓取" },
-  curated: { label: "本站精选", description: "基于工具库字段与场景适配计算" },
+  curated: { label: "本站精选", description: "基于产品库字段与场景适配计算" },
   demo: { label: "降级数据", description: "数据源不可用时的内置可浏览版本" },
 };
 

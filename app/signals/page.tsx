@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { ArrowRight, CalendarDays, Radio, Rss, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, ArrowUpRight, CalendarDays, Globe2, Rss, ShieldCheck } from "lucide-react";
 import { SignalsExplorer } from "@/components/signals/SignalsExplorer";
-import { SignalPulse } from "@/components/signals/SignalPulse";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
 import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
-import { SIGNAL_CATEGORIES, SIGNAL_IMPACTS, type SignalImpact } from "@/types/signal";
+import { SIGNAL_CATEGORIES } from "@/types/signal";
+import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "最新 AI 情报",
-  description: "截至 2026 年 7 月 30 日核验的 AI 模型、Agent、编程工具和产品变更，标注官方来源、发布时间与编辑说明。",
+  title: "出海观察",
+  description: "聚焦 AI 产品出海、海外 KOL 渠道、分发、支付、本地化与平台规则，所有条目均附原始来源。",
   alternates: {
     canonical: "/signals",
     types: { "application/rss+xml": "/feed.xml" },
@@ -18,47 +19,60 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default function SignalsPage() {
-  const companies = new Set(SIGNAL_ITEMS.map((item) => item.company)).size;
   const verifiedStamp = SIGNALS_LAST_VERIFIED.replaceAll("-", ".");
-  const impactCounts = SIGNAL_IMPACTS.reduce(
-    (counts, impact) => {
-      counts[impact] = SIGNAL_ITEMS.filter((item) => item.impact === impact).length;
-      return counts;
-    },
-    {} as Record<SignalImpact, number>,
-  );
-  const categoryCounts = SIGNAL_CATEGORIES.map((category) => ({
-    category,
-    count: SIGNAL_ITEMS.filter((item) => item.category === category).length,
-  }));
+  const featured = SIGNAL_ITEMS.slice(0, 3);
 
   return (
     <main id="main-content" className="pixel-shell pixel-news-page" tabIndex={-1}>
       <div className="pixel-content-stack">
-        <section className="pixel-news-hero pixel-news-hero-visual">
-          <div className="pixel-news-hero-copy">
-            <span className="pixel-kicker"><Radio size={16} aria-hidden="true" /> OFFICIAL SIGNAL FEED</span>
-            <h1>{SIGNAL_ITEMS.length} 条官方 AI 动态，<br /><span>一眼看完重点。</span></h1>
-            <p>按主题、发布时间和信息类型整理，详情页保留来源、事实与编辑说明。</p>
-            <div className="pixel-news-hero-actions">
-              <a href="#latest-signals" className={pixelButtonClassName({ tone: "blue" })}>浏览动态 <ArrowRight size={16} aria-hidden="true" /></a>
-              <a href="/feed.xml" className={pixelButtonClassName({ tone: "ghost" })}><Rss size={16} aria-hidden="true" /> 订阅 RSS</a>
+        <section className={styles.hero}>
+          <div className={styles.heroCopy}>
+            <span className="pixel-kicker"><Globe2 size={16} aria-hidden="true" /> PRODUCT × KOL × GLOBAL</span>
+            <h1>只看与产品出海<br /><span>真正有关的变化。</span></h1>
+            <p>跟踪海外分发、KOL 渠道、内容本地化、支付与商业化。模型新闻只有在改变产品进入市场的方式时才会出现。</p>
+            <div className={styles.heroActions}>
+              <a href="#latest-signals" className={pixelButtonClassName({ tone: "blue" })}>
+                浏览出海观察 <ArrowRight size={16} aria-hidden="true" />
+              </a>
+              <a href="/feed.xml" className={pixelButtonClassName({ tone: "ghost" })}>
+                <Rss size={16} aria-hidden="true" /> 订阅 RSS
+              </a>
+            </div>
+            <div className={styles.scope} aria-label="本站内容范围">
+              {SIGNAL_CATEGORIES.map((category) => (
+                <span key={category}><strong>{SIGNAL_ITEMS.filter((item) => item.category === category).length}</strong>{category}</span>
+              ))}
             </div>
           </div>
 
-          <SignalPulse
-            total={SIGNAL_ITEMS.length}
-            companies={companies}
-            impactCounts={impactCounts}
-            categoryCounts={categoryCounts}
-            compact
-          />
+          <aside className={styles.watchboard} aria-label="最新海外市场观察">
+            <header>
+              <span><ShieldCheck size={15} aria-hidden="true" /> GLOBAL WATCH</span>
+              <time dateTime={SIGNALS_LAST_VERIFIED}>{verifiedStamp}</time>
+            </header>
+            <div>
+              {featured.map((item, index) => (
+                <Link href={`/signals/${item.id}`} key={item.id}>
+                  <span className={styles.index}>0{index + 1}</span>
+                  <span className={styles.watchCopy}>
+                    <small>{item.market} · {item.category}</small>
+                    <strong>{item.title}</strong>
+                  </span>
+                  <ArrowUpRight size={17} aria-hidden="true" />
+                </Link>
+              ))}
+            </div>
+            <footer>仅整理官方、平台或当事方原始资料</footer>
+          </aside>
         </section>
 
         <section id="latest-signals" className="pixel-news-feed">
           <div className="pixel-section-heading">
-            <div><span className="pixel-kicker"><CalendarDays size={15} aria-hidden="true" /> VERIFIED {verifiedStamp}</span><h2>近期 AI 动态</h2></div>
-            <p><ShieldCheck size={15} aria-hidden="true" /> 所有条目直达厂商官方原文</p>
+            <div>
+              <span className="pixel-kicker"><CalendarDays size={15} aria-hidden="true" /> VERIFIED {verifiedStamp}</span>
+              <h2>近期出海观察</h2>
+            </div>
+            <p><ShieldCheck size={15} aria-hidden="true" /> 事实、案例与编辑判断分开标注</p>
           </div>
           <SignalsExplorer items={SIGNAL_ITEMS} />
         </section>

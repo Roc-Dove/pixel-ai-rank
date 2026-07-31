@@ -152,11 +152,12 @@
   display: flex;
   min-width: 0;
   align-items: center;
-  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
 .category,
+.market,
 .impact {
   display: inline-flex;
   min-height: 30px;
@@ -171,7 +172,17 @@
   color: var(--cover-tone);
 }
 
+.market {
+  gap: 5px;
+  overflow: hidden;
+  color: var(--px-text-muted);
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .impact {
+  margin-left: auto;
   border: 1px solid color-mix(in srgb, var(--cover-tone) 20%, var(--px-border));
   background: color-mix(in srgb, var(--cover-tone) 8%, var(--px-surface));
   padding: 0.3rem 0.62rem;
@@ -198,5 +209,10 @@
 
   .title {
     font-size: 1rem;
+  }
+
+  .market {
+    order: 3;
+    width: 100%;
   }
 }

@@ -5,12 +5,13 @@ import { getLibraryItemsWithGuide } from "../lib/library/guide";
 import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "../lib/signals/items";
 import { getSignalLifecycle } from "../lib/signals/utils";
 
-test("official signal feed is unique, sorted and fully sourced", () => {
-  assert.ok(SIGNAL_ITEMS.length >= 22);
-  assert.equal(SIGNALS_LAST_VERIFIED, "2026-07-30");
-  assert.equal(SIGNAL_ITEMS[0].date, "2026-07-29");
-  assert.ok(SIGNAL_ITEMS.some((item) => item.id === "chatgpt-academic-researchers"));
-  assert.ok(SIGNAL_ITEMS.some((item) => item.id === "gpt-5-6-efficiency-engineering"));
+test("global product watch is unique, sorted and fully sourced", () => {
+  assert.ok(SIGNAL_ITEMS.length >= 10);
+  assert.equal(SIGNALS_LAST_VERIFIED, "2026-07-31");
+  assert.equal(SIGNAL_ITEMS[0].date, "2026-07-22");
+  assert.ok(SIGNAL_ITEMS.some((item) => item.id === "google-play-us-third-party-catalog"));
+  assert.ok(SIGNAL_ITEMS.some((item) => item.id === "youtube-creator-partnerships-2026"));
+  assert.ok(SIGNAL_ITEMS.some((item) => item.id === "gamma-global-checkout-local-payments"));
   assert.equal(new Set(SIGNAL_ITEMS.map((item) => item.id)).size, SIGNAL_ITEMS.length);
 
   for (let index = 0; index < SIGNAL_ITEMS.length; index += 1) {
@@ -18,22 +19,22 @@ test("official signal feed is unique, sorted and fully sourced", () => {
     assert.match(item.sourceUrl, /^https:\/\//);
     assert.ok(item.facts.length >= 3);
     assert.ok(item.nextStep.length >= 12);
+    assert.ok(item.market.length >= 2);
+    assert.ok(item.focus.length >= 2);
+    assert.ok(item.applicableTo.length >= 1);
     assert.ok(item.date <= SIGNALS_LAST_VERIFIED);
     if (index > 0) assert.ok(SIGNAL_ITEMS[index - 1].date >= item.date);
   }
 });
 
-test("action signals expose a lifecycle separate from editorial impact", () => {
-  const academicProgram = SIGNAL_ITEMS.find((item) => item.id === "chatgpt-academic-researchers");
-  const githubRetirement = SIGNAL_ITEMS.find((item) => item.id === "github-models-retirement");
-  const deepseekAliases = SIGNAL_ITEMS.find((item) => item.id === "deepseek-legacy-aliases-retired");
+test("dated platform changes expose a lifecycle separate from editorial type", () => {
+  const verification = SIGNAL_ITEMS.find((item) => item.id === "android-developer-verification-first-markets");
+  const catalog = SIGNAL_ITEMS.find((item) => item.id === "google-play-us-third-party-catalog");
 
-  assert.ok(academicProgram);
-  assert.ok(githubRetirement);
-  assert.ok(deepseekAliases);
-  assert.deepEqual(getSignalLifecycle(academicProgram, SIGNALS_LAST_VERIFIED), { status: "open", label: "申请已开放" });
-  assert.deepEqual(getSignalLifecycle(githubRetirement, SIGNALS_LAST_VERIFIED), { status: "due-today", label: "今日截止" });
-  assert.equal(getSignalLifecycle(deepseekAliases, SIGNALS_LAST_VERIFIED).status, "retired");
+  assert.ok(verification);
+  assert.ok(catalog);
+  assert.deepEqual(getSignalLifecycle(verification, SIGNALS_LAST_VERIFIED), { status: "upcoming", label: "9 月 30 日首批生效" });
+  assert.deepEqual(getSignalLifecycle(catalog, SIGNALS_LAST_VERIFIED), { status: "ongoing", label: "持续有效" });
 });
 
 test("refreshed library removes retired products and keeps ids unique", () => {

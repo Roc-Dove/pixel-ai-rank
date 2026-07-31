@@ -72,7 +72,7 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
       />
       <div className="pixel-content-stack">
         <nav className="pixel-breadcrumb" aria-label="面包屑">
-          <Link href="/signals"><ArrowLeft size={15} aria-hidden="true" /> 最新 AI 情报</Link>
+          <Link href="/signals"><ArrowLeft size={15} aria-hidden="true" /> 出海观察</Link>
           <span>/</span><span aria-current="page">{item.company}</span>
         </nav>
 
@@ -83,6 +83,7 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
               <time dateTime={item.date}>{formatSignalDate(item.date)}</time>
               <span>{item.company}</span>
               <span>{item.category}</span>
+              <span>{item.market}</span>
               {lifecycle.status !== "ongoing" ? <span className={`is-${lifecycle.status}`}>{lifecycle.label}</span> : null}
             </div>
             <h1>{item.title}</h1>
@@ -91,7 +92,7 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
               <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className={pixelButtonClassName({ tone: "blue" })}>
                 阅读官方原文 <ArrowUpRight size={16} aria-hidden="true" />
               </a>
-              <Link href="/signals" className={pixelButtonClassName({ tone: "ghost" })}><ArrowLeft size={16} aria-hidden="true" /> 返回情报页</Link>
+              <Link href="/signals" className={pixelButtonClassName({ tone: "ghost" })}><ArrowLeft size={16} aria-hidden="true" /> 返回出海观察</Link>
             </div>
           </header>
 
@@ -105,12 +106,12 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
               </section>
 
               <section>
-                <div className="pixel-news-detail-section-title"><Compass size={18} aria-hidden="true" /><h2>编辑解读</h2></div>
+                <div className="pixel-news-detail-section-title"><Compass size={18} aria-hidden="true" /><h2>出海看点</h2></div>
                 <p>{item.whyItMatters}</p>
               </section>
 
               <section className="pixel-news-action-card">
-                <div className="pixel-news-detail-section-title"><ListChecks size={18} aria-hidden="true" /><h2>评估维度</h2></div>
+                <div className="pixel-news-detail-section-title"><ListChecks size={18} aria-hidden="true" /><h2>关键变量</h2></div>
                 <p>{item.nextStep}</p>
               </section>
             </div>
@@ -122,6 +123,9 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
                 <dl>
                   <div><dt>发布方</dt><dd>{item.company}</dd></div>
                   <div><dt>官方来源</dt><dd>{item.sourceLabel}</dd></div>
+                  <div><dt>涉及市场</dt><dd>{item.market}</dd></div>
+                  <div><dt>涉及环节</dt><dd>{item.focus.join(" / ")}</dd></div>
+                  <div><dt>相关产品</dt><dd>{item.applicableTo.join(" / ")}</dd></div>
                   <div><dt>发布时间</dt><dd>{formatSignalDate(item.date)}</dd></div>
                   <div><dt>本站核验</dt><dd>{SIGNALS_LAST_VERIFIED.replaceAll("-", ".")}</dd></div>
                 </dl>
@@ -131,11 +135,11 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
               {relatedTools.length ? (
                 <section>
                   <span className="pixel-kicker">RELATED TOOLS</span>
-                  <h2>相关工具</h2>
+                  <h2>相关产品</h2>
                   <div className="pixel-news-related-tools">
                     {relatedTools.map((tool) => (
                       <Link href={`/library/${tool.id}`} key={tool.id}>
-                        <span>{tool.category}</span><strong>{tool.name}</strong><small>编辑评分 {tool.guide.recommendation}</small>
+                        <span>{tool.category}</span><strong>{tool.name}</strong><small>查看产品资料</small>
                       </Link>
                     ))}
                   </div>
@@ -148,8 +152,8 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
         {relatedSignals.length ? (
           <section className="pixel-news-more" aria-labelledby="more-signals-heading">
             <div className="pixel-section-heading compact">
-              <div><span className="pixel-kicker">RELATED UPDATES</span><h2 id="more-signals-heading">相关动态</h2></div>
-              <Link href="/signals">查看全部情报 <ArrowRight size={16} aria-hidden="true" /></Link>
+              <div><span className="pixel-kicker">RELATED WATCH</span><h2 id="more-signals-heading">相关出海观察</h2></div>
+              <Link href="/signals">查看全部观察 <ArrowRight size={16} aria-hidden="true" /></Link>
             </div>
             <div className="pixel-news-more-grid">
               {relatedSignals.map((related) => (
@@ -165,7 +169,7 @@ export default async function SignalDetailPage({ params }: SignalDetailPageProps
 
         <aside className="pixel-news-method-note">
           <ShieldCheck size={19} aria-hidden="true" />
-          <div><strong>编辑说明</strong><p>事实字段整理官方页面明确披露的信息；“编辑解读”和“评估维度”为 Pixel AI Rank 的编辑说明，不代表发布方观点。</p></div>
+          <div><strong>编辑说明</strong><p>事实字段整理原始页面明确披露的信息；“出海看点”和“关键变量”为 Pixel AI Rank 的编辑说明，不代表发布方观点，也不构成法律、税务或投资建议。</p></div>
         </aside>
       </div>
     </main>

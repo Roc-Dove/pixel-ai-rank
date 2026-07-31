@@ -11,10 +11,11 @@ import { RANK_TYPES } from "../types/rank";
 test("sitemap exposes every static content route exactly once", () => {
   const entries = sitemap();
   const urls = entries.map((entry) => entry.url);
-  const expectedCount = 3 + RANK_TYPES.length + SIGNAL_ITEMS.length + LIBRARY_ITEMS.length;
+  const expectedCount = 4 + RANK_TYPES.length + SIGNAL_ITEMS.length + LIBRARY_ITEMS.length;
 
   assert.equal(entries.length, expectedCount);
   assert.equal(new Set(urls).size, entries.length);
+  assert.ok(urls.includes(`${SITE_URL}/opc`));
   assert.ok(urls.includes(`${SITE_URL}/signals/${SIGNAL_ITEMS[0].id}`));
   assert.ok(urls.includes(`${SITE_URL}/library/${LIBRARY_ITEMS[0].id}`));
 });

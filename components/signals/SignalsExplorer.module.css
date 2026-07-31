@@ -33,10 +33,29 @@
   overflow: hidden;
   margin: 0;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   color: var(--px-text-muted);
   font-size: 0.82rem;
   line-height: 1.68;
+}
+
+.context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.context span {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--px-surface-muted);
+  padding: 0.25rem 0.58rem;
+  color: var(--px-text-muted);
+  font-size: 0.7rem;
+  font-weight: 680;
 }
 
 .lifecycle {

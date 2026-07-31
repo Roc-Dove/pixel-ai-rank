@@ -1,6 +1,6 @@
 import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
 import { absoluteUrl, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
-import { formatSignalImpact, getSignalLifecycle } from "@/lib/signals/utils";
+import { formatSignalImpact } from "@/lib/signals/utils";
 
 export const dynamic = "force-static";
 export const revalidate = 3600;
@@ -21,13 +21,12 @@ function toRfc822(date: string) {
 export function GET() {
   const items = SIGNAL_ITEMS.map((item) => {
     const url = absoluteUrl(`/signals/${item.id}`);
-    const lifecycle = getSignalLifecycle(item);
     const description = [
       item.summary,
-      `状态：${lifecycle.label}`,
-      `信息类型：${formatSignalImpact(item.impact)}`,
-      `编辑解读：${item.whyItMatters}`,
-      `评估维度：${item.nextStep}`,
+      `市场：${item.market}`,
+      `主线：${item.category} · ${formatSignalImpact(item.impact)}`,
+      `出海看点：${item.whyItMatters}`,
+      `关键变量：${item.nextStep}`,
     ].join("\n\n");
 
     return [
@@ -46,7 +45,7 @@ export function GET() {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
     "  <channel>",
-    `    <title>${SITE_NAME}｜最新 AI 情报</title>`,
+    `    <title>${SITE_NAME}｜出海观察</title>`,
     `    <link>${absoluteUrl("/signals")}</link>`,
     `    <description>${escapeXml(SITE_DESCRIPTION)}</description>`,
     "    <language>zh-CN</language>",

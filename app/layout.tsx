@@ -21,11 +21,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   applicationName: SITE_NAME,
   title: {
-    default: "Pixel AI Rank｜最新 AI 情报、排行榜与中文工具库",
+    default: "Pixel AI Rank｜AI 产品、KOL 与出海增长导航",
     template: "%s｜Pixel AI Rank",
   },
   description: SITE_DESCRIPTION,
-  keywords: ["AI 最新消息", "AI 排行榜", "AI 工具", "AI 导航", "AI Agent", "AI 编程"],
+  keywords: ["AI 产品出海", "AI 出海", "AI KOL", "海外增长", "AI 产品榜", "AI 产品库"],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Pixel AI Rank",
-    description: "汇总 AI 官方动态、排行榜与工具资料。",
+    description: "看 AI 产品，找中外 KOL，跟踪海外分发、渠道、本地化与商业化。",
     locale: "zh_CN",
     type: "website",
     url: "/",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: SITE_NAME,
-    description: "汇总 AI 官方动态、排行榜与工具资料。",
+    description: "看 AI 产品，找中外 KOL，跟踪海外分发、渠道、本地化与商业化。",
   },
 };
 

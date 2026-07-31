@@ -50,14 +50,14 @@ export async function generateMetadata({ params }: LibraryDetailPageProps): Prom
   const item = getLibraryItemWithGuide(id);
   if (!item) return {};
   return {
-    title: `${item.name} AI 工具资料`,
+    title: `${item.name} AI 产品资料`,
     description: item.descriptionZh,
     alternates: {
       canonical: `/library/${item.id}`,
       types: { "application/rss+xml": "/feed.xml" },
     },
     openGraph: {
-      title: `${item.name} AI 工具资料`,
+      title: `${item.name} AI 产品资料`,
       description: item.descriptionZh,
       type: "website",
       url: `/library/${item.id}`,
@@ -98,7 +98,7 @@ export default async function LibraryDetailPage({ params }: LibraryDetailPagePro
       />
       <div className="pixel-content-stack">
         <nav className="pixel-breadcrumb" aria-label="面包屑">
-          <Link href="/library"><ArrowLeft size={15} aria-hidden="true" /> AI 工具库</Link>
+          <Link href="/library"><ArrowLeft size={15} aria-hidden="true" /> AI 产品库</Link>
           <span>/</span><span aria-current="page">{item.name}</span>
         </nav>
 
@@ -123,7 +123,7 @@ export default async function LibraryDetailPage({ params }: LibraryDetailPagePro
           </div>
 
           <div className="pixel-detail-actions">
-            <Link href="/library" className={pixelButtonClassName({ tone: "ghost" })}><ArrowLeft size={16} aria-hidden="true" /> 返回工具库</Link>
+            <Link href="/library" className={pixelButtonClassName({ tone: "ghost" })}><ArrowLeft size={16} aria-hidden="true" /> 返回产品库</Link>
             {item.officialUrl ? (
               <a href={item.officialUrl} target="_blank" rel="noopener noreferrer" className={pixelButtonClassName({ tone: "blue" })}>
                 访问官网 <ArrowUpRight size={16} aria-hidden="true" />
@@ -141,7 +141,7 @@ export default async function LibraryDetailPage({ params }: LibraryDetailPagePro
           <DetailList title="适用对象" items={item.guide.bestFor} icon={Compass} tone="blue" />
           <DetailList title="使用限制" items={item.guide.notFor} icon={ShieldAlert} tone="red" />
           <DetailList title="典型使用场景" items={item.guide.useCases} icon={Lightbulb} tone="yellow" />
-          <DetailList title="同类工具" items={item.guide.alternatives} icon={ExternalLink} tone="purple" itemLinks={alternativeLinks} />
+          <DetailList title="同类产品" items={item.guide.alternatives} icon={ExternalLink} tone="purple" itemLinks={alternativeLinks} />
         </div>
 
         <section className="pixel-signal-card">
@@ -164,8 +164,8 @@ export default async function LibraryDetailPage({ params }: LibraryDetailPagePro
           <p>
             基础信息整理自 {item.sourceName}{item.verifiedAt ? `，最近通过官方来源核验于 ${item.verifiedAt.replaceAll("-", ".")}` : "，当前属于社区聚合资料，尚待逐项官方复核"}。
             {item.guideDepth === "individual"
-              ? " 编辑评分和“适用对象”包含该工具的个体化编辑评测。"
-              : ` 当前编辑评分和适用范围沿用「${item.category}」分类基线，不代表已经完成单工具深度评测。`}
+              ? " 编辑评分和“适用对象”包含该产品的个体化编辑评测。"
+              : ` 当前编辑评分和适用范围沿用「${item.category}」分类基线，不代表已经完成单产品深度评测。`}
             价格、隐私和授权条款需以官方最新页面为准。
           </p>
           <div className="pixel-source-links">

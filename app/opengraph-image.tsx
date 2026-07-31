@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { SIGNALS_LAST_VERIFIED } from "@/lib/signals/constants";
 
-export const alt = "Pixel AI Rank — AI signals, rankings and tools";
+export const alt = "Pixel AI Rank — AI products, KOLs and global growth";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -50,13 +50,13 @@ export default function OpenGraphImage() {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ display: "flex", color: "#8795ff", fontSize: 22, letterSpacing: 5 }}>
-            SIGNALS, NOT NOISE
+            PRODUCT × KOL × GLOBAL
           </div>
           <div style={{ display: "flex", maxWidth: 980, fontSize: 78, fontWeight: 850, lineHeight: 1.03 }}>
-            AI updates you can act on.
+            中国 AI 产品，如何走向全球。
           </div>
           <div style={{ display: "flex", color: "#b5c0d2", fontSize: 27 }}>
-            Official sources · Decision context · Chinese tool guides
+            Products · Creators · Distribution · Localization
           </div>
         </div>
 

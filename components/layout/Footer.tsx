@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Code2, Database, RefreshCw, Rss } from "lucide-react";
+import { Database, Globe2, RefreshCw, Rss, ShieldCheck } from "lucide-react";
 import { PixelMark } from "@/components/ui/PixelMark";
 
 export function Footer() {
@@ -11,31 +11,33 @@ export function Footer() {
             <PixelMark />
             <div>
               <strong>PIXEL AI RANK</strong>
-              <span>汇总 AI 官方动态、排行榜与工具资料。</span>
+              <span>AI 产品、KOL 与出海增长导航。</span>
             </div>
           </div>
-          <p>产品榜、KOL 信号与中文 AI 工具资料。数据来源、降级状态和算法口径都会明确标注。</p>
+          <p>为中国 AI 产品团队整理产品样本、中文与海外 KOL、可追溯的 OPC 案例，以及分发、支付、本地化和平台规则变化。</p>
         </div>
 
         <div className="pixel-footer-column">
           <span className="pixel-footer-heading">探索</span>
-          <Link href="/">产品总览</Link>
-          <Link href="/signals">最新 AI 情报</Link>
-          <Link href="/rank/aicpb">AI 排行榜</Link>
-          <Link href="/library">AI 工具库</Link>
+          <Link href="/rank/aicpb">出海产品</Link>
+          <Link href="/library">AI 产品库</Link>
+          <Link href="/rank/xhunt_cn">中文 KOL</Link>
+          <Link href="/rank/xhunt_global">全球 KOL</Link>
+          <Link href="/opc">AI 出海 OPC</Link>
+          <Link href="/signals">出海观察</Link>
           <a href="/feed.xml"><Rss size={15} aria-hidden="true" />订阅 RSS</a>
         </div>
 
         <div className="pixel-footer-column">
           <span className="pixel-footer-heading">数据承诺</span>
-          <span><RefreshCw size={15} aria-hidden="true" />最新情报只收录官方一手来源</span>
+          <span><RefreshCw size={15} aria-hidden="true" />观察条目均附原始来源与日期</span>
           <span><Database size={15} aria-hidden="true" />真实抓取与本站精选分开标识</span>
-          <span><Code2 size={15} aria-hidden="true" />Next.js + Prisma 数据架构</span>
+          <span><ShieldCheck size={15} aria-hidden="true" />事实与编辑判断分开呈现</span>
         </div>
       </div>
       <div className="pixel-footer-bottom">
         <span>© {new Date().getFullYear()} Pixel AI Rank</span>
-        <span>Official signals, clearly organized.</span>
+        <span><Globe2 size={14} aria-hidden="true" /> Products, people and global growth.</span>
       </div>
     </footer>
   );

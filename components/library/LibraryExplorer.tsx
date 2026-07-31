@@ -131,12 +131,12 @@ export function LibraryExplorer({ items }: { items: LibraryCardItem[] }) {
         <section className="pixel-library-hero">
           <div>
             <span className="pixel-kicker"><LibraryBig size={16} aria-hidden="true" /> CURATED AI LIBRARY</span>
-            <h1>AI 工具库</h1>
-            <p>按场景、人群和上手难度筛选；工具详情补充评分口径与适用范围。</p>
+            <h1>AI 产品库</h1>
+            <p>按场景、人群和上手难度筛选；产品详情补充来源、适用范围与编辑口径。</p>
           </div>
-          <figure className="pixel-library-category-map" aria-label={`${items.length} 个工具的热门分类分布`}>
+          <figure className="pixel-library-category-map" aria-label={`${items.length} 个产品的热门分类分布`}>
             <header>
-              <div><strong>{items.length}</strong><span>精选工具</span></div>
+              <div><strong>{items.length}</strong><span>收录产品</span></div>
               <small>{LIBRARY_CATEGORIES.length} 个分类</small>
             </header>
             <div>
@@ -145,7 +145,7 @@ export function LibraryExplorer({ items }: { items: LibraryCardItem[] }) {
                   type="button"
                   key={category}
                   className={activeCategory === category ? "is-active" : ""}
-                  aria-label={`筛选 ${category}，${count} 个工具`}
+                  aria-label={`筛选 ${category}，${count} 个产品`}
                   aria-pressed={activeCategory === category}
                   onClick={() => setActiveCategory(category)}
                 >
@@ -176,7 +176,7 @@ export function LibraryExplorer({ items }: { items: LibraryCardItem[] }) {
           </div>
 
           <div className="pixel-filter-row">
-            <span className="pixel-filter-label"><LibraryBig size={15} aria-hidden="true" /> 工具分类</span>
+            <span className="pixel-filter-label"><LibraryBig size={15} aria-hidden="true" /> 产品分类</span>
             <div className="pixel-filter-options">
               <button className={pixelButtonClassName({ tone: activeCategory === ALL_CATEGORIES ? "purple" : "ghost", active: activeCategory === ALL_CATEGORIES })} aria-pressed={activeCategory === ALL_CATEGORIES} onClick={() => setActiveCategory(ALL_CATEGORIES)}>全部 / {items.length}</button>
               {categories.map(({ category, count }) => (
@@ -196,7 +196,7 @@ export function LibraryExplorer({ items }: { items: LibraryCardItem[] }) {
         </section>
 
         <div className="pixel-library-toolbar" aria-live="polite">
-          <div><strong>{filteredItems.length}</strong><span> 个匹配工具</span>{search ? <small>关键词：{search}</small> : null}</div>
+          <div><strong>{filteredItems.length}</strong><span> 个匹配产品</span>{search ? <small>关键词：{search}</small> : null}</div>
           <label>
             <span>排序</span>
             <select value={sortMode} onChange={(event) => setSortMode(event.target.value as LibrarySort)}>
@@ -210,13 +210,13 @@ export function LibraryExplorer({ items }: { items: LibraryCardItem[] }) {
 
         {filteredItems.length > 0 ? (
           <>
-            <section className="pixel-library-grid" aria-label="AI 工具列表">
+            <section className="pixel-library-grid" aria-label="AI 产品列表">
               {visibleItems.map((item) => <LibraryCard key={item.id} item={item} />)}
             </section>
             {hasMore ? (
               <div className="pixel-load-more">
                 <p>已显示 {visibleItems.length} / {filteredItems.length}</p>
-                <PixelButton tone="ghost" onClick={() => setPagination({ key: filterKey, limit: visibleLimit + PAGE_SIZE })}>加载更多工具</PixelButton>
+                <PixelButton tone="ghost" onClick={() => setPagination({ key: filterKey, limit: visibleLimit + PAGE_SIZE })}>加载更多产品</PixelButton>
               </div>
             ) : null}
           </>

@@ -12,7 +12,7 @@ import styles from "./SignalsExplorer.module.css";
 
 const ALL_CATEGORIES = "全部";
 const ALL_IMPACTS = "全部类型";
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 12;
 
 function SignalCard({ item }: { item: SignalItem }) {
   const lifecycle = getSignalLifecycle(item);
@@ -25,6 +25,7 @@ function SignalCard({ item }: { item: SignalItem }) {
         date={item.date}
         id={item.id}
         impact={item.impact}
+        market={item.market}
         sourceLabel={item.sourceLabel}
         sourceUrl={item.sourceUrl}
         title={item.title}
@@ -32,6 +33,9 @@ function SignalCard({ item }: { item: SignalItem }) {
 
       <div className={styles.copy}>
         <p>{item.summary}</p>
+        <div className={styles.context} aria-label={`涉及环节：${item.focus.join("、")}`}>
+          {item.focus.slice(0, 3).map((focus) => <span key={focus}>{focus}</span>)}
+        </div>
       </div>
 
       {lifecycle.status !== "ongoing" ? (
@@ -48,10 +52,10 @@ function SignalCard({ item }: { item: SignalItem }) {
           className={`${pixelButtonClassName({ tone: "blue" })} ${styles.detailLink}`}
           aria-label={`查看“${item.title}”详情`}
         >
-          查看详情 <ArrowRight size={15} aria-hidden="true" />
+          阅读观察 <ArrowRight size={15} aria-hidden="true" />
         </Link>
         <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className={styles.officialLink}>
-          官方原文 <ArrowUpRight size={15} aria-hidden="true" />
+          原始来源 <ArrowUpRight size={15} aria-hidden="true" />
         </a>
       </div>
     </article>
@@ -79,6 +83,9 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
         item.summary,
         item.whyItMatters,
         item.nextStep,
+        item.market,
+        ...item.focus,
+        ...item.applicableTo,
         ...item.tags,
         ...item.facts,
       ].join(" ").toLowerCase();
@@ -100,14 +107,14 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
     <>
       <section className="pixel-news-filter" aria-labelledby="news-filter-heading">
         <div className="pixel-news-filter-head">
-          <div><Filter size={17} aria-hidden="true" /><h2 id="news-filter-heading">动态筛选</h2></div>
+          <div><Filter size={17} aria-hidden="true" /><h2 id="news-filter-heading">筛选出海观察</h2></div>
           {hasFilters ? (
             <button type="button" onClick={resetFilters}><RotateCcw size={15} aria-hidden="true" /> 重置</button>
           ) : null}
         </div>
 
         <div className="pixel-news-filter-group">
-          <span>主题</span>
+          <span>主线</span>
           <div>
             <button type="button" className={category === ALL_CATEGORIES ? "is-active" : ""} aria-pressed={category === ALL_CATEGORIES} onClick={() => setCategory(ALL_CATEGORIES)}>全部</button>
             {SIGNAL_CATEGORIES.map((item) => (
@@ -117,7 +124,7 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
         </div>
 
         <div className="pixel-news-filter-group">
-          <span>信息类型</span>
+          <span>内容类型</span>
           <div>
             <button type="button" className={impact === ALL_IMPACTS ? "is-active" : ""} aria-pressed={impact === ALL_IMPACTS} onClick={() => setImpact(ALL_IMPACTS)}>全部类型</button>
             {SIGNAL_IMPACTS.map((item) => (
@@ -128,13 +135,13 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
       </section>
 
       <div className="pixel-news-toolbar" aria-live="polite">
-        <div><ShieldCheck size={16} aria-hidden="true" /><strong>{filteredItems.length}</strong><span> 条官方来源动态</span></div>
+        <div><ShieldCheck size={16} aria-hidden="true" /><strong>{filteredItems.length}</strong><span> 条带原始来源的观察</span></div>
         {search ? <span>搜索：{search}</span> : <span><CalendarClock size={15} aria-hidden="true" /> 按发布时间倒序</span>}
       </div>
 
       {filteredItems.length ? (
         <>
-          <section className="pixel-news-grid" aria-label="最新 AI 情报">
+          <section className="pixel-news-grid" aria-label="最新出海观察">
             {visibleItems.map((item) => <SignalCard key={item.id} item={item} />)}
           </section>
           {hasMore ? (
@@ -152,7 +159,7 @@ export function SignalsExplorer({ items }: { items: SignalItem[] }) {
       ) : (
         <section className="pixel-empty">
           <SearchX size={26} aria-hidden="true" />
-          <div><h2>没有匹配的动态</h2><p>换一个关键词，或者重置主题和信息类型。</p></div>
+          <div><h2>没有匹配的观察</h2><p>换一个关键词，或者重置主线和内容类型。</p></div>
           {hasFilters ? <PixelButton tone="blue" onClick={resetFilters}>重置筛选</PixelButton> : null}
         </section>
       )}

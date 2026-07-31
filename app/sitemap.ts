@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { LIBRARY_ITEMS } from "@/lib/library/items";
+import { OPC_LAST_VERIFIED } from "@/lib/opc/items";
 import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
 import { absoluteUrl } from "@/lib/site";
 import { RANK_TYPES } from "@/types/rank";
@@ -23,6 +24,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: absoluteUrl("/library"),
       lastModified: verifiedAt,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: absoluteUrl("/opc"),
+      lastModified: `${OPC_LAST_VERIFIED}T00:00:00+08:00`,
       changeFrequency: "weekly",
       priority: 0.9,
     },

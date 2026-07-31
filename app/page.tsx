@@ -1,31 +1,29 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
 import Link from "next/link";
 import {
-  Activity,
   ArrowRight,
+  ArrowUpRight,
+  Boxes,
   FileCheck2,
-  Gauge,
-  GraduationCap,
-  LibraryBig,
-  ListChecks,
-  Radio,
-  Scale,
+  Globe2,
+  Languages,
+  Megaphone,
   ShieldCheck,
-  Sparkles,
-  Trophy,
-  Workflow,
-  type LucideIcon,
+  UsersRound,
 } from "lucide-react";
 import { LibraryLogo } from "@/components/library/LibraryLogo";
-import { SignalPulse } from "@/components/signals/SignalPulse";
-import { pixelButtonClassName } from "@/components/ui/PixelButton";
+import { ProfileAvatar } from "@/components/ui/ProfileAvatar";
 import { getLibraryItemsWithGuide } from "@/lib/library/guide";
+import { FEATURED_OPC_CASES, OPC_LAST_VERIFIED } from "@/lib/opc/items";
+import { getRankPayload } from "@/lib/rank-data";
 import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
-import { formatSignalDate, formatSignalImpact } from "@/lib/signals/utils";
-import { SIGNAL_CATEGORIES, SIGNAL_IMPACTS, type SignalCategory, type SignalImpact } from "@/types/signal";
+import { formatSignalDate } from "@/lib/signals/utils";
+import type { RankItemDto } from "@/types/rank";
+import styles from "./home.module.css";
 
 export const metadata: Metadata = {
+  title: "AI 产品、KOL 与出海观察",
+  description: "面向中国 AI 产品团队，整理产品机会、KOL 传播与海外市场变化。",
   alternates: {
     canonical: "/",
     types: { "application/rss+xml": "/feed.xml" },
@@ -34,255 +32,349 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-type HomeSignalVisual = {
-  value: string;
-  label: string;
-  icon: LucideIcon;
-  tone: "blue" | "coral" | "purple" | "green";
-  nodes?: string[];
-};
+function KolPanel({
+  eyebrow,
+  title,
+  href,
+  linkLabel,
+  items,
+  language,
+}: {
+  eyebrow: string;
+  title: string;
+  href: string;
+  linkLabel: string;
+  items: RankItemDto[];
+  language: "zh" | "en";
+}) {
+  return (
+    <article className={styles.kolPanel}>
+      <header className={styles.panelHeader}>
+        <div>
+          <span>{eyebrow}</span>
+          <h3>{title}</h3>
+        </div>
+        <Link href={href} aria-label={linkLabel}>
+          查看全部 <ArrowRight size={16} aria-hidden="true" />
+        </Link>
+      </header>
 
-const HOME_SIGNAL_VISUALS: Record<string, HomeSignalVisual> = {
-  "chatgpt-academic-researchers": {
-    value: "10万",
-    label: "计划覆盖研究者",
-    icon: GraduationCap,
-    tone: "blue",
-    nodes: ["1 万起步", "2027", "10 万"],
-  },
-  "gpt-5-6-efficiency-engineering": {
-    value: "−20%",
-    label: "披露服务成本",
-    icon: Gauge,
-    tone: "green",
-    nodes: ["推理", "负载", "内核"],
-  },
-  "microsoft-project-perception": {
-    value: "4 层",
-    label: "Agent 安全边界",
-    icon: ShieldCheck,
-    tone: "purple",
-    nodes: ["身份", "权限", "执行", "审计"],
-  },
-  "meta-muse-spark-acts": {
-    value: "执行",
-    label: "从回答走向行动",
-    icon: Workflow,
-    tone: "coral",
-    nodes: ["观察", "推理", "行动"],
-  },
-};
-
-function getFallbackSignalVisual(category: SignalCategory): HomeSignalVisual {
-  return {
-    value: category.replace("升级", ""),
-    label: "最新官方动态",
-    icon: Activity,
-    tone: "blue",
-  };
+      <div className={styles.kolList}>
+        {items.map((item) => (
+          <a
+            key={item.name}
+            className={styles.kolCard}
+            href={item.externalLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`查看 ${item.name} 的公开主页`}
+          >
+            <ProfileAvatar className={styles.kolAvatar} imageUrl={item.logoUrl} name={item.name} profileUrl={item.externalLink} />
+            <div>
+              <strong>{item.name}</strong>
+              <p lang={language}>{item.description ?? "AI 产品与行业观察"}</p>
+            </div>
+            <ArrowUpRight size={17} aria-hidden="true" />
+          </a>
+        ))}
+      </div>
+    </article>
+  );
 }
 
-export default function HomePage() {
-  const libraryItems = getLibraryItemsWithGuide();
-  const topTools = [...libraryItems]
-    .filter((item) => item.officialUrl && item.guideDepth === "individual")
-    .sort((left, right) => right.guide.recommendation - left.guide.recommendation || left.name.localeCompare(right.name))
-    .slice(0, 6);
-  const latestSignals = SIGNAL_ITEMS.slice(0, 4);
-  const impactCounts = SIGNAL_IMPACTS.reduce(
-    (counts, impact) => {
-      counts[impact] = SIGNAL_ITEMS.filter((item) => item.impact === impact).length;
-      return counts;
-    },
-    {} as Record<SignalImpact, number>,
-  );
-  const categoryCounts = SIGNAL_CATEGORIES.map((category) => ({
-    category,
-    count: SIGNAL_ITEMS.filter((item) => item.category === category).length,
-  }));
-  const companies = new Set(SIGNAL_ITEMS.map((item) => item.company)).size;
-  const verifiedStamp = SIGNALS_LAST_VERIFIED.replaceAll("-", ".");
+export default async function HomePage() {
+  const [productPayload, cnKolPayload, globalKolPayload] = await Promise.all([
+    getRankPayload("aicpb"),
+    getRankPayload("xhunt_cn"),
+    getRankPayload("xhunt_global"),
+  ]);
+
+  const observations = SIGNAL_ITEMS.slice(0, 5);
+  const libraryCount = getLibraryItemsWithGuide().length;
+  const marketBriefs = observations.slice(0, 3);
+  const leadObservation = observations[0];
+  const secondaryObservations = observations.slice(1);
+  const products = productPayload.items.slice(0, 6);
+  const cnKols = cnKolPayload.items.slice(0, 3);
+  const globalKols = globalKolPayload.items.slice(0, 3);
+  const kolCount = cnKolPayload.items.length + globalKolPayload.items.length;
 
   return (
-    <main id="main-content" className="pixel-home pixel-home-visual-refresh" tabIndex={-1}>
-      <section className="pixel-home-hero pixel-home-hero-visual">
-        <div className="pixel-home-hero-copy">
-          <span className="pixel-kicker"><Radio size={16} aria-hidden="true" /> VERIFIED {verifiedStamp}</span>
-          <h1>每天 3 分钟，<br /><span>看懂 AI 在变什么。</span></h1>
-          <p>收录经核验的官方 AI 动态，并标注发布时间、来源和信息类型。</p>
-          <div className="pixel-home-actions">
-            <Link href="/signals" className={pixelButtonClassName({ tone: "blue" })}>
-              浏览 AI 动态 <ArrowRight size={17} aria-hidden="true" />
+    <main id="main-content" className={styles.main} tabIndex={-1}>
+      <section className={styles.hero} aria-labelledby="home-hero-title">
+        <div className={styles.heroCopy}>
+          <span className={styles.eyebrow}><Globe2 size={16} aria-hidden="true" /> PRODUCT × KOL × GLOBAL</span>
+          <h1 id="home-hero-title">中国 AI 产品，<br /><span>如何走向全球。</span></h1>
+          <p>产品机会、KOL 扩散与海外市场变化，放在同一张图里。</p>
+
+          <div className={styles.heroActions}>
+            <Link href="/signals" className={styles.primaryAction}>
+              查看出海观察 <ArrowRight size={17} aria-hidden="true" />
             </Link>
-            <Link href="/library" className={pixelButtonClassName({ tone: "ghost" })}>
-              浏览工具库
+            <Link href="/rank/aicpb" className={styles.secondaryAction}>
+              浏览出海产品
             </Link>
           </div>
-          <div className="pixel-home-proofline" aria-label="情报核验摘要">
-            <span><strong>100%</strong> 官方源</span>
-            <i aria-hidden="true" />
-            <span><strong>{companies}</strong> 家公司</span>
-            <i aria-hidden="true" />
-            <span><strong>{SIGNAL_ITEMS.length}</strong> 条信号</span>
+
+          <div className={styles.coverage} aria-label="当前可浏览内容">
+            <span><strong>{productPayload.items.length}</strong> 个出海产品</span>
+            <span><strong>{kolCount}</strong> 位中外 KOL</span>
+            <span><strong>{SIGNAL_ITEMS.length}</strong> 条来源观察</span>
           </div>
         </div>
 
-        <SignalPulse
-          total={SIGNAL_ITEMS.length}
-          companies={companies}
-          impactCounts={impactCounts}
-          categoryCounts={categoryCounts}
-        />
-      </section>
+        <aside className={styles.marketDesk} aria-labelledby="market-desk-title">
+          <header>
+            <div>
+              <span>GLOBAL DESK</span>
+              <h2 id="market-desk-title">本期市场观察</h2>
+            </div>
+            <small>核验至 {SIGNALS_LAST_VERIFIED.replaceAll("-", ".")}</small>
+          </header>
 
-      <section className="pixel-home-section pixel-home-news pixel-home-visual-news">
-        <div className="pixel-section-heading">
-          <div>
-            <span className="pixel-kicker"><Radio size={15} aria-hidden="true" /> SIGNAL SNAPSHOT</span>
-            <h2>近期 AI 动态</h2>
-          </div>
-          <Link href="/signals">查看全部 {SIGNAL_ITEMS.length} 条 <ArrowRight size={16} aria-hidden="true" /></Link>
-        </div>
-
-        <div className="pixel-snapshot-grid">
-          {latestSignals.map((item, index) => {
-            const visual = HOME_SIGNAL_VISUALS[item.id] ?? getFallbackSignalVisual(item.category);
-            const VisualIcon = visual.icon;
-
-            return (
-              <Link
-                href={`/signals/${item.id}`}
-                key={item.id}
-                className={`pixel-snapshot-card tone-${visual.tone} ${index === 0 ? "is-lead" : ""}`}
-              >
-                <div className="pixel-snapshot-meta">
-                  <span>{item.company}</span>
+          <ol className={styles.marketBriefList}>
+            {marketBriefs.map((item, index) => (
+              <li key={item.id}>
+                <Link href={`/signals/${item.id}`}>
+                  <span className={styles.briefIndex}>0{index + 1}</span>
+                  <span className={styles.briefCopy}>
+                    <span>{item.market} · {item.focus[0]}</span>
+                    <strong>{item.title}</strong>
+                  </span>
                   <time dateTime={item.date}>{formatSignalDate(item.date)}</time>
-                  <strong>{formatSignalImpact(item.impact)}</strong>
-                </div>
-                <div className="pixel-snapshot-visual">
-                  <span className="pixel-snapshot-icon"><VisualIcon size={index === 0 ? 34 : 26} strokeWidth={1.65} aria-hidden="true" /></span>
-                  <div>
-                    <strong>{visual.value}</strong>
-                    <span>{visual.label}</span>
-                  </div>
-                  {visual.nodes ? (
-                    <div className="pixel-snapshot-nodes" aria-label={visual.nodes.join("，")}>
-                      {visual.nodes.map((node) => <span key={node}>{node}</span>)}
-                    </div>
-                  ) : null}
-                </div>
-                <h3>{item.title}</h3>
-                <span className="pixel-entry-link">查看详情 <ArrowRight size={16} aria-hidden="true" /></span>
-              </Link>
-            );
-          })}
-        </div>
+                </Link>
+              </li>
+            ))}
+          </ol>
+
+          <footer>
+            <ShieldCheck size={16} aria-hidden="true" />
+            <span>只展示可追溯的公司、日期与原始来源</span>
+          </footer>
+        </aside>
       </section>
 
-      <section className="pixel-home-section pixel-home-decisions">
-        <div className="pixel-section-heading">
+      <section className={styles.section} aria-labelledby="paths-title">
+        <header className={styles.sectionHeader}>
           <div>
-            <span className="pixel-kicker">SITE INDEX</span>
-            <h2>按内容类型浏览</h2>
+            <span className={styles.sectionEyebrow}>THREE LENSES</span>
+            <h2 id="paths-title">产品、传播者与市场</h2>
           </div>
-        </div>
+          <p>三个入口，对应一支出海团队最常查看的三类信息。</p>
+        </header>
 
-        <div className="pixel-decision-grid">
-          <Link href="/signals" className="pixel-decision-card tone-red">
-            <div className="pixel-decision-graphic is-wave" aria-hidden="true">
-              {[28, 58, 42, 84, 52, 70, 34].map((height, index) => (
-                <i key={`${height}-${index}`} style={{ "--wave-height": `${height}%` } as CSSProperties} />
+        <div className={styles.pathGrid}>
+          <Link href="/library" className={`${styles.pathCard} ${styles.productPath}`}>
+            <header>
+              <span className={styles.pathIcon}><Boxes size={22} aria-hidden="true" /></span>
+              <span>{libraryCount} 个产品</span>
+            </header>
+            <div className={styles.logoCluster} aria-hidden="true">
+              {products.slice(0, 4).map((item) => (
+                <span key={item.name}><LibraryLogo name={item.name} officialUrl={item.externalLink} /></span>
               ))}
             </div>
-            <div>
-              <span><Radio size={18} aria-hidden="true" /> {SIGNAL_ITEMS.length} 条已核验</span>
-              <h3>最新 AI 动态</h3>
-              <p>按发布时间查看官方发布。</p>
+            <div className={styles.pathCopy}>
+              <h3>产品图谱</h3>
+              <p>查看产品定位、适用人群与出海资料。</p>
             </div>
-            <ArrowRight size={19} aria-hidden="true" />
+            <span className={styles.pathFooter}>进入产品库 <ArrowRight size={17} aria-hidden="true" /></span>
           </Link>
 
-          <Link href="/library" className="pixel-decision-card tone-blue">
-            <div className="pixel-decision-graphic is-mosaic" aria-hidden="true">
-              {Array.from({ length: 9 }, (_, index) => <i key={index} />)}
+          <Link href="/rank/xhunt_cn" className={`${styles.pathCard} ${styles.kolPath}`}>
+            <header>
+              <span className={styles.pathIcon}><UsersRound size={22} aria-hidden="true" /></span>
+              <span>{kolCount} 位 KOL</span>
+            </header>
+            <div className={styles.avatarCluster} aria-label="中文与全球 KOL 样本">
+              {[...cnKols.slice(0, 2), ...globalKols.slice(0, 2)].map((item) => (
+                <ProfileAvatar
+                  key={`${item.name}-path`}
+                  className={`${styles.kolAvatar} ${styles.kolAvatarCompact}`}
+                  imageUrl={item.logoUrl}
+                  name={item.name}
+                  profileUrl={item.externalLink}
+                />
+              ))}
             </div>
-            <div>
-              <span><LibraryBig size={18} aria-hidden="true" /> {libraryItems.length} 个工具</span>
-              <h3>AI 工具分类</h3>
-              <p>按人群、场景与难度筛选。</p>
+            <div className={styles.pathCopy}>
+              <h3>KOL 观察</h3>
+              <p>按中文与全球视角查看产品传播者。</p>
             </div>
-            <ArrowRight size={19} aria-hidden="true" />
+            <span className={styles.pathFooter}>查看 KOL <ArrowRight size={17} aria-hidden="true" /></span>
           </Link>
 
-          <Link href="/rank/month" className="pixel-decision-card tone-purple">
-            <div className="pixel-decision-graphic is-podium" aria-hidden="true">
-              <i><span>2</span></i><i><span>1</span></i><i><span>3</span></i>
+          <Link href="/signals" className={`${styles.pathCard} ${styles.globalPath}`}>
+            <header>
+              <span className={styles.pathIcon}><Globe2 size={22} aria-hidden="true" /></span>
+              <span>{observations.length} 条本期观察</span>
+            </header>
+            <ul className={styles.pathSignalList} aria-label="本期出海观察样本">
+              {marketBriefs.map((item) => (
+                <li key={`${item.id}-path`}><span>{item.company}</span><strong>{item.tags[0] ?? item.category}</strong></li>
+              ))}
+            </ul>
+            <div className={styles.pathCopy}>
+              <h3>出海市场</h3>
+              <p>聚焦成本、渠道、产品交付与全球变化。</p>
             </div>
-            <div>
-              <span><Trophy size={18} aria-hidden="true" /> 5 份榜单</span>
-              <h3>AI 产品榜单</h3>
-              <p>查看榜单结果与数据口径。</p>
-            </div>
-            <ArrowRight size={19} aria-hidden="true" />
+            <span className={styles.pathFooter}>浏览市场观察 <ArrowRight size={17} aria-hidden="true" /></span>
           </Link>
         </div>
       </section>
 
-      <section className="pixel-home-section pixel-home-picks pixel-home-tool-radar">
-        <div className="pixel-section-heading">
-          <div>
-            <span className="pixel-kicker"><Sparkles size={15} aria-hidden="true" /> TOOL RADAR</span>
-            <h2>综合评分靠前的 6 个工具</h2>
-          </div>
-          <Link href="/library">打开工具库 <ArrowRight size={16} aria-hidden="true" /></Link>
-        </div>
+      {leadObservation ? (
+        <section className={styles.section} aria-labelledby="observations-title">
+          <header className={styles.sectionHeader}>
+            <div>
+              <span className={styles.sectionEyebrow}>GLOBAL WATCH</span>
+              <h2 id="observations-title">最新出海观察</h2>
+            </div>
+            <p>从官方发布中筛出影响产品成本、渠道、开发与全球交付的变化。</p>
+            <Link href="/signals" className={styles.sectionLink}>全部观察 <ArrowRight size={16} aria-hidden="true" /></Link>
+          </header>
 
-        <div className="pixel-tool-radar-grid">
-          {topTools.map((item, index) => (
-            <Link href={`/library/${item.id}`} key={item.id} className="pixel-tool-radar-card">
-              <span className="pixel-tool-rank">0{index + 1}</span>
-              <LibraryLogo name={item.name} officialUrl={item.officialUrl} />
-              <div className="pixel-tool-radar-copy">
-                <h3>{item.name}</h3>
-                <span>{item.category}</span>
+          <div className={styles.observationGrid}>
+            <Link href={`/signals/${leadObservation.id}`} className={styles.leadObservation}>
+              <div className={styles.leadCover}>
+                <span>{leadObservation.company}</span>
+                <time dateTime={leadObservation.date}>{formatSignalDate(leadObservation.date)}</time>
+                <strong>{leadObservation.sourceLabel}</strong>
               </div>
-              <div
-                className="pixel-tool-score-ring"
-                style={{ "--tool-score": `${item.guide.recommendation * 3.6}deg` } as CSSProperties}
-                role="img"
-                aria-label={`${item.name} 编辑评分 ${item.guide.recommendation}`}
-              >
-                <strong>{item.guide.recommendation}</strong>
+              <div className={styles.leadBody}>
+                <div className={styles.signalMeta}>
+                  <span>{leadObservation.category}</span>
+                  {leadObservation.tags.slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}
+                </div>
+                <h3>{leadObservation.title}</h3>
+                <p>{leadObservation.summary}</p>
+                <span className={styles.cardLink}>查看来源与解读 <ArrowRight size={16} aria-hidden="true" /></span>
               </div>
             </Link>
-          ))}
+
+            <div className={styles.secondaryObservationGrid}>
+              {secondaryObservations.map((item) => (
+                <Link href={`/signals/${item.id}`} key={item.id} className={styles.secondaryObservation}>
+                  <div className={styles.signalMeta}>
+                    <span>{item.company}</span>
+                    <time dateTime={item.date}>{formatSignalDate(item.date)}</time>
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.summary}</p>
+                  <footer><span>{item.market}</span><ArrowRight size={16} aria-hidden="true" /></footer>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <section className={styles.section} aria-labelledby="kol-title">
+        <header className={styles.sectionHeader}>
+          <div>
+            <span className={styles.sectionEyebrow}>KOL WATCH</span>
+            <h2 id="kol-title">谁在塑造 AI 产品认知</h2>
+          </div>
+          <p>中文圈帮助理解本地传播，全球账号连接海外产品与开发者语境。</p>
+        </header>
+
+        <div className={styles.kolGrid}>
+          <KolPanel
+            eyebrow="CHINESE VOICES"
+            title="中文 KOL"
+            href="/rank/xhunt_cn"
+            linkLabel="查看全部中文 KOL"
+            items={cnKols}
+            language="zh"
+          />
+          <KolPanel
+            eyebrow="GLOBAL VOICES"
+            title="Global KOL"
+            href="/rank/xhunt_global"
+            linkLabel="查看全部全球 KOL"
+            items={globalKols}
+            language="en"
+          />
         </div>
       </section>
 
-      <section className="pixel-trust-flow" aria-labelledby="trust-flow-heading">
-        <header>
-          <span className="pixel-kicker">EDITORIAL METHOD</span>
-          <h2 id="trust-flow-heading">信息整理方式</h2>
+      <section className={styles.section} aria-labelledby="opc-title">
+        <header className={styles.sectionHeader}>
+          <div>
+            <span className={styles.sectionEyebrow}>AI-NATIVE OPC</span>
+            <h2 id="opc-title">四种已跑通的 AI 出海方向</h2>
+          </div>
+          <p>当前一人运营、公开结果和出海路径同时可追溯；收入均保留披露日期。</p>
+          <Link href="/opc" className={styles.sectionLink}>查看 OPC 案例 <ArrowRight size={16} aria-hidden="true" /></Link>
         </header>
-        <div>
-          <span className="pixel-trust-node">
-            <i><FileCheck2 size={23} aria-hidden="true" /></i>
-            <strong>官方原文</strong>
-            <small>只从一手信源开始</small>
-          </span>
-          <ArrowRight className="pixel-trust-arrow" size={20} aria-hidden="true" />
-          <span className="pixel-trust-node">
-            <i><Scale size={23} aria-hidden="true" /></i>
-            <strong>编辑核验</strong>
-            <small>事实和判断分开</small>
-          </span>
-          <ArrowRight className="pixel-trust-arrow" size={20} aria-hidden="true" />
-          <span className="pixel-trust-node">
-            <i><ListChecks size={23} aria-hidden="true" /></i>
-            <strong>编辑解读</strong>
-            <small>标注影响范围与评估维度</small>
-          </span>
+
+        <div className={styles.opcGrid}>
+          {FEATURED_OPC_CASES.map((item) => (
+            <article key={item.id} className={styles.opcCard}>
+              <header>
+                <a href={item.productUrl} target="_blank" rel="noopener noreferrer" aria-label={`打开 ${item.name} 官网`}>
+                  <span className={styles.opcLogo}><LibraryLogo name={item.name} officialUrl={item.productUrl} /></span>
+                  <span><strong>{item.name}</strong><small>{item.founder}</small></span>
+                </a>
+                <span className={styles.opcStatus}>{item.statusLabel}</span>
+              </header>
+
+              <div className={styles.opcDirection}>{item.direction}<span>{item.founderRegion}</span></div>
+
+              <div className={styles.opcMetric}>
+                <strong>{item.resultValue}</strong>
+                <span>{item.resultLabel}</span>
+                <time dateTime={item.resultAsOf}>{item.resultAsOf.replaceAll("-", ".")}</time>
+              </div>
+
+              <div className={styles.opcRoute}>
+                <span>{item.channels[0]}</span><ArrowRight size={14} aria-hidden="true" /><span>{item.businessModel}</span>
+              </div>
+
+              <footer>
+                <span>{item.teamSummary}</span>
+                <a href={item.resultEvidence.url} target="_blank" rel="noopener noreferrer">
+                  {item.resultEvidence.label} <ArrowUpRight size={14} aria-hidden="true" />
+                </a>
+              </footer>
+            </article>
+          ))}
+        </div>
+
+        <div className={styles.opcDisclosure}>
+          <ShieldCheck size={16} aria-hidden="true" />
+          <span>核验至 {OPC_LAST_VERIFIED.replaceAll("-", ".")}：创始人自报不等同于审计数据；一人公司与极小团队分开呈现。</span>
+        </div>
+      </section>
+
+      <section className={styles.method} aria-labelledby="method-title">
+        <header>
+          <span>HOW WE READ THE MARKET</span>
+          <h2 id="method-title">来源清楚，判断有边界。</h2>
+          <p>收录数量不等于市场需求；编辑判断也不会伪装成精确分数。</p>
+        </header>
+
+        <div className={styles.methodGrid}>
+          <article>
+            <FileCheck2 size={23} aria-hidden="true" />
+            <strong>产品资料</strong>
+            <p>{productPayload.sourceLabel}，保留产品官网与公开说明。</p>
+          </article>
+          <article>
+            <UsersRound size={23} aria-hidden="true" />
+            <strong>KOL 名单</strong>
+            <p>{cnKolPayload.sourceLabel}与{globalKolPayload.sourceLabel}分开呈现。</p>
+          </article>
+          <article>
+            <Megaphone size={23} aria-hidden="true" />
+            <strong>市场观察</strong>
+            <p>官方发布、事实摘要与编辑解读明确分层。</p>
+          </article>
+          <article>
+            <Languages size={23} aria-hidden="true" />
+            <strong>全球语境</strong>
+            <p>同时保留中文视角和海外一手信息。</p>
+          </article>
         </div>
       </section>
     </main>

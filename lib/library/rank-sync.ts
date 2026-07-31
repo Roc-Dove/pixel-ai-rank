@@ -2,7 +2,11 @@ import { getLibraryItemsWithGuide } from "@/lib/library/guide";
 import { type LibraryItemWithGuide } from "@/types/library";
 import { type RankItemDto, type RankPayload, type RankRouteType } from "@/types/rank";
 
-const SELECTED_RANK_TYPES = new Set<RankRouteType>(["aicpb", "stars", "month"]);
+type SelectedRankType = Extract<RankRouteType, "stars" | "month">;
+
+function isSelectedRankType(type: RankRouteType): type is SelectedRankType {
+  return type === "stars" || type === "month";
+}
 
 function formatScore(score: number) {
   return String(Math.max(420, Math.min(999, Math.round(score))));
@@ -14,16 +18,6 @@ function categoryBoost(item: LibraryItemWithGuide, categories: string[], boost: 
 
 function audienceBoost(item: LibraryItemWithGuide, audience: string, boost: number) {
   return item.guide.audiences.includes(audience as never) ? boost : 0;
-}
-
-function globalScore(item: LibraryItemWithGuide) {
-  return (
-    item.guide.recommendation * 7 +
-    (item.guide.isGoodForGlobal ? 95 : 0) +
-    audienceBoost(item, "出海团队", 80) +
-    categoryBoost(item, ["AI 视频生成", "AI 营销/SEO", "AI 写作", "AI 自动化", "AI PPT/演示", "AI 设计"], 46) +
-    (item.guide.isChineseFriendly ? 12 : 24)
-  );
 }
 
 function trendScore(item: LibraryItemWithGuide) {
@@ -48,16 +42,7 @@ function monthlyScore(item: LibraryItemWithGuide) {
   );
 }
 
-function rankConfig(type: RankRouteType) {
-  if (type === "aicpb") {
-    return {
-      primaryLabel: "出海适配",
-      secondaryLabel: "编辑评分",
-      score: globalScore,
-      filter: (item: LibraryItemWithGuide) => item.guide.isGoodForGlobal || item.guide.audiences.includes("出海团队"),
-    };
-  }
-
+function rankConfig(type: SelectedRankType) {
   if (type === "stars") {
     return {
       primaryLabel: "趋势潜力",
@@ -90,7 +75,7 @@ function toRankItem(type: RankRouteType, rank: number, item: LibraryItemWithGuid
 }
 
 export function buildSelectedLibraryRankPayload(payload: RankPayload): RankPayload {
-  if (!SELECTED_RANK_TYPES.has(payload.type)) return payload;
+  if (!isSelectedRankType(payload.type)) return payload;
   if (payload.dataMode === "database" && payload.items.length > 0) return payload;
 
   const config = rankConfig(payload.type);

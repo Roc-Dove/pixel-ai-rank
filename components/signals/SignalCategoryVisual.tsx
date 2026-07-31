@@ -1,26 +1,20 @@
 import Link from "next/link";
-import { Bot, Boxes, Code2, Cpu, PackageOpen, ShieldCheck } from "lucide-react";
+import { Globe2, MapPin, Megaphone, PackageSearch } from "lucide-react";
 import { LibraryLogo } from "@/components/library/LibraryLogo";
 import { formatSignalImpact } from "@/lib/signals/utils";
 import type { SignalCategory, SignalImpact } from "@/types/signal";
 import styles from "./SignalCategoryVisual.module.css";
 
 const CATEGORY_ICONS = {
-  "模型升级": Cpu,
-  Agent: Bot,
-  "AI 编程": Code2,
-  多模态: Boxes,
-  产品变更: PackageOpen,
-  安全与产业: ShieldCheck,
-} satisfies Record<SignalCategory, typeof Cpu>;
+  产品: PackageSearch,
+  KOL: Megaphone,
+  出海: Globe2,
+} satisfies Record<SignalCategory, typeof Globe2>;
 
 const CATEGORY_TONES: Record<SignalCategory, string> = {
-  "模型升级": "blue",
-  Agent: "purple",
-  "AI 编程": "green",
-  多模态: "coral",
-  产品变更: "yellow",
-  安全与产业: "red",
+  产品: "blue",
+  KOL: "purple",
+  出海: "green",
 };
 
 export function SignalCategoryVisual({
@@ -29,6 +23,7 @@ export function SignalCategoryVisual({
   date,
   id,
   impact,
+  market,
   sourceLabel,
   sourceUrl,
   title,
@@ -38,6 +33,7 @@ export function SignalCategoryVisual({
   date: string;
   id: string;
   impact: SignalImpact;
+  market: string;
   sourceLabel: string;
   sourceUrl: string;
   title: string;
@@ -68,6 +64,7 @@ export function SignalCategoryVisual({
 
       <div className={styles.footer}>
         <span className={styles.category}><Icon size={16} strokeWidth={1.8} aria-hidden="true" /> {category}</span>
+        <span className={styles.market}><MapPin size={14} strokeWidth={1.8} aria-hidden="true" /> {market}</span>
         <span className={styles.impact}>{formatSignalImpact(impact)}</span>
       </div>
     </header>

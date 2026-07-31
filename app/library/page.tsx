@@ -3,8 +3,8 @@ import { LibraryExplorer } from "@/components/library/LibraryExplorer";
 import { getLibraryCardItems } from "@/lib/library/guide";
 
 export const metadata: Metadata = {
-  title: "AI 工具库",
-  description: "112 个中文 AI 工具资料，明确区分官方核验与社区聚合、个体导购与分类基线，并可按用途、人群和难度筛选。",
+  title: "AI 产品库",
+  description: "按产品类别、适用人群与使用场景整理的 AI 产品资料，明确区分官方核验、社区聚合与编辑说明。",
   alternates: {
     canonical: "/library",
     types: { "application/rss+xml": "/feed.xml" },
