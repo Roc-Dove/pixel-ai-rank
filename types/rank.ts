@@ -81,14 +81,14 @@ export const TAB_CONFIG: Record<
   }
 > = {
   aicpb: {
-    label: "中国 AI 产品出海榜",
+    label: "国际化 AI 产品",
     shortLabel: "出海产品",
     navLabel: "出海产品",
     icon: "🌏",
     tone: "red",
-    sourceLabel: "内置出海产品样本",
+    sourceLabel: "Pixel AI Rank 国际化产品精选",
     databaseSourceLabel: "AICPB 中国 AI 产品增长榜",
-    summary: "观察中国 AI 产品在海外市场的访问规模与增长变化；数据不可用时展示明确标注的内置样本，不用工具评分替代出海表现。",
+    summary: "浏览面向全球用户的主流 AI 软件与独立开发者产品，观察产品形态、使用场景、收费方式和国际化路径。",
   },
   stars: {
     label: "AI 产品新品榜",

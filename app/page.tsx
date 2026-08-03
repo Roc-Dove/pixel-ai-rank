@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import { LibraryLogo } from "@/components/library/LibraryLogo";
 import { ProfileAvatar } from "@/components/ui/ProfileAvatar";
-import { getLibraryItemsWithGuide } from "@/lib/library/guide";
 import { FEATURED_OPC_CASES, OPC_LAST_VERIFIED } from "@/lib/opc/items";
+import { INDIE_AI_PRODUCTS, INTERNATIONAL_PRODUCT_COUNT, MAINSTREAM_AI_PRODUCTS } from "@/lib/global-products";
 import { getRankPayload } from "@/lib/rank-data";
 import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
 import { formatSignalDate } from "@/lib/signals/utils";
@@ -83,18 +83,16 @@ function KolPanel({
 }
 
 export default async function HomePage() {
-  const [productPayload, cnKolPayload, globalKolPayload] = await Promise.all([
-    getRankPayload("aicpb"),
+  const [cnKolPayload, globalKolPayload] = await Promise.all([
     getRankPayload("xhunt_cn"),
     getRankPayload("xhunt_global"),
   ]);
 
   const observations = SIGNAL_ITEMS.slice(0, 5);
-  const libraryCount = getLibraryItemsWithGuide().length;
   const marketBriefs = observations.slice(0, 3);
   const leadObservation = observations[0];
   const secondaryObservations = observations.slice(1);
-  const products = productPayload.items.slice(0, 6);
+  const products = [...MAINSTREAM_AI_PRODUCTS, ...INDIE_AI_PRODUCTS];
   const cnKols = cnKolPayload.items.slice(0, 3);
   const globalKols = globalKolPayload.items.slice(0, 3);
   const kolCount = cnKolPayload.items.length + globalKolPayload.items.length;
@@ -117,7 +115,7 @@ export default async function HomePage() {
           </div>
 
           <div className={styles.coverage} aria-label="当前可浏览内容">
-            <span><strong>{productPayload.items.length}</strong> 个出海产品</span>
+            <span><strong>{INTERNATIONAL_PRODUCT_COUNT}</strong> 个国际化产品</span>
             <span><strong>{kolCount}</strong> 位中外 KOL</span>
             <span><strong>{SIGNAL_ITEMS.length}</strong> 条来源观察</span>
           </div>
@@ -164,21 +162,21 @@ export default async function HomePage() {
         </header>
 
         <div className={styles.pathGrid}>
-          <Link href="/library" className={`${styles.pathCard} ${styles.productPath}`}>
+          <Link href="/rank/aicpb" className={`${styles.pathCard} ${styles.productPath}`}>
             <header>
               <span className={styles.pathIcon}><Boxes size={22} aria-hidden="true" /></span>
-              <span>{libraryCount} 个产品</span>
+              <span>{INTERNATIONAL_PRODUCT_COUNT} 个产品</span>
             </header>
             <div className={styles.logoCluster} aria-hidden="true">
               {products.slice(0, 4).map((item) => (
-                <span key={item.name}><LibraryLogo name={item.name} officialUrl={item.externalLink} /></span>
+                <span key={item.name}><LibraryLogo name={item.name} officialUrl={item.productUrl} /></span>
               ))}
             </div>
             <div className={styles.pathCopy}>
-              <h3>产品图谱</h3>
-              <p>查看产品定位、适用人群与出海资料。</p>
+              <h3>国际化产品</h3>
+              <p>对照全球主流产品，也发现独立团队的好产品。</p>
             </div>
-            <span className={styles.pathFooter}>进入产品库 <ArrowRight size={17} aria-hidden="true" /></span>
+            <span className={styles.pathFooter}>浏览出海产品 <ArrowRight size={17} aria-hidden="true" /></span>
           </Link>
 
           <Link href="/rank/xhunt_cn" className={`${styles.pathCard} ${styles.kolPath}`}>
@@ -358,7 +356,7 @@ export default async function HomePage() {
           <article>
             <FileCheck2 size={23} aria-hidden="true" />
             <strong>产品资料</strong>
-            <p>{productPayload.sourceLabel}，保留产品官网与公开说明。</p>
+            <p>全球主流与 Indie 产品分栏整理，保留官网和团队公开资料。</p>
           </article>
           <article>
             <UsersRound size={23} aria-hidden="true" />

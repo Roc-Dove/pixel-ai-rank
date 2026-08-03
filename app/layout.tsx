@@ -34,17 +34,19 @@ export const metadata: Metadata = {
     types: { "application/rss+xml": "/feed.xml" },
   },
   openGraph: {
-    title: "Pixel AI Rank",
-    description: "看 AI 产品，找中外 KOL，跟踪海外分发、渠道、本地化与商业化。",
+    title: "Pixel AI Rank｜全球主流 × Indie 出海",
+    description: "发现真正面向国际用户的 AI 产品，也看个人与小团队如何服务全球市场。",
     locale: "zh_CN",
     type: "website",
     url: "/",
     siteName: SITE_NAME,
+    images: [{ url: "/og-international.png", width: 1200, height: 630, alt: "Pixel AI Rank 全球主流与 Indie 出海产品" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: SITE_NAME,
-    description: "看 AI 产品，找中外 KOL，跟踪海外分发、渠道、本地化与商业化。",
+    title: "Pixel AI Rank｜全球主流 × Indie 出海",
+    description: "发现真正面向国际用户的 AI 产品。",
+    images: ["/og-international.png"],
   },
 };
 
