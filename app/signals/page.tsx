@@ -4,6 +4,7 @@ import { ArrowRight, ArrowUpRight, CalendarDays, Globe2, Rss, ShieldCheck } from
 import { SignalsExplorer } from "@/components/signals/SignalsExplorer";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
 import { SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
+import { SOCIAL_IMAGE } from "@/lib/site";
 import { SIGNAL_CATEGORIES } from "@/types/signal";
 import styles from "./page.module.css";
 
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
     canonical: "/signals",
     types: { "application/rss+xml": "/feed.xml" },
   },
+  openGraph: { title: "出海观察", description: "聚焦 AI 产品出海、海外 KOL 渠道、分发、支付、本地化与平台规则。", url: "/signals", images: [SOCIAL_IMAGE] },
 };
 
 export const revalidate = 3600;

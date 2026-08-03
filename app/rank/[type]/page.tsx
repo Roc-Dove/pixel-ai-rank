@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { RankExplorer } from "@/components/rank/RankExplorer";
 import { GlobalProductShowcase } from "@/components/rank/GlobalProductShowcase";
 import { getRankPayload } from "@/lib/rank-data";
+import { SOCIAL_IMAGE } from "@/lib/site";
 import { isRankRouteType, RANK_TYPES, TAB_CONFIG } from "@/types/rank";
 
 export const revalidate = 3600;
@@ -29,6 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ type: str
       description: TAB_CONFIG[type].summary,
       url: `/rank/${type}`,
       type: "website",
+      images: [SOCIAL_IMAGE],
     },
   };
 }

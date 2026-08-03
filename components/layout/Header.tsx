@@ -30,6 +30,7 @@ export function Header() {
   const isLibrary = pathname.startsWith("/library");
   const isSignals = pathname.startsWith("/signals");
   const isProductRank = currentType === "aicpb" || currentType === "stars" || currentType === "month";
+  const isGlobalProducts = currentType === "aicpb";
   const isKolRank = currentType === "xhunt_cn" || currentType === "xhunt_global";
   const showSearch = Boolean(currentTab) || pathname === "/library" || pathname === "/signals";
   const searchLabel = currentTab ? `搜索${currentTab.shortLabel}` : isSignals ? "搜索出海观察" : "搜索 AI 产品库";
@@ -92,7 +93,7 @@ export function Header() {
               <PixelInput
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder={currentTab ? "搜索名称、简介或标签" : isSignals ? "搜索市场、平台、产品或渠道" : "搜索产品、分类、人群或使用场景"}
+                placeholder={isGlobalProducts ? "搜索产品、场景、创始人或收费模式" : currentTab ? "搜索名称、简介或标签" : isSignals ? "搜索市场、平台、产品或渠道" : "搜索产品、分类、人群或使用场景"}
                 aria-label={searchLabel}
                 autoComplete="off"
               />
@@ -105,7 +106,7 @@ export function Header() {
 
             <div className="pixel-search-hint" aria-hidden="true">
               <BookOpen size={16} strokeWidth={1.8} />
-              <span>{currentTab ? "在当前榜单内检索" : isSignals ? "原始来源 · 持续核验" : "产品资料 · 场景筛选"}</span>
+              <span>{isGlobalProducts ? "在国际化产品内检索" : currentTab ? "在当前榜单内检索" : isSignals ? "原始来源 · 持续核验" : "产品资料 · 场景筛选"}</span>
             </div>
           </div>
         ) : null}

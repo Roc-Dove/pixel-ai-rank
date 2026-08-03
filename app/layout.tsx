@@ -4,7 +4,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { SearchProvider } from "@/components/providers/SearchProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, SOCIAL_IMAGE } from "@/lib/site";
 import "./globals.css";
 
 const themeScript = `
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     type: "website",
     url: "/",
     siteName: SITE_NAME,
-    images: [{ url: "/og-international.png", width: 1200, height: 630, alt: "Pixel AI Rank 全球主流与 Indie 出海产品" }],
+    images: [SOCIAL_IMAGE],
   },
   twitter: {
     card: "summary_large_image",

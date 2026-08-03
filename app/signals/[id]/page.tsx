@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Check, Compass, ExternalLink, List
 import { notFound } from "next/navigation";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
 import { getRelatedSignals, getSignalItem, SIGNAL_ITEMS, SIGNALS_LAST_VERIFIED } from "@/lib/signals/items";
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl, SOCIAL_IMAGE } from "@/lib/site";
 import { formatSignalDate, formatSignalImpact, getSignalLifecycle } from "@/lib/signals/utils";
 import { getLibraryItemWithGuide } from "@/lib/library/guide";
 
@@ -35,6 +35,7 @@ export async function generateMetadata({ params }: SignalDetailPageProps): Promi
       publishedTime: `${item.date}T00:00:00+08:00`,
       modifiedTime: `${SIGNALS_LAST_VERIFIED}T00:00:00+08:00`,
       tags: item.tags,
+      images: [SOCIAL_IMAGE],
     },
   };
 }

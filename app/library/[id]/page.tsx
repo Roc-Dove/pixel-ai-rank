@@ -7,7 +7,7 @@ import { LibraryLogo } from "@/components/library/LibraryLogo";
 import { pixelButtonClassName } from "@/components/ui/PixelButton";
 import { getLibraryItemWithGuide } from "@/lib/library/guide";
 import { LIBRARY_ITEMS } from "@/lib/library/items";
-import { absoluteUrl } from "@/lib/site";
+import { absoluteUrl, SOCIAL_IMAGE } from "@/lib/site";
 
 type LibraryDetailPageProps = { params: Promise<{ id: string }> };
 
@@ -61,6 +61,7 @@ export async function generateMetadata({ params }: LibraryDetailPageProps): Prom
       description: item.descriptionZh,
       type: "website",
       url: `/library/${item.id}`,
+      images: [SOCIAL_IMAGE],
     },
   };
 }

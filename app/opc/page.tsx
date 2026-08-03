@@ -3,12 +3,14 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Bot, Globe2, ShieldCheck, UsersRound } from "lucide-react";
 import { LibraryLogo } from "@/components/library/LibraryLogo";
 import { FEATURED_OPC_CASES, OPC_CASES, OPC_LAST_VERIFIED, type OpcCase, type OpcEvidence } from "@/lib/opc/items";
+import { SOCIAL_IMAGE } from "@/lib/site";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "AI 出海 OPC 案例",
   description: "可追溯的 AI 一人公司与极小团队案例：产品方向、获客渠道、商业模式、公开结果与团队状态。",
   alternates: { canonical: "/opc" },
+  openGraph: { title: "AI 出海 OPC 案例", description: "可追溯的 AI 一人公司与极小团队案例。", url: "/opc", images: [SOCIAL_IMAGE] },
 };
 
 const STATUS_CLASS: Record<OpcCase["status"], string> = {

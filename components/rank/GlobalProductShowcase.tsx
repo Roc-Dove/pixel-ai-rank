@@ -20,7 +20,7 @@ function matchesQuery(item: MainstreamProduct | IndieProduct, query: string) {
 
 function MainstreamCard({ item, featured = false }: { item: MainstreamProduct; featured?: boolean }) {
   return (
-    <article className={`${styles.productCard} ${featured ? styles.productCardFeatured : ""}`} style={{ "--card-accent": item.accent } as React.CSSProperties}>
+    <article id={`product-${item.id}`} className={`${styles.productCard} ${featured ? styles.productCardFeatured : ""}`} style={{ "--card-accent": item.accent } as React.CSSProperties}>
       <div className={styles.productVisual}>
         <span className={styles.productLogo}><LibraryLogo name={item.name} officialUrl={item.productUrl} /></span>
         <span className={styles.visualWord} aria-hidden="true">{item.category}</span>
@@ -28,7 +28,7 @@ function MainstreamCard({ item, featured = false }: { item: MainstreamProduct; f
       </div>
       <div className={styles.productBody}>
         <div className={styles.cardTitleRow}>
-          <div><span>{item.category}</span><h3>{item.name}</h3></div>
+          <div><h3><a href={item.productUrl} target="_blank" rel="noopener noreferrer">{item.name}</a></h3></div>
           <a href={item.productUrl} target="_blank" rel="noopener noreferrer" aria-label={`打开 ${item.name} 官网`}><ArrowUpRight size={19} /></a>
         </div>
         <p>{item.tagline}</p>
@@ -44,16 +44,17 @@ function MainstreamCard({ item, featured = false }: { item: MainstreamProduct; f
 
 function IndieCard({ item }: { item: IndieProduct }) {
   return (
-    <article className={styles.indieCard} style={{ "--card-accent": item.accent } as React.CSSProperties}>
+    <article id={`product-${item.id}`} className={styles.indieCard} style={{ "--card-accent": item.accent } as React.CSSProperties}>
       <header>
         <span className={styles.indieLogo}><LibraryLogo name={item.name} officialUrl={item.productUrl} /></span>
         <span className={styles.teamBadge}><UsersRound size={14} />{item.teamLabel}</span>
       </header>
-      <div className={styles.indieTitle}><span>{item.category}</span><h3>{item.name}</h3><p>{item.maker}</p></div>
+      <div className={styles.indieTitle}><span>{item.category}</span><h3><a href={item.productUrl} target="_blank" rel="noopener noreferrer">{item.name}</a></h3><p>{item.maker}</p></div>
       <p className={styles.indieTagline}>{item.tagline}</p>
       <div className={styles.indieMeta}>
         <span><Globe2 size={14} />{item.origin}</span>
         <span><Check size={14} />{item.globalSignal}</span>
+        <span><UsersRound size={14} />适合 {item.bestFor}</span>
       </div>
       <footer>
         <span>{item.businessModel}</span>
@@ -81,16 +82,17 @@ export function GlobalProductShowcase() {
           <h1 id="global-products-title">从全球产品，<br /><span>读懂 AI 出海。</span></h1>
           <p>主流产品看体验基准，独立团队看可复制的切口。只收录面向国际用户、可以在线体验或购买的 AI 软件。</p>
           <nav className={styles.laneNav} aria-label="产品分区">
-            <a href="#mainstream"><Building2 size={17} />全球主流 <strong>{MAINSTREAM_AI_PRODUCTS.length}</strong></a>
-            <a href="#indie"><UsersRound size={17} />Indie 出海 <strong>{INDIE_AI_PRODUCTS.length}</strong></a>
+            {mainstream.length > 0 ? <a href="#mainstream"><Building2 size={17} />全球主流 <strong>{mainstream.length}</strong></a> : null}
+            {indie.length > 0 ? <a href="#indie"><UsersRound size={17} />Indie 出海 <strong>{indie.length}</strong></a> : null}
+            <span className={styles.resultCount} aria-live="polite">{mainstream.length + indie.length} 个匹配结果</span>
           </nav>
         </div>
 
         <div className={styles.heroShelf} aria-label="本期收录产品">
           <header><span>GLOBAL PRODUCT SHELF</span><time dateTime={GLOBAL_PRODUCTS_LAST_VERIFIED}>核验 {GLOBAL_PRODUCTS_LAST_VERIFIED.replaceAll("-", ".")}</time></header>
           <div className={styles.heroLogoGrid}>
-            {[...MAINSTREAM_AI_PRODUCTS.slice(0, 3), ...INDIE_AI_PRODUCTS.slice(0, 3)].map((item, index) => (
-              <a key={item.id} href={`#${index < 3 ? "mainstream" : "indie"}`} aria-label={`在页面中查看 ${item.name}`}>
+            {[...MAINSTREAM_AI_PRODUCTS.slice(0, 3), ...INDIE_AI_PRODUCTS.slice(0, 3)].map((item) => (
+              <a key={item.id} href={item.productUrl} target="_blank" rel="noopener noreferrer" aria-label={`打开 ${item.name} 官网`}>
                 <LibraryLogo name={item.name} officialUrl={item.productUrl} />
                 <span>{item.name}</span>
               </a>
