@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { RankExplorer } from "@/components/rank/RankExplorer";
-import { GlobalProductShowcase } from "@/components/rank/GlobalProductShowcase";
 import { getRankPayload } from "@/lib/rank-data";
 import { SOCIAL_IMAGE } from "@/lib/site";
 import { isRankRouteType, RANK_TYPES, TAB_CONFIG } from "@/types/rank";
@@ -39,10 +38,6 @@ export default async function RankTypePage({ params }: { params: Promise<{ type:
   const { type } = await params;
   if (!isRankRouteType(type)) {
     notFound();
-  }
-
-  if (type === "aicpb") {
-    return <GlobalProductShowcase />;
   }
 
   const payload = await getRankPayload(type);
