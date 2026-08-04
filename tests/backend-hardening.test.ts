@@ -53,7 +53,7 @@ test("没有可用真实条目时才为站内产品榜生成 curated 精选榜",
 });
 
 test("空字符串服务端环境变量会被当作未配置", () => {
-  const keys = ["DATABASE_URL", "DIRECT_URL", "CRON_SECRET", "PUPPETEER_EXECUTABLE_PATH"] as const;
+  const keys = ["DATABASE_URL", "DIRECT_URL", "CRON_SECRET", "PUPPETEER_EXECUTABLE_PATH", "TAVILY_API_KEY"] as const;
   const previousValues = new Map(keys.map((key) => [key, process.env[key]]));
 
   try {
@@ -66,6 +66,7 @@ test("空字符串服务端环境变量会被当作未配置", () => {
       DIRECT_URL: undefined,
       CRON_SECRET: undefined,
       PUPPETEER_EXECUTABLE_PATH: undefined,
+      TAVILY_API_KEY: undefined,
     });
   } finally {
     keys.forEach((key) => {

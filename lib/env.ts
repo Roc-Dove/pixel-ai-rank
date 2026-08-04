@@ -10,6 +10,7 @@ const serverEnvSchema = z.object({
   DIRECT_URL: optionalServerString,
   CRON_SECRET: optionalServerString,
   PUPPETEER_EXECUTABLE_PATH: optionalServerString,
+  TAVILY_API_KEY: optionalServerString,
 });
 
 export function getServerEnv() {
@@ -18,5 +19,6 @@ export function getServerEnv() {
     DIRECT_URL: process.env.DIRECT_URL,
     CRON_SECRET: process.env.CRON_SECRET,
     PUPPETEER_EXECUTABLE_PATH: process.env.PUPPETEER_EXECUTABLE_PATH,
+    TAVILY_API_KEY: process.env.TAVILY_API_KEY,
   });
 }

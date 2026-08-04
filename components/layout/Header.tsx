@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Globe2, LibraryBig, Moon, Rocket, Rss, Search, Sun, UsersRound, X } from "lucide-react";
+import { BookOpen, Globe2, House, LibraryBig, Moon, Rocket, Rss, Search, Sun, X } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useSearch } from "@/components/providers/SearchProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
@@ -27,11 +27,10 @@ export function Header() {
   }, [pathname]);
 
   const currentTab = currentType ? TAB_CONFIG[currentType] : null;
+  const isHome = pathname === "/";
   const isLibrary = pathname.startsWith("/library");
   const isSignals = pathname.startsWith("/signals");
-  const isProductRank = currentType === "aicpb" || currentType === "stars" || currentType === "month";
   const isGlobalProducts = currentType === "aicpb";
-  const isKolRank = currentType === "xhunt_cn" || currentType === "xhunt_global";
   const showSearch = Boolean(currentTab) || pathname === "/library" || pathname === "/signals";
   const searchLabel = currentTab ? `搜索${currentTab.shortLabel}` : isSignals ? "搜索出海观察" : "搜索 AI 产品库";
 
@@ -48,14 +47,14 @@ export function Header() {
           </Link>
 
           <nav className="pixel-site-nav" aria-label="主导航">
-            <Link href="/rank/aicpb" className={isProductRank ? "is-active" : ""} aria-current={isProductRank ? "page" : undefined}>
-              <Rocket size={18} aria-hidden="true" /><span>出海产品</span>
+            <Link href="/" className={isHome ? "is-active" : ""} aria-current={isHome ? "page" : undefined}>
+              <House size={18} aria-hidden="true" /><span>主页</span>
             </Link>
             <Link href="/library" className={isLibrary ? "is-active" : ""} aria-current={isLibrary ? "page" : undefined}>
               <LibraryBig size={18} aria-hidden="true" /><span>产品库</span>
             </Link>
-            <Link href="/rank/xhunt_cn" className={isKolRank ? "is-active" : ""} aria-current={isKolRank ? "page" : undefined}>
-              <UsersRound size={18} aria-hidden="true" /><span>KOL</span>
+            <Link href="/rank/aicpb" className={isGlobalProducts ? "is-active" : ""} aria-current={isGlobalProducts ? "page" : undefined}>
+              <Rocket size={18} aria-hidden="true" /><span>国际AI产品</span>
             </Link>
             <Link href="/signals" className={isSignals ? "is-active" : ""} aria-current={isSignals ? "page" : undefined}>
               <Globe2 size={18} aria-hidden="true" /><span>出海观察</span>

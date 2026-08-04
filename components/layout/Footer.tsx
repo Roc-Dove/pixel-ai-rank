@@ -19,7 +19,7 @@ export function Footer() {
 
         <div className="pixel-footer-column">
           <span className="pixel-footer-heading">探索</span>
-          <Link href="/rank/aicpb">出海产品</Link>
+          <Link href="/rank/aicpb">国际 AI 产品</Link>
           <Link href="/library">AI 产品库</Link>
           <Link href="/rank/xhunt_cn">中文 KOL</Link>
           <Link href="/rank/xhunt_global">全球 KOL</Link>

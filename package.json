@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test": "node --test --import tsx tests/**/*.test.ts",
     "typecheck": "tsc --noEmit",
+    "products:discover": "node --import tsx scripts/discover-global-products.ts",
     "db:migrate": "prisma migrate deploy",
     "check": "npm run lint && npm run test && npm run typecheck"
   },

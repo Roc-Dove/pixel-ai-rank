@@ -8,13 +8,16 @@ import {
 } from "../lib/global-products";
 
 test("international products are split into mainstream and indie lanes", () => {
-  assert.equal(MAINSTREAM_AI_PRODUCTS.length, 6);
-  assert.equal(INDIE_AI_PRODUCTS.length, 6);
-  assert.equal(INTERNATIONAL_PRODUCT_COUNT, 12);
-  assert.equal(GLOBAL_PRODUCTS_LAST_VERIFIED, "2026-08-03");
+  assert.ok(MAINSTREAM_AI_PRODUCTS.length >= 24);
+  assert.ok(INDIE_AI_PRODUCTS.length >= 24);
+  assert.equal(INTERNATIONAL_PRODUCT_COUNT, MAINSTREAM_AI_PRODUCTS.length + INDIE_AI_PRODUCTS.length);
+  assert.equal(GLOBAL_PRODUCTS_LAST_VERIFIED, "2026-08-04");
 
   const ids = [...MAINSTREAM_AI_PRODUCTS, ...INDIE_AI_PRODUCTS].map((item) => item.id);
   assert.equal(new Set(ids).size, ids.length);
+
+  const productUrls = [...MAINSTREAM_AI_PRODUCTS, ...INDIE_AI_PRODUCTS].map((item) => item.productUrl);
+  assert.equal(new Set(productUrls).size, productUrls.length);
 });
 
 test("every international product keeps an official product and evidence link", () => {

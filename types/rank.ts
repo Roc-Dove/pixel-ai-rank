@@ -82,8 +82,8 @@ export const TAB_CONFIG: Record<
 > = {
   aicpb: {
     label: "国际化 AI 产品",
-    shortLabel: "出海产品",
-    navLabel: "出海产品",
+    shortLabel: "国际 AI 产品",
+    navLabel: "国际 AI 产品",
     icon: "🌏",
     tone: "red",
     sourceLabel: "Pixel AI Rank 国际化产品精选",

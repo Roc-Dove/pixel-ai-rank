@@ -110,7 +110,7 @@ export default async function HomePage() {
               查看出海观察 <ArrowRight size={17} aria-hidden="true" />
             </Link>
             <Link href="/rank/aicpb" className={styles.secondaryAction}>
-              浏览出海产品
+              浏览国际 AI 产品
             </Link>
           </div>
 
@@ -176,7 +176,7 @@ export default async function HomePage() {
               <h3>国际化产品</h3>
               <p>对照全球主流产品，也发现独立团队的好产品。</p>
             </div>
-            <span className={styles.pathFooter}>浏览出海产品 <ArrowRight size={17} aria-hidden="true" /></span>
+            <span className={styles.pathFooter}>浏览国际 AI 产品 <ArrowRight size={17} aria-hidden="true" /></span>
           </Link>
 
           <Link href="/rank/xhunt_cn" className={`${styles.pathCard} ${styles.kolPath}`}>

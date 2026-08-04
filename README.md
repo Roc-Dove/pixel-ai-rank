@@ -20,7 +20,7 @@
 
 | 路由 | 内容 |
 | --- | --- |
-| `/rank/aicpb` | 出海精选 |
+| `/rank/aicpb` | 国际 AI 产品（全球主流 + Indie 小团队） |
 | `/rank/stars` | 趋势新品 |
 | `/rank/month` | 综合月榜 |
 | `/rank/xhunt_cn` | 中文 AI KOL |
@@ -64,12 +64,14 @@ DATABASE_URL="postgresql://user:password@host:5432/database?pgbouncer=true"
 DIRECT_URL="postgresql://user:password@host:5432/database"
 CRON_SECRET="replace-with-a-long-random-secret"
 PUPPETEER_EXECUTABLE_PATH=""
+TAVILY_API_KEY=""
 ```
 
 - `DATABASE_URL`：页面读取和抓取写入使用的数据库连接
 - `DIRECT_URL`：Prisma migration 使用的直连地址，可选
 - `CRON_SECRET`：抓取接口必填密钥；未配置时接口返回 `503`，不再使用公开默认值
 - `PUPPETEER_EXECUTABLE_PATH`：本地执行 Xhunt 动态抓取时的 Chrome/Chromium 路径
+- `TAVILY_API_KEY`：可选，仅供服务端产品发现脚本调用 Tavily Search API，不会发送到浏览器
 
 空字符串会被视为未配置。
 
@@ -114,7 +116,18 @@ npm run typecheck    # TypeScript
 npm run check        # lint + test + typecheck
 npm run build        # Prisma Client + Next 生产构建
 npm run db:migrate   # 部署数据库 migration
+npm run products:discover # 用 Tavily 发现并去重国际 AI 产品候选
 ```
+
+## 国际 AI 产品发现
+
+在 `.env.local` 配置 `TAVILY_API_KEY` 后运行：
+
+```bash
+npm run products:discover
+```
+
+脚本会并行检索全球主流产品官网、Indie/小团队产品官网和创始人证据；高置信官网候选按域名去重，证据来源和待审文章单独标记，不会把榜单或社交文章误计为新产品。结果写入本地 `.tmp-product-discovery/`，不会自动发布到网站；编辑仍需核对官网、产品可用性、国际用户入口和团队证据后，再加入 `lib/global-products.ts`。候选报告和密钥都不会进入 Git。
 
 ## 目录结构
 
@@ -122,6 +135,7 @@ npm run db:migrate   # 部署数据库 migration
 app/                 页面、元数据与 Route Handlers
 components/          布局、情报、榜单、工具库和基础 UI
 lib/signals/         官方 AI 情报、核验日期与行动建议
+lib/product-discovery/ Tavily 产品发现、去重与候选规范化
 lib/library/         112 个工具、中文导购字段与精选榜算法
 lib/scrapers/        5 个数据抓取器与批次读写
 lib/db/              Prisma Client

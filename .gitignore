@@ -43,6 +43,7 @@ next-env.d.ts
 
 # Local notes and scrape debug output
 .tmp-scrape-debug/
+.tmp-product-discovery/
 .trae/
 TabAI会话_*.md
 当前进度梳理.md
